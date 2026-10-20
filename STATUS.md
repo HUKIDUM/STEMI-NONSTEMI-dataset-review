@@ -67,6 +67,8 @@ Last update: 2026-10-20
 
 - S4 `mimic_iv_ecg` (fallback C): record_list.csv 70.4 MB (resumed; plausibility: 800,035 rows = registry), dictionary, 50 headers. Results `results/mimic_iv_ecg_*`, `results/findings_mimic_iv_ecg.md`. Verified (planner recount) → 10 rows. STEMI/NSTEMI = not checked yet (user-run ICD script). Key technical finding: lead order aVF before aVL, gain 200/mV.
 
+- S11 (part): CPSC 2018, CPSC-Extra and Georgia (§5.5–5.7), the shared Challenge block, the first §8 warning (no patient ID despite repeat patients), the §9 Georgia conflict and sources filled; PDF rebuilt. Planner checked them (age-92 rule scoped to CPSC/CPSC-Extra).
+
 ## In progress
 - S1 downloads: PTB-XL done. First run aborted on a dropped connection (retry bug: reused .part file). Fixed in `fetch_samples.py` (per-attempt .part, truncated body = retry, per-batch logging); `pytest` 110 passed (planner re-ran). Re-run in progress with --workers 2. PhysioNet speed ~4–5 KB/s: the MIMIC CSVs (~298 MB) may take many hours.
 - S4 `mimic_iv_ecg`: the user chose option E (public S3 mirror) → HTTP 404 → fallback option C (approved): `record_list.csv`, the data dictionary and 50 `.hea` headers from physionet.org, downloading now. **`machine_measurements.csv` and `waveform_note_links.csv` are NOT approved yet** (they need a new request). `review_mimic.py` is written, not yet run on data.
