@@ -4,6 +4,10 @@ Owner: planner. A new session reads this first. Plan: `PLAN.md` (APPROVED 2026-1
 
 Last update: 2026-10-20
 
+## Team rule: what needs a download request (team-lead 2026-10-20; the user may overrule)
+- **No request needed:** reading official web pages, papers and small API metadata (e.g. figshare/Zenodo JSON for license and md5) to check facts. Cite the URL.
+- **Request needed first, even if nothing is saved:** anything from a dataset's file tree (physionet.org/files/..., ndownloader.figshare.com, zenodo.org/.../files/, raw dataset files), including index files, RECORDS lists and checksum lists (SHA256SUMS).
+
 ## Done
 - S0: `PLAN.md` approved by the user via team-lead (2026-10-20).
 - Environment: documenter installed `markdown_pdf` 1.13.3 (+ deps pymupdf 2.0, pymupdf_layout 2.0, pymupdf4llm 2.0, markdown-it-py 4.2.0, mdurl 0.1.2) into the project `.venv` only, for `docs/dataset_report.pdf`. Approved by the user (confirmed by team-lead). No weasyprint, no LaTeX.
