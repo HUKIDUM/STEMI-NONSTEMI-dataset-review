@@ -26,6 +26,9 @@ Last update: 2026-10-20
 
 - S11 (part): PTB-XL filled in `docs/dataset_report.md` (§3 row, §4 row, §5.1, §10 sources); PDF rebuilt (7 pages). Planner checked it against the verified rows (4 fixes made first).
 
+- U1 script: `src/stemi/review/mimic_icd_count.py` + `tests/test_mimic_icd_count.py`, reviewed by planner (2 rounds). Aggregates only, <10 suppressed with secondary suppression, chunked read-only, caveats printed; ext-ICD input not supported. `pytest` 133 passed. **Ready for the user to run**; the counts are not available yet.
+- Report: optional PTB-XL likelihood tweak included in this commit.
+
 ## In progress
 - S1 downloads: PTB-XL done. First run aborted on a dropped connection (retry bug: reused .part file). Fixed in `fetch_samples.py` (per-attempt .part, truncated body = retry, per-batch logging); `pytest` 110 passed (planner re-ran). Re-run in progress with --workers 2. PhysioNet speed ~4–5 KB/s: the MIMIC CSVs (~298 MB) may take many hours.
 - S4 `mimic_iv_ecg`: the user chose option E (public S3 mirror) → HTTP 404 → fallback option C (approved): `record_list.csv`, the data dictionary and 50 `.hea` headers from physionet.org, downloading now. **`machine_measurements.csv` and `waveform_note_links.csv` are NOT approved yet** (they need a new request). `review_mimic.py` is written, not yet run on data.
