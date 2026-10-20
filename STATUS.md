@@ -20,9 +20,11 @@ Last update: 2026-10-20
 
 - S11 (skeleton): `docs/dataset_report.md` outline (no dataset facts), PDF build `docs/report_build/build_pdf.py` + `report.css` (markdown_pdf), test build `docs/dataset_report.pdf` (6 pages). Planner checked: it holds no dataset facts; section 2 matches PLAN §0/§3 and U1.
 
+- S1 (code only) + S2: `src/stemi/review/fetch_samples.py` (manifest-only, 500 MB cap, .hea/RECORDS only for headers, 401/403 stop, no overwrite, append-only `results/download_manifest.csv`), `src/stemi/review/hea_parser.py`; tests `tests/test_fetch_samples.py`, `tests/test_hea_parser.py`. `pytest`: 101 passed (planner re-ran). **No files downloaded yet.**
+
 ## In progress
-- S1 coder: `fetch_samples.py` + tests; ask for download approval per dataset (PLAN §3).
-- S2 coder: `hea_parser.py` + tests.
+- S1 downloads: PTB-XL approval request #1 sent to team-lead (pending).
+- S3 coder: `review_ptbxl.py` on synthetic fixtures while approval is pending.
 
 ## Next
 - S3 `ptb_xl` → S4 `mimic_iv_ecg` (+ `mimic_icd_count.py`) → S5 `ptb_diagnostic` → S6 `sph` → S7 Challenge 5 → S8 `code15` → S9 `incart` → S10 overlap/summary → S11–S12 report → S13 final report.
