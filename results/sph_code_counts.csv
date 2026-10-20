@@ -1,0 +1,45 @@
+code,n_ecgs,n_patients,Category,description,kw_infarct,kw_injury,kw_st_elev,kw_st_depr,kw_ischemi,kw_acute,kw_q_wave,in_code_csv
+1,13905,13498,A,Normal ECG,False,False,False,False,False,False,False,True
+22,2711,2640,C,Sinus bradycardia,False,False,False,False,False,False,False,True
+147,2218,2155,L,T-wave abnormality,False,False,False,False,False,False,False,True
+145,1829,1783,L,ST deviation,False,False,False,False,False,False,False,True
+23,1553,1527,C,Sinus arrhythmia,False,False,False,False,False,False,False,True
+105,1259,1238,I,Incomplete right bundle-branch block,False,False,False,False,False,False,False,True
+60,1067,1032,F,Ventricular premature complex(es),False,False,False,False,False,False,False,True
+146,1063,1042,L,ST deviation with T-wave change,False,False,False,False,False,False,False,True
+21,725,705,C,Sinus tachycardia,False,False,False,False,False,False,False,True
+106,710,658,I,Right bundle-branch block,False,False,False,False,False,False,False,True
+50,675,634,E,Atrial fibrillation,False,False,False,False,False,False,False,True
+30,539,525,D,Atrial premature complex(es),False,False,False,False,False,False,False,True
+125,322,307,J,Low voltage,False,False,False,False,False,False,False,True
+82,238,233,H,Prolonged PR interval,False,False,False,False,False,False,False,True
+142,209,201,K,Left ventricular hypertrophy,False,False,False,False,False,False,False,True
+120,161,158,J,Right-axis deviation,False,False,False,False,False,False,False,True
+101,154,149,I,Left anterior fascicular block,False,False,False,False,False,False,False,True
+121,138,136,J,Left-axis deviation,False,False,False,False,False,False,False,True
+161,120,117,M,Inferior MI,True,False,False,False,False,False,False,True
+51,99,88,E,Atrial flutter,False,False,False,False,False,False,False,True
+165,91,82,M,Anteroseptal MI,True,False,False,False,False,False,False,True
+153,88,86,L,ST-T change due to ventricular hypertrophy,False,False,False,False,False,False,False,True
+104,84,79,I,Left bundle-branch block,False,False,False,False,False,False,False,True
+36,64,63,D,Junctional premature complex(es),False,False,False,False,False,False,False,True
+160,52,47,M,Anterior MI,True,False,False,False,False,False,False,True
+86,47,47,H,"AV block, varying conduction",False,False,False,False,False,False,False,True
+85,35,32,H,2:1 AV block,False,False,False,False,False,False,False,True
+155,32,32,L,Early repolarization,False,False,False,False,False,False,False,True
+108,27,27,I,Ventricular preexcitation,False,False,False,False,False,False,False,True
+148,24,23,L,Prolonged QT interval,False,False,False,False,False,False,False,True
+88,22,20,H,"AV block, complete (third-degree)",False,False,False,False,False,False,False,True
+37,20,19,D,Junctional escape complex(es),False,False,False,False,False,False,False,True
+140,19,19,K,Left atrial enlargement,False,False,False,False,False,False,False,True
+54,13,13,E,Junctional tachycardia,False,False,False,False,False,False,False,True
+80,11,11,H,Short PR interval,False,False,False,False,False,False,False,True
+83,9,9,H,"Second-degree AV block, Mobitz type I (Wenckebach)",False,False,False,False,False,False,False,True
+152,9,9,L,TU fusion,False,False,False,False,False,False,False,True
+166,7,7,M,Extensive anterior MI,True,False,False,False,False,False,False,True
+143,6,6,K,Right ventricular hypertrophy,False,False,False,False,False,False,False,True
+102,6,6,I,Left posterior fascicular block,False,False,False,False,False,False,False,True
+31,4,4,D,"Atrial premature complexes, nonconducted",False,False,False,False,False,False,False,True
+81,3,3,H,AV conduction ratio N:D,False,False,False,False,False,False,False,True
+84,3,3,H,"Second-degree AV block, Mobitz type II",False,False,False,False,False,False,False,True
+87,3,3,H,"AV block, advanced (high-grade)",False,False,False,False,False,False,False,True

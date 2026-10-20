@@ -448,9 +448,16 @@ def attach_checksums(source: Source, rows: list[dict], *, skip_sha256sums: bool 
         r.setdefault("checksum_match", "not available")
 
 
+def filter_groups(relpaths: list[str], groups: list[str] | None) -> list[str]:
+    """Keep only paths inside the named group folders (e.g. ['g1']); None keeps all."""
+    if not groups:
+        return relpaths
+    return [rp for rp in relpaths if any(f"/{g}/" in f"/{rp}" for g in groups)]
+
+
 def run(dataset_id: str, *, approval: str, workers: int = 4, dry_run: bool = False,
         only: list[str] | None = None, skip_stages: bool = False,
-        skip_sha256sums: bool = False) -> list[dict]:
+        skip_sha256sums: bool = False, groups: list[str] | None = None) -> list[dict]:
     """``only``: subset of the fixed files; ``skip_stages``: no derived files this run."""
     if dataset_id not in MANIFEST:
         raise RefusedError(f"{dataset_id} is not in the manifest: {sorted(MANIFEST)}")
@@ -481,7 +488,7 @@ def run(dataset_id: str, *, approval: str, workers: int = 4, dry_run: bool = Fal
     batches = [(fixed, None)] + ([] if skip_stages else [(None, st) for st in source.stages])
     for relpaths, stage in batches:
         if stage is not None:
-            relpaths = stage.rule(local)
+            relpaths = filter_groups(stage.rule(local), groups)
             print(f"{dataset_id}: {stage.description}: {len(relpaths)} files")
         rows, error = fetch_files(source, relpaths, stage, budget=budget, approval=approval,
                                   workers=workers)
@@ -507,12 +514,14 @@ def main(argv: list[str] | None = None) -> None:
     ap.add_argument("--dry-run", action="store_true", help="HEAD sizes of fixed files only")
     ap.add_argument("--only", default="", help="comma list: subset of the fixed files")
     ap.add_argument("--skip-stages", action="store_true", help="no derived files this run")
+    ap.add_argument("--groups", default="", help="comma list of group folders, e.g. g1")
     ap.add_argument("--skip-sha256sums", action="store_true",
                     help="do not stream SHA256SUMS.txt (checksum_match = not available)")
     args = ap.parse_args(argv)
     run(args.dataset_id, approval=args.approval, workers=args.workers, dry_run=args.dry_run,
         only=args.only.split(",") if args.only else None, skip_stages=args.skip_stages,
-        skip_sha256sums=args.skip_sha256sums)
+        skip_sha256sums=args.skip_sha256sums,
+        groups=args.groups.split(",") if args.groups else None)
 
 
 if __name__ == "__main__":

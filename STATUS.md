@@ -29,6 +29,9 @@ Last update: 2026-10-20
 - U1 script: `src/stemi/review/mimic_icd_count.py` + `tests/test_mimic_icd_count.py`, reviewed by planner (2 rounds). Aggregates only, <10 suppressed with secondary suppression, chunked read-only, caveats printed; ext-ICD input not supported. `pytest` 133 passed. **Ready for the user to run**; the counts are not available yet.
 - Report: optional PTB-XL likelihood tweak included in this commit.
 
+- S6 `sph`: 3 files (metadata.csv, code.csv, rule.pdf; md5 = figshare). Results `results/sph_*`, `results/findings_sph.md`. Verified (planner recount): 260 MI ECGs; only 7 Acute. Data CC0, article CC BY 4.0.
+- S8 `code15`: exams.csv (md5 = Zenodo). Results `results/code15_*`, `results/findings_code15.md`. Verified: no MI label; `ST` = sinus tachycardia.
+
 ## In progress
 - S1 downloads: PTB-XL done. First run aborted on a dropped connection (retry bug: reused .part file). Fixed in `fetch_samples.py` (per-attempt .part, truncated body = retry, per-batch logging); `pytest` 110 passed (planner re-ran). Re-run in progress with --workers 2. PhysioNet speed ~4–5 KB/s: the MIMIC CSVs (~298 MB) may take many hours.
 - S4 `mimic_iv_ecg`: the user chose option E (public S3 mirror) → HTTP 404 → fallback option C (approved): `record_list.csv`, the data dictionary and 50 `.hea` headers from physionet.org, downloading now. **`machine_measurements.csv` and `waveform_note_links.csv` are NOT approved yet** (they need a new request). `review_mimic.py` is written, not yet run on data.

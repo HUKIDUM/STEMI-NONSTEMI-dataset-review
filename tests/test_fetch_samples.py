@@ -211,3 +211,10 @@ def test_skip_sha256sums_marks_not_available(server, tmp_path):
     fs.attach_checksums(src, rows, skip_sha256sums=True)
     assert rows[0]["checksum_match"] == "not available"
     assert "skipped" in rows[0]["checksum_source"]
+
+
+def test_filter_groups():
+    paths = ["training/georgia/g1/RECORDS", "training/georgia/g10/RECORDS",
+             "training/georgia/g1/E00001.hea", "training/georgia/g2/E01001.hea"]
+    assert fs.filter_groups(paths, ["g1"]) == [paths[0], paths[2]]
+    assert fs.filter_groups(paths, None) == paths

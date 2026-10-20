@@ -1,0 +1,26 @@
+code,modifier,n_ecgs,n_patients,description,modifier_description
+145,362,1024,1012,ST deviation,Depression
+60,310,277,271,Ventricular premature complex(es),Frequent
+60,308,271,266,Ventricular premature complex(es),Occasional
+50,346,210,205,Atrial fibrillation,With a rapid ventricular response
+147,367,176,174,T-wave abnormality,Inversion
+30,308,153,148,Atrial premature complex(es),Occasional
+30,310,125,124,Atrial premature complex(es),Frequent
+161,332,114,111,Inferior MI,Old
+165,332,75,70,Anteroseptal MI,Old
+60,341,70,68,Ventricular premature complex(es),In a bigeminal pattern
+160,332,47,42,Anterior MI,Old
+60,342,38,37,Ventricular premature complex(es),In a trigeminal pattern
+145,363,37,34,ST deviation,Elevation
+30,341,31,31,Atrial premature complex(es),In a bigeminal pattern
+30,349,16,16,Atrial premature complex(es),With aberrancy
+30,340,11,11,Atrial premature complex(es),Couplets
+165,331,9,6,Anteroseptal MI,Recent
+166,332,7,7,Extensive anterior MI,Old
+50,347,6,6,Atrial fibrillation,With a slow ventricular response
+165,330,4,4,Anteroseptal MI,Acute
+60,340,3,3,Ventricular premature complex(es),Couplets
+161,331,3,3,Inferior MI,Recent
+60,350,3,3,Ventricular premature complex(es),Polymorphic
+161,330,2,2,Inferior MI,Acute
+160,330,1,1,Anterior MI,Acute

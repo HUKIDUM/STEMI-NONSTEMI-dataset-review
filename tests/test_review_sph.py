@@ -15,7 +15,8 @@ def root(tmp_path):
                   "Patient_ID": ["P1", "P1", "P2", "P3"],
                   "Age": ["50", "50", "70", "30"], "Sex": ["M", "M", "F", "F"],
                   "N": ["5000", "5000", "7500", "5000"]}).to_csv(r / "metadata.csv", index=False)
-    pd.DataFrame({"Code": ["1", "22", "50", "160", "330", "332"],
+    pd.DataFrame({"Category": ["A", "C", "L", "M", "Modifier", "Modifier"],
+                  "Code": ["1", "22", "50", "160", "330", "332"],
                   "Description": ["Normal ECG", "Sinus tachycardia", "Fake ST change",
                                   "Fake anterior MI", "Acute", "Old"]}).to_csv(r / "code.csv", index=False)
     return r
@@ -38,3 +39,11 @@ def test_basics(root, tmp_path):
     assert b["N / 500 s (500 Hz per [MCR p.3]) min / median / max"] == "10 / 10 / 15"
     assert b["primary codes not in code.csv"] == "none"
     assert (tmp_path / "out" / "sph_summary.md").exists()
+
+
+def test_mi_timing_table(root, tmp_path):
+    t = rs.review(root, tmp_path / "out")["timing"].set_index("selection")["n_ecgs"]
+    assert t["any MI code ['160']"] == 2
+    assert t["MI code with modifier 330 (Acute)"] == 1
+    assert t["MI code with modifier 332 (Old)"] == 1
+    assert t["MI code with none of the timing modifiers"] == 0

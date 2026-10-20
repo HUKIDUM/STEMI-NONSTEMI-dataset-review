@@ -10,6 +10,7 @@ fields contain each separator.
 Outputs (results/):
     sph_code_counts.csv           primary AHA code: ECGs, patients, description
     sph_code_modifier_counts.csv  primary code + modifier pairs: ECGs, patients
+    sph_mi_timing.csv             distinct ECGs with an MI code by Acute/Recent/Old modifier
     sph_summary.md
 """
 
@@ -59,6 +60,34 @@ def counts(long: pd.DataFrame, by: list[str]) -> pd.DataFrame:
                          "n_patients": g["patient"].nunique()}).reset_index()
 
 
+def mi_timing_table(long: pd.DataFrame, primary: pd.DataFrame, names: pd.DataFrame) -> pd.DataFrame:
+    """Distinct ECGs/patients with an MI-named code (category M in code.csv if present,
+    else 'MI' in the description), by the timing modifier attached to that statement."""
+    if "Category" in names.columns:
+        mi = set(names.loc[names["Category"].str.strip() == "M", "code"])
+    else:
+        mi = set(primary.loc[primary["kw_infarct"], "code"])
+    timing = {m: d for m, d in zip(names["code"], names["description"])
+              if str(d).strip().lower() in ("acute", "recent", "old")}
+    mi_long = long[long["code"].isin(mi)]
+    stmt_mods = mi_long.groupby(["ecg", "code"])["modifier"].apply(set)
+    rows = []
+    def add(label, ecgs):
+        sub = long[long["ecg"].isin(ecgs)]
+        rows.append({"selection": label, "n_ecgs": len(ecgs),
+                     "n_patients": sub["patient"].nunique()})
+    add(f"any MI code {sorted(mi)}", set(mi_long["ecg"]))
+    for m, d in sorted(timing.items()):
+        add(f"MI code with modifier {m} ({d})",
+            {e for (e, _), mods in stmt_mods.items() if m in mods})
+    add("MI code with none of the timing modifiers",
+        {e for (e, _), mods in stmt_mods.items() if not (mods & set(timing))})
+    acute = {e for (e, _), mods in stmt_mods.items() if any(timing.get(x) == "Acute" for x in mods)}
+    st_elev = set(long[(long["code"] == "145") & (long["modifier"] == "363")]["ecg"])
+    add("MI code + Acute AND 145+363 (ST deviation + Elevation) on the same ECG", acute & st_elev)
+    return pd.DataFrame(rows)
+
+
 def load_code_names(path: Path) -> pd.DataFrame:
     """code.csv -> (code, description, category if present) with code as string."""
     c = pd.read_csv(path, dtype=str)
@@ -87,12 +116,14 @@ def review(root: Path, out_dir: Path = RESULTS_DIR) -> dict:
              .merge(names[["code", "description"]].rename(columns={"code": "modifier",
                                                                    "description": "modifier_description"}),
                     on="modifier", how="left"))
+    timing = mi_timing_table(long, primary, names)
     primary = primary.sort_values("n_ecgs", ascending=False)
     pairs = pairs.sort_values("n_ecgs", ascending=False)
 
     out_dir.mkdir(parents=True, exist_ok=True)
     primary.to_csv(out_dir / "sph_code_counts.csv", index=False)
     pairs.to_csv(out_dir / "sph_code_modifier_counts.csv", index=False)
+    timing.to_csv(out_dir / "sph_mi_timing.csv", index=False)
 
     raw = meta[cols["code"]].astype(str)
     basics = {
@@ -123,15 +154,18 @@ def review(root: Path, out_dir: Path = RESULTS_DIR) -> dict:
         d = pd.to_datetime(meta[cols["date"]], errors="coerce")
         basics["date min / max (as stored)"] = f"{d.min()} / {d.max()}"
 
-    mi_mask = primary["kw_infarct"] | primary["kw_injury"] | primary["kw_st_elev"]
+    st_dev = primary["description"].fillna("").str.contains(r"ST deviation", case=False)
+    mi_mask = primary["kw_infarct"] | primary["kw_injury"] | primary["kw_st_elev"] | st_dev
     mi_codes = set(primary.loc[mi_mask, "code"])
     mi_ecgs = long[long["code"].isin(mi_codes)]
     sections = [
         ("Basic counts", md_table(pd.DataFrame(list(basics.items()), columns=["item", "value"]))),
-        ("Codes whose code.csv description mentions infarct / injury / ST elevation "
-         "(listing only; L2)",
+        ("Codes whose code.csv description mentions infarct / injury / ST elevation / "
+         "ST deviation (listing only; L2)",
          f"ECGs with any: {mi_ecgs['ecg'].nunique()}; patients: {mi_ecgs['patient'].nunique()}.\n\n"
          + md_table(primary.loc[mi_mask, ["code", "description", "n_ecgs", "n_patients"]])),
+        ("MI codes by timing modifier: distinct ECGs (listing only; not acute labels, L2/L3)",
+         md_table(timing)),
         ("Modifiers attached to those codes",
          md_table(pairs[pairs["code"].isin(mi_codes)][["code", "description", "modifier",
                                                          "modifier_description", "n_ecgs",
@@ -143,7 +177,7 @@ def review(root: Path, out_dir: Path = RESULTS_DIR) -> dict:
                   DATASET_ID, RELEASE, SCRIPT,
                   provenance([meta_p, code_p] + ([root / "rule.pdf"] if (root / "rule.pdf").exists() else [])),
                   sections)
-    return {"primary": primary, "pairs": pairs, "basics": basics, "mi_codes": sorted(mi_codes)}
+    return {"primary": primary, "pairs": pairs, "timing": timing, "basics": basics, "mi_codes": sorted(mi_codes)}
 
 
 def main(argv: list[str] | None = None) -> None:

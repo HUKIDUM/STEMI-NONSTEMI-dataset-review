@@ -1,0 +1,7 @@
+selection,n_ecgs,n_patients
+"any MI code ['160', '161', '165', '166']",260,242
+MI code with modifier 330 (Acute),7,7
+MI code with modifier 331 (Recent),12,9
+MI code with modifier 332 (Old),233,219
+MI code with none of the timing modifiers,8,8
+MI code + Acute AND 145+363 (ST deviation + Elevation) on the same ECG,1,1

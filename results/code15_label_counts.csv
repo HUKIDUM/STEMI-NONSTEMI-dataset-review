@@ -1,0 +1,10 @@
+column,n_true,n_missing,n_patients_true,name_matches_mi_regex
+is_male,139203,0,94807,False
+1dAVb,5716,0,4701,False
+RBBB,9672,0,6672,False
+LBBB,6026,0,4193,False
+SB,5605,0,4976,False
+ST,7584,0,6894,False
+AF,7033,0,4799,False
+death,8341,112132,8341,False
+normal_ecg,134657,0,109623,False
