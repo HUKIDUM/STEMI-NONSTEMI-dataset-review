@@ -79,6 +79,8 @@ Last update: 2026-10-20
 
 - S7 part 3 (`ningbo`, g1 999) verified → 10 rows (planner recount; median age 38). **All approved downloads are finished** (no fetcher or lock left). S10 `build_summary.py` → `results/dataset_summary.csv` (one fix requested: acute/timing column for ningbo/cpsc_extra).
 
+- S10 done: `results/dataset_summary.csv` (fixed: ningbo acute label, cpsc_extra old MI, incart records) and `results/combine_matrix.csv` + summary (45 after checks, 10 no, 0 yes). Planner spot-checked them and added 2 S10 rows (matrix; per-model assessment). Next: S11 §1/§6/§7/§8/§9 and Appendix A (documenter), S12 PDF, S13 final report.
+
 ## In progress
 - S1 downloads: PTB-XL done. First run aborted on a dropped connection (retry bug: reused .part file). Fixed in `fetch_samples.py` (per-attempt .part, truncated body = retry, per-batch logging); `pytest` 110 passed (planner re-ran). Re-run in progress with --workers 2. PhysioNet speed ~4–5 KB/s: the MIMIC CSVs (~298 MB) may take many hours.
 - S4 `mimic_iv_ecg`: the user chose option E (public S3 mirror) → HTTP 404 → fallback option C (approved): `record_list.csv`, the data dictionary and 50 `.hea` headers from physionet.org, downloading now. **`machine_measurements.csv` and `waveform_note_links.csv` are NOT approved yet** (they need a new request). `review_mimic.py` is written, not yet run on data.

@@ -134,13 +134,28 @@ def code15(r: Path, samples: Path = SAMPLES) -> dict:
             "source_files": "code15_label_counts.csv; data/samples/code15/exams.csv"}
 
 
+def incart_diagnosis_records(path: Path) -> dict[str, int]:
+    """files-patients-diagnoses.txt blocks: 'patient N' / record list / diagnosis text."""
+    lines = path.read_text().splitlines()
+    out: dict[str, int] = {}
+    for i, ln in enumerate(lines):
+        if ln.strip().lower().startswith("patient ") and i + 2 < len(lines):
+            recs, dx = lines[i + 1].split(), lines[i + 2].strip()
+            if dx and not dx.lower().startswith("patient "):
+                out[dx] = out.get(dx, 0) + len(recs)
+    return out
+
+
 def incart(r: Path, samples: Path = SAMPLES) -> dict:
     h = _read(r, "incart_headers.csv")
     f = samples / "incart" / "files-patients-diagnoses.txt"
     pts = (sum(1 for ln in f.read_text().splitlines() if ln.strip().lower().startswith("patient "))
            if f.exists() else NA)
+    dx = incart_diagnosis_records(f) if f.exists() else {}
+    mi_rel = (f"{dx.get('Acute MI', 0)} records (Acute MI) + {dx.get('Earlier MI', 0)} (Earlier MI)"
+              if dx else NA)
     return {"dataset_id": "incart", "scope": "all 75 headers + text files", **_hdr(h),
-            "ecgs": len(h) if h is not None else NA, "patients": pts,
+            "ecgs": len(h) if h is not None else NA, "patients": pts, "mi_related_ecgs": mi_rel,
             "mi_detail": "files-patients-diagnoses.txt: Acute MI 2 patients (6 records)",
             "acute_or_timing_info": "patient-level 'Acute MI' text", "stemi_nstemi_label": "none",
             "source_files": "incart_headers.csv; data/samples/incart/files-patients-diagnoses.txt"}
@@ -154,6 +169,17 @@ def challenge(r: Path, ds: str, pub: pd.DataFrame | None) -> dict:
     if pub is not None and CHALLENGE[ds] in pub.columns:
         mi = pub[pub["kw_infarct"].astype(bool)]
         col = CHALLENGE[ds]
+        g1 = _read(r, f"challenge_{ds}_dx_counts.csv")
+        g1n = {} if g1 is None else dict(zip(g1["code"].astype(str), g1["n_records"]))
+        timing = []
+        for name in ("acute myocardial infarction", "old myocardial infarction"):
+            hit = pub[pub["Dx"].str.lower() == name]
+            if len(hit) and int(hit[col].iloc[0]):
+                code = str(hit["SNOMEDCTCode"].iloc[0])
+                timing.append(f"label '{name}' (publisher {int(hit[col].iloc[0]):,}; "
+                              f"g1 {int(g1n.get(code, 0))})")
+        if timing:
+            row["acute_or_timing_info"] = "; ".join(timing) + "; no timing field"
         row["mi_detail"] = "; ".join(f"{d} {int(n)}" for d, n in zip(mi["Dx"], mi[col]) if n) or "no MI codes"
         row["mi_related_ecgs"] = "counts as listed, see mi_detail (publisher; may overlap)"
     return row

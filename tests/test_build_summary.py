@@ -19,3 +19,9 @@ def test_rows_and_not_observed(tmp_path):
     assert df.loc["ptb_xl", "mi_related_ecgs"] == 2
     assert df.loc["sph", "ecgs"] == bs.NA                     # nothing downloaded -> not observed
     assert (r / "dataset_summary.csv").exists()
+
+
+def test_incart_diagnosis_records(tmp_path):
+    f = tmp_path / "d.txt"
+    f.write_text("patient 1\nI01 I02\nAcute MI\npatient 2\nI03\n\npatient 3\nI04 I05 I06\nEarlier MI\n")
+    assert bs.incart_diagnosis_records(f) == {"Acute MI": 2, "Earlier MI": 3}
