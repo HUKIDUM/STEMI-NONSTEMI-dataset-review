@@ -65,6 +65,8 @@ Last update: 2026-10-20
 
 - S7 part 1 (`cpsc_2018`, `cpsc_extra`, `georgia`, g1 sample of 999 headers each): results `results/challenge_*`, `results/findings_{cpsc_2018,cpsc_extra,georgia}.md`. Planner recounted the g1 headers and checked CH21/PA2020 → 30 rows. None has STEMI/NSTEMI; there is no patient ID although repeat patients exist (PA2020). Fix: dx_mapping names now win over ConditionNames.
 
+- S4 `mimic_iv_ecg` (fallback C): record_list.csv 70.4 MB (resumed; plausibility: 800,035 rows = registry), dictionary, 50 headers. Results `results/mimic_iv_ecg_*`, `results/findings_mimic_iv_ecg.md`. Verified (planner recount) → 10 rows. STEMI/NSTEMI = not checked yet (user-run ICD script). Key technical finding: lead order aVF before aVL, gain 200/mV.
+
 ## In progress
 - S1 downloads: PTB-XL done. First run aborted on a dropped connection (retry bug: reused .part file). Fixed in `fetch_samples.py` (per-attempt .part, truncated body = retry, per-batch logging); `pytest` 110 passed (planner re-ran). Re-run in progress with --workers 2. PhysioNet speed ~4–5 KB/s: the MIMIC CSVs (~298 MB) may take many hours.
 - S4 `mimic_iv_ecg`: the user chose option E (public S3 mirror) → HTTP 404 → fallback option C (approved): `record_list.csv`, the data dictionary and 50 `.hea` headers from physionet.org, downloading now. **`machine_measurements.csv` and `waveform_note_links.csv` are NOT approved yet** (they need a new request). `review_mimic.py` is written, not yet run on data.

@@ -174,7 +174,8 @@ def main(argv: list[str] | None = None) -> None:
     res = review(args.root, args.out_dir)
     for k, v in res["basics"].items():
         print(f"{k}: {v}")
-    print(res["flags"].to_string(index=False))
+    if res["flags"] is not None:
+        print(res["flags"].to_string(index=False))
 
 
 if __name__ == "__main__":
