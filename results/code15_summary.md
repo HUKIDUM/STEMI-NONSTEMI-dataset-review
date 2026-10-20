@@ -1,7 +1,7 @@
 # CODE-15% exams.csv review (local observation)
 
 - Dataset: `code15`, release Zenodo 4916206
-- Script: `src/stemi/review/review_code15.py`; generated 2026-10-20T11:55:19+00:00
+- Script: `src/stemi/review/review_code15.py`; generated 2026-10-20T11:59:13+00:00
 - Local observation of the downloaded file(s) named below; not a release-level fact (data_contract E2, E3). Labels are described, not converted into training labels (L1, L2).
 
 ## Input files
@@ -24,7 +24,8 @@
 | patients with >1 exam | 66929 |
 | distinct trace_file | 18 |
 | exams per trace_file min / max | 5779 / 20000 |
-| exams with none of ['1dAVb', 'RBBB', 'LBBB', 'SB', 'ST', 'AF', 'normal_ecg'] True | 173347 |
+| exams with none of the abnormality columns ['1dAVb', 'RBBB', 'LBBB', 'SB', 'ST', 'AF'] True | 308004 |
+| exams with none of ['1dAVb', 'RBBB', 'LBBB', 'SB', 'ST', 'AF'] True AND normal_ecg not True | 173347 |
 
 ## Boolean columns (labels and other flags)
 

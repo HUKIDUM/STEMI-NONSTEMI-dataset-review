@@ -75,9 +75,12 @@ def review(root: Path, out_dir: Path = RESULTS_DIR) -> dict:
         basics["distinct trace_file"] = len(tf)
         basics["exams per trace_file min / max"] = f"{tf.min()} / {tf.max()}"
     if bools:
-        lab_cols = [c for c in bools if c not in ("is_male", "death")]
-        none = ~df[lab_cols].apply(as_bool).any(axis=1)
-        basics[f"exams with none of {lab_cols} True"] = int(none.sum())
+        abn = [c for c in bools if c not in ("is_male", "death", "normal_ecg")]
+        any_abn = df[abn].apply(as_bool).any(axis=1)
+        basics[f"exams with none of the abnormality columns {abn} True"] = int((~any_abn).sum())
+        if "normal_ecg" in df.columns:
+            basics[f"exams with none of {abn} True AND normal_ecg not True"] = int(
+                (~any_abn & ~as_bool(df["normal_ecg"])).sum())
     sections = [
         ("Basic counts", md_table(pd.DataFrame(list(basics.items()), columns=["item", "value"]))),
         ("Boolean columns (labels and other flags)", md_table(labels)),
