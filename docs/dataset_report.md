@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| Status | **FINAL (2026-10-21).** All facts come from rows marked verified in `results/verified_facts.md`. MIMIC STEMI/NSTEMI counts are pending the user's script. |
+| Status | **FINAL (2026-10-21).** All facts come from rows marked verified in `results/verified_facts.md`. MIMIC STEMI/NSTEMI counts are pending the user's script. **Add-on in progress:** section 4b and Appendix B (label lists). |
 | Date | 2026-10-21 |
 | Written by | documenter (team: planner, coder, team-lead) |
 | Plan | `PLAN.md` (approved by the user on 2026-10-20) |
@@ -97,6 +97,24 @@ For each dataset: which labels are about heart attacks, how many ECGs have them,
 | Chapman-Shaoxing | Myocardial infarction (one code; wall location lost) [OBS-CHAPMAN; ZH2020] | Publisher's count: 40 [DXMAP] | No [DXMAP] | No [DXMAP] |
 | CODE-15% | None. The "ST" column means sinus tachycardia (a fast heart rhythm that starts in the heart's normal pacemaker), not ST elevation [ZEN-CODE15] | 0 [OBS-CODE15] | No [OBS-CODE15] | No [OBS-CODE15; RIBEIRO2020] |
 | INCART | Diagnosis text "Acute MI" and "Earlier MI" [OBS-INCART] | Acute MI: 6 records (2 patients). Earlier MI: 9 records (4 patients) [OBS-INCART] | Yes, as diagnosis text ("acute" / "earlier") [OBS-INCART] | No [OBS-INCART] |
+
+## 4b. Which labels each dataset has
+
+*Waiting for verified facts.* This section will show the labels that several datasets share, in plain English. Each label is explained in brackets the first time it appears.
+
+**This table is a team mapping for the clinical supervisor to review.** The team matched labels from different code systems (SCP-ECG, SNOMED CT, AHA, free text, yes/no columns) by name. A match here is not an official mapping.
+
+How to read the cells:
+
+- **A number:** how many ECGs have this label. For the Challenge datasets this is the publisher's count as listed.
+- **not present:** we checked the dataset's label list, and this label is not in it.
+- **not checked:** we could not check this dataset. For MIMIC-IV-ECG: not checked: label file not downloaded.
+
+| Label (plain English) | PTB-XL | MIMIC | PTB-Diag | SPH | CPSC | CPSC-Ex | Georgia | Ningbo | Chapman | CODE-15 | INCART |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| *(waiting)* | | | | | | | | | | | |
+
+The full label list for each dataset is in Appendix B.
 
 ## 5. Each dataset in detail
 
@@ -517,6 +535,25 @@ These datasets were found in a short extra search. They were **not** reviewed li
 - **HEEDB (Harvard-Emory ECG Database).** "A large collection of 12-lead electrocardiography (ECG) recordings". Controlled access with a data user agreement ("BDSP Restricted Health Data License 1.0.0"). Size, label types and whether it has STEMI or NSTEMI labels: **not found** (the pages we tried did not open) [AWS-HEEDB].
 - **University of Michigan pre/post-STEMI ECGs (Deep Blue, DOI 10.7302/gk9v-ka27).** **Could not be checked:** the page blocked automated reading. No facts are given here. The user can open it in a browser.
 - **Derived from the 11:** MIMIC-IV-ECG-ext-ICD gives diagnosis codes for the **same** ECGs as MIMIC-IV-ECG (credentialed) [EXTRA-DERIVED]. PTB-XL+: not checked.
+
+## Appendix B. Full label list for each dataset
+
+*Waiting for verified facts.* One small table per dataset, with every label and its count. The rules from section 4b apply: "not present" and "not checked" mean different things, and Challenge counts are the publisher's count as listed.
+
+### B.1 PTB-XL
+### B.2 MIMIC-IV-ECG
+
+Not checked: label file not downloaded.
+
+### B.3 PTB Diagnostic
+### B.4 SPH
+### B.5 CPSC 2018
+### B.6 CPSC-Extra
+### B.7 Georgia
+### B.8 Ningbo
+### B.9 Chapman-Shaoxing
+### B.10 CODE-15%
+### B.11 INCART
 
 ## 10. Sources
 
