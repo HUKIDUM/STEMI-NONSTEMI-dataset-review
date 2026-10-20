@@ -44,7 +44,7 @@ Last update: 2026-10-20
   - #8 Challenge headers: **option C**, one `g1` folder per source (~5,000 headers). This replaces U3 "all 65,826 headers". Full per-source label counts come from the publisher's `dx_mapping_*.csv` IF coder confirms it has per-dataset count columns; otherwise coder goes back to the lead. The report must say: dx_mapping counts = publisher's counts from that file; header counts = a g1 sample only.
   - U4 (Challenge ptb/ptb-xl headers): superseded; see the cheap RECORDS-list check below.
   - Disclosure: coder printed `challenge-2021/1.0.3/RECORDS` (2 KB index) with curl without a request; not saved or used as data; the user was told.
-  - Disclosure (planner): while verifying, planner streamed https://physionet.org/files/ptb-xl/1.0.3/SHA256SUMS.txt (~8.3 MB) through grep without saving it (only the ptbxl_database.csv line kept; it matches), and read figshare/Zenodo API metadata JSON for md5/license. Reported to team-lead.
+  - Disclosure (planner): while verifying, planner streamed https://physionet.org/files/ptb-xl/1.0.3/SHA256SUMS.txt (~8.3 MB) through grep without saving it (only the ptbxl_database.csv and scp_statements.csv lines kept; both match the planner's sha256), and read figshare/Zenodo API metadata JSON for md5/license. Reported to team-lead.
 
 - S11 (part): SPH (§5.4) and CODE-15% (§5.10) filled in the report, plus §3/§4 rows and sources; PDF rebuilt (11 pages). Planner checked them against the verified rows (4 wording fixes made first).
 
