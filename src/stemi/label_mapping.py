@@ -11,7 +11,7 @@ Input record keys (dict): ``dataset_id``, ``record_id``, ``label_source``,
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from types import MappingProxyType
 from typing import Any, Callable, Iterable, Mapping
 
@@ -62,10 +62,11 @@ LABEL_COLUMNS = [
 @dataclass(frozen=True)
 class MappingConfig:
     """Production defaults come from the module constants; tests build their own."""
-    mi_codes: Mapping[str, frozenset[str]] = APPROVED_MI_STATEMENT_CODES
-    st_codes: Mapping[str, frozenset[str]] = APPROVED_ST_INJURY_CODES
+    # default_factory: Python < 3.12 rejects mappingproxy as a plain dataclass default
+    mi_codes: Mapping[str, frozenset[str]] = field(default_factory=lambda: APPROVED_MI_STATEMENT_CODES)
+    st_codes: Mapping[str, frozenset[str]] = field(default_factory=lambda: APPROVED_ST_INJURY_CODES)
     acute_window: Callable[[Any, Any], bool] | None = ACUTE_WINDOW
-    overlap_groups: Mapping[str, str] = OVERLAP_GROUPS
+    overlap_groups: Mapping[str, str] = field(default_factory=lambda: OVERLAP_GROUPS)
     no_target_label_source: frozenset[str] = NO_TARGET_LABEL_SOURCE
 
 

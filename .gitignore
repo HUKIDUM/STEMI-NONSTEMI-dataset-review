@@ -4,3 +4,4 @@ __pycache__/
 .DS_Store
 data/samples/
 data_contract.backup.md
+*.egg-info/
