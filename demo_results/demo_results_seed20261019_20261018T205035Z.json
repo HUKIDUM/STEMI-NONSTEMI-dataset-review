@@ -1,0 +1,225 @@
+{
+  "disclaimer": "SYNTHETIC DATA — numbers have no clinical meaning — not a model trained on real ECGs — research_plan step 8 gate still applies to real data.",
+  "seed": 20261019,
+  "contract_version": "0.1.0-draft",
+  "mapping_version": "0.1.0",
+  "data_origin": "synthetic_fixture",
+  "assumptions": [
+    "Input 12 leads x 10 s x 500 Hz is the C1.3 provisional setting, not a decided spec (Q9).",
+    "Lead order I, II, III, aVR, aVL, aVF, V1-V6 follows P6 (ASSUMPTION).",
+    "Split fractions 70/15/15 follow the S8 example; ratios are open question Q10.",
+    "Metrics (per-class sensitivity/specificity, macro-F1) follow research_plan step 8 (ASSUMPTION).",
+    "Class signal patterns are invented; they do not model real STEMI/NSTEMI morphology.",
+    "Patient keys deliberately collide across the two fake sources; groups are (dataset_id, patient_key)."
+  ],
+  "sources": [
+    "ptb_xl",
+    "mimic_iv_ecg"
+  ],
+  "counts": {
+    "inventory_rows": 144,
+    "label_status": {
+      "confirmed": 110,
+      "unresolved": 34
+    },
+    "label_rule_id": {
+      "M1": 110,
+      "M4": 34
+    },
+    "supervised_rows": 110,
+    "patient_groups": {
+      "train": 32,
+      "val": 6,
+      "test": 9
+    },
+    "n_per_class": {
+      "train": {
+        "STEMI": 26,
+        "NSTEMI": 27,
+        "non-MI": 23
+      },
+      "val": {
+        "STEMI": 4,
+        "NSTEMI": 4,
+        "non-MI": 5
+      },
+      "test": {
+        "STEMI": 7,
+        "NSTEMI": 6,
+        "non-MI": 8
+      }
+    }
+  },
+  "baseline": "nearest centroid on standardised per-lead mean/std/p10/p90 (numpy only)",
+  "metrics": {
+    "flat_3class": {
+      "val": {
+        "per_class": {
+          "STEMI": {
+            "n": 4,
+            "sensitivity": 1.0,
+            "specificity": 1.0,
+            "f1": 1.0
+          },
+          "NSTEMI": {
+            "n": 4,
+            "sensitivity": 1.0,
+            "specificity": 1.0,
+            "f1": 1.0
+          },
+          "non-MI": {
+            "n": 5,
+            "sensitivity": 1.0,
+            "specificity": 1.0,
+            "f1": 1.0
+          }
+        },
+        "macro_f1": 1.0,
+        "confusion": {
+          "STEMI": {
+            "STEMI": 4,
+            "NSTEMI": 0,
+            "non-MI": 0
+          },
+          "NSTEMI": {
+            "STEMI": 0,
+            "NSTEMI": 4,
+            "non-MI": 0
+          },
+          "non-MI": {
+            "STEMI": 0,
+            "NSTEMI": 0,
+            "non-MI": 5
+          }
+        },
+        "n": 13
+      },
+      "test": {
+        "per_class": {
+          "STEMI": {
+            "n": 7,
+            "sensitivity": 1.0,
+            "specificity": 1.0,
+            "f1": 1.0
+          },
+          "NSTEMI": {
+            "n": 6,
+            "sensitivity": 1.0,
+            "specificity": 1.0,
+            "f1": 1.0
+          },
+          "non-MI": {
+            "n": 8,
+            "sensitivity": 1.0,
+            "specificity": 1.0,
+            "f1": 1.0
+          }
+        },
+        "macro_f1": 1.0,
+        "confusion": {
+          "STEMI": {
+            "STEMI": 7,
+            "NSTEMI": 0,
+            "non-MI": 0
+          },
+          "NSTEMI": {
+            "STEMI": 0,
+            "NSTEMI": 6,
+            "non-MI": 0
+          },
+          "non-MI": {
+            "STEMI": 0,
+            "NSTEMI": 0,
+            "non-MI": 8
+          }
+        },
+        "n": 21
+      }
+    },
+    "hierarchical": {
+      "val": {
+        "per_class": {
+          "STEMI": {
+            "n": 4,
+            "sensitivity": 1.0,
+            "specificity": 1.0,
+            "f1": 1.0
+          },
+          "NSTEMI": {
+            "n": 4,
+            "sensitivity": 1.0,
+            "specificity": 1.0,
+            "f1": 1.0
+          },
+          "non-MI": {
+            "n": 5,
+            "sensitivity": 1.0,
+            "specificity": 1.0,
+            "f1": 1.0
+          }
+        },
+        "macro_f1": 1.0,
+        "confusion": {
+          "STEMI": {
+            "STEMI": 4,
+            "NSTEMI": 0,
+            "non-MI": 0
+          },
+          "NSTEMI": {
+            "STEMI": 0,
+            "NSTEMI": 4,
+            "non-MI": 0
+          },
+          "non-MI": {
+            "STEMI": 0,
+            "NSTEMI": 0,
+            "non-MI": 5
+          }
+        },
+        "n": 13
+      },
+      "test": {
+        "per_class": {
+          "STEMI": {
+            "n": 7,
+            "sensitivity": 1.0,
+            "specificity": 1.0,
+            "f1": 1.0
+          },
+          "NSTEMI": {
+            "n": 6,
+            "sensitivity": 0.8333333333333334,
+            "specificity": 1.0,
+            "f1": 0.9090909090909091
+          },
+          "non-MI": {
+            "n": 8,
+            "sensitivity": 1.0,
+            "specificity": 0.9230769230769231,
+            "f1": 0.9411764705882353
+          }
+        },
+        "macro_f1": 0.9500891265597149,
+        "confusion": {
+          "STEMI": {
+            "STEMI": 7,
+            "NSTEMI": 0,
+            "non-MI": 0
+          },
+          "NSTEMI": {
+            "STEMI": 0,
+            "NSTEMI": 5,
+            "non-MI": 1
+          },
+          "non-MI": {
+            "STEMI": 0,
+            "NSTEMI": 0,
+            "non-MI": 8
+          }
+        },
+        "n": 21
+      }
+    }
+  },
+  "generated_utc": "2026-10-18T20:50:35+00:00"
+}
