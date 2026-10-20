@@ -197,13 +197,17 @@ def review(root: Path, out_dir: Path = RESULTS_DIR) -> dict:
         ("MI timing: ECG date minus infarction date (listing only; not an acute label, L2)",
          timing_note),
     ]
+    if keys["ecg_date"]:
+        parts = rec[f"c:{keys['ecg_date']}"].astype(str).str.extract(r"^(\d{1,2})/(\d{1,2})/\d{2,4}$").dropna().astype(int)
+        basics["ECG date 'a/b/yyyy' values: total / a>12 / b>12 (day-first evidence)"] = (
+            f"{len(parts)} / {int((parts[0] > 12).sum())} / {int((parts[1] > 12).sum())}")
     plain = find_key(allkeys, r"^infarction date$")
     if keys["infarct_date"] and plain and plain != keys["infarct_date"]:
         a, b = rec[f"c:{keys['infarct_date']}"], rec[f"c:{plain}"]
         both = a.notna() & b.notna()
         basics[f"records where '{keys['infarct_date']}' != '{plain}'"] = int((a[both] != b[both]).sum())
-        sections[0] = ("Basic counts", md_table(pd.DataFrame(list(basics.items()),
-                                                             columns=["item", "value"])))
+    sections[0] = ("Basic counts", md_table(pd.DataFrame(list(basics.items()),
+                                                         columns=["item", "value"])))
     sections += [
         ("MI patients by their earliest ECG after the acute infarction date (listing only)",
          md_table(ptiming)),

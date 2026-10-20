@@ -26,3 +26,4 @@ Source keys:
 2. 25 MI records have no parsable date pair (missing or "n/a"); 1 record gives a negative day count (−1,789 days). Both are listed in `results/ptb_diagnostic_mi_timing.csv`.
 3. Healthy-control records: 80 in the header field = 80 lines in `CONTROLS` (OBS).
 4. Two `Lytic agent` values look like misplaced medication lists (1 record each), kept verbatim.
+5. Date format: `ECG date` is parsed **day-first** (dd/mm/yyyy). Evidence (OBS, summary "Basic counts"): of 541 values in a/b/yyyy form, 374 have a > 12 and none have b > 12. Planner's check: month-first parsing would make 43 of 110 parsable day differences negative. Infarction dates use the unambiguous dd-Mon-yy form (e.g. 29-Sep-90).

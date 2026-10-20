@@ -1,7 +1,7 @@
 # PTB Diagnostic ECG Database review (local observation)
 
 - Dataset: `ptb_diagnostic`, release 1.0.0 native
-- Script: `src/stemi/review/review_ptbdb.py`; generated 2026-10-20T12:38:56+00:00
+- Script: `src/stemi/review/review_ptbdb.py`; generated 2026-10-20T12:41:40+00:00
 - Local observation of the downloaded file(s) named below; not a release-level fact (data_contract E2, E3). Labels are described, not converted into training labels (L1, L2).
 
 ## Input files
@@ -31,6 +31,7 @@
 | key used for former_loc | Former infarction (localization) |
 | key used for infarct_date | Infarction date (acute) |
 | key used for ecg_date | ECG date |
+| ECG date 'a/b/yyyy' values: total / a>12 / b>12 (day-first evidence) | 541 / 374 / 0 |
 | records where 'Infarction date (acute)' != 'Infarction date' | 3 |
 
 ## Reason for admission (records / patients)
