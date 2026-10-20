@@ -21,7 +21,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from stemi.review.common import RESULTS_DIR, md_table, provenance, write_summary
+from stemi.review.common import RESULTS_DIR, md_table, provenance, read_text_csv, write_summary
 
 DATASET_ID = "code15"
 RELEASE = "Zenodo 4916206"
@@ -44,7 +44,7 @@ def as_bool(s: pd.Series) -> pd.Series:
 
 def review(root: Path, out_dir: Path = RESULTS_DIR) -> dict:
     path = root / "exams.csv"
-    df = pd.read_csv(path)
+    df = read_text_csv(path)
     bools = boolean_columns(df)
     pid = "patient_id" if "patient_id" in df.columns else None
     rows = []

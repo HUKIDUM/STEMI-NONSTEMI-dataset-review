@@ -26,7 +26,9 @@ from pathlib import Path
 
 import pandas as pd
 
-from stemi.review.common import RESULTS_DIR, keyword_flags, md_table, provenance, write_summary
+from stemi.review.common import (
+    RESULTS_DIR, keyword_flags, md_table, provenance, read_text_csv, write_summary,
+)
 from stemi.review.hea_parser import header_row, parse_header
 
 DATASET_ID = "ptb_xl"
@@ -62,7 +64,7 @@ def explode_codes(db: pd.DataFrame) -> pd.DataFrame:
 
 
 def load_statements(path: Path) -> pd.DataFrame:
-    st = pd.read_csv(path, index_col=0)
+    st = read_text_csv(path, index_col=0)
     st.index = st.index.astype(str)
     st.index.name = "code"
     return st
@@ -156,7 +158,7 @@ def header_table(root: Path) -> pd.DataFrame:
 
 def review(root: Path, out_dir: Path = RESULTS_DIR) -> dict:
     db_path, st_path = root / "ptbxl_database.csv", root / "scp_statements.csv"
-    db = pd.read_csv(db_path)
+    db = read_text_csv(db_path)
     st = load_statements(st_path)
     long = explode_codes(db)
     counts = scp_counts(long, st)

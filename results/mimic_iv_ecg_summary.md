@@ -1,7 +1,7 @@
 # MIMIC-IV-ECG open-module review (local observation)
 
 - Dataset: `mimic_iv_ecg`, release 1.0
-- Script: `src/stemi/review/review_mimic.py`; generated 2026-10-20T17:06:04+00:00
+- Script: `src/stemi/review/review_mimic.py`; generated 2026-10-20T17:44:18+00:00
 - Local observation of the downloaded file(s) named below; not a release-level fact (data_contract E2, E3). Labels are described, not converted into training labels (L1, L2).
 
 ## Input files

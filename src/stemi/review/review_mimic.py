@@ -27,7 +27,7 @@ from pathlib import Path
 import pandas as pd
 
 from stemi.review.common import (
-    MI_KEYWORDS, RESULTS_DIR, keyword_flags, md_table, provenance, write_summary,
+    MI_KEYWORDS, RESULTS_DIR, keyword_flags, md_table, provenance, read_text_csv, write_summary,
 )
 from stemi.review.hea_parser import header_row, parse_header
 
@@ -89,11 +89,11 @@ def review(root: Path, out_dir: Path = RESULTS_DIR) -> dict:
                                       ("mm", "machine_measurements.csv"),
                                       ("dict", "machine_measurements_data_dictionary.csv"),
                                       ("notes", "waveform_note_links.csv")]}
-    rec = pd.read_csv(paths["records"])
-    mm = (pd.read_csv(paths["mm"], low_memory=False, dtype={c: str for c in RAW_FIELDS})
+    rec = read_text_csv(paths["records"])
+    mm = (read_text_csv(paths["mm"], low_memory=False, dtype={c: str for c in RAW_FIELDS})
           if paths["mm"].exists() else None)
-    notes = pd.read_csv(paths["notes"]) if paths["notes"].exists() else None
-    ddict = pd.read_csv(paths["dict"]) if paths["dict"].exists() else None
+    notes = read_text_csv(paths["notes"]) if paths["notes"].exists() else None
+    ddict = read_text_csv(paths["dict"]) if paths["dict"].exists() else None
     headers = header_table(root)
 
     out_dir.mkdir(parents=True, exist_ok=True)

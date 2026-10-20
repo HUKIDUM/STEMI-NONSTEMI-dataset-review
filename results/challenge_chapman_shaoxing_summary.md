@@ -1,7 +1,7 @@
 # Challenge 2021 `chapman_shaoxing` header review (local observation)
 
 - Dataset: `chapman_shaoxing`, release PhysioNet Challenge 2021, 1.0.3
-- Script: `src/stemi/review/review_challenge.py`; generated 2026-10-20T17:39:10+00:00
+- Script: `src/stemi/review/review_challenge.py`; generated 2026-10-20T17:44:20+00:00
 - Local observation of the downloaded file(s) named below; not a release-level fact (data_contract E2, E3). Labels are described, not converted into training labels (L1, L2).
 
 ## Input files

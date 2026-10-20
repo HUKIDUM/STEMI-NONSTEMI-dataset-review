@@ -34,3 +34,4 @@ def test_ptbdb_counts_only(tmp_path):
     rows = {r["check"]: r["result"] for r in ov.ptbdb_check(tmp_path)}
     assert rows["ptb_diagnostic: challenge names equal to a native record stem"] == 0
     assert rows["ptb_diagnostic: record-level mapping"].startswith("not possible")
+    assert rows["ptb_diagnostic: numbers 1..len(native RECORDS) missing from challenge"] == "none"

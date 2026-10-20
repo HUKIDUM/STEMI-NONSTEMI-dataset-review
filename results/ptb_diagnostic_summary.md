@@ -1,7 +1,7 @@
 # PTB Diagnostic ECG Database review (local observation)
 
 - Dataset: `ptb_diagnostic`, release 1.0.0 native
-- Script: `src/stemi/review/review_ptbdb.py`; generated 2026-10-20T12:41:40+00:00
+- Script: `src/stemi/review/review_ptbdb.py`; generated 2026-10-20T17:44:18+00:00
 - Local observation of the downloaded file(s) named below; not a release-level fact (data_contract E2, E3). Labels are described, not converted into training labels (L1, L2).
 
 ## Input files

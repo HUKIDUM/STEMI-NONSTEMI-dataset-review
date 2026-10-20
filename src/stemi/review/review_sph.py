@@ -27,7 +27,9 @@ from pathlib import Path
 
 import pandas as pd
 
-from stemi.review.common import RESULTS_DIR, keyword_flags, md_table, provenance, write_summary
+from stemi.review.common import (
+    RESULTS_DIR, keyword_flags, md_table, provenance, read_text_csv, write_summary,
+)
 
 DATASET_ID = "sph"
 RELEASE = "figshare collection 5779802 v1"
@@ -90,7 +92,7 @@ def mi_timing_table(long: pd.DataFrame, primary: pd.DataFrame, names: pd.DataFra
 
 def load_code_names(path: Path) -> pd.DataFrame:
     """code.csv -> (code, description, category if present) with code as string."""
-    c = pd.read_csv(path, dtype=str)
+    c = read_text_csv(path, dtype=str)
     code_col = find_col(c.columns, r"^code$") or c.columns[0]
     desc_col = find_col(c.columns, r"^(description|statement|name)$") or c.columns[1]
     out = c.rename(columns={code_col: "code", desc_col: "description"})
@@ -100,7 +102,7 @@ def load_code_names(path: Path) -> pd.DataFrame:
 
 def review(root: Path, out_dir: Path = RESULTS_DIR) -> dict:
     meta_p, code_p = root / "metadata.csv", root / "code.csv"
-    meta = pd.read_csv(meta_p, dtype=str)
+    meta = read_text_csv(meta_p, dtype=str)
     cols = {k: find_col(meta.columns, p) for k, p in COLUMN_PATTERNS.items()}
     if not cols["ecg"] or not cols["code"]:
         raise ValueError(f"ECG id / AHA code column not found in {list(meta.columns)}")

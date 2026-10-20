@@ -22,7 +22,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from stemi.review.common import RESULTS_DIR
+from stemi.review.common import RESULTS_DIR, read_text_csv
 
 SAMPLES = Path(__file__).resolve().parents[3] / "data" / "samples"
 
@@ -36,7 +36,7 @@ CHALLENGE = {"cpsc_2018": "CPSC", "cpsc_extra": "CPSC_Extra", "georgia": "Georgi
 
 def _read(r: Path, name: str) -> pd.DataFrame | None:
     p = r / name
-    return pd.read_csv(p) if p.exists() else None
+    return read_text_csv(p) if p.exists() else None
 
 
 def _range(s: pd.Series) -> str:

@@ -87,6 +87,11 @@ def ptbdb_check(samples: Path) -> list[dict]:
         {"check": "ptb_diagnostic: challenge numeric range", "result": f"{nums[0]}–{nums[-1]}" if nums else "n/a"},
         {"check": "ptb_diagnostic: challenge names equal to a native record stem",
          "result": len(set(names) & native_stems)},
+        {"check": "ptb_diagnostic: numbers 1..len(native RECORDS) missing from challenge",
+         "result": ", ".join(map(str, sorted(set(range(1, len(native) + 1)) - set(nums)))) or "none"},
+        {"check": "ptb_diagnostic: those native records IF Sn = n-th line of native RECORDS (ASSUMPTION)",
+         "result": ", ".join(native[n - 1] for n in sorted(set(range(1, len(native) + 1)) - set(nums)))
+                   or "none"},
         {"check": "ptb_diagnostic: record-level mapping",
          "result": "not possible from RECORDS alone (name forms differ); counts only"
          if not set(names) & native_stems else "partial name match, see counts"},

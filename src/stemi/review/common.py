@@ -31,6 +31,12 @@ MI_KEYWORDS = {
 }
 
 
+def read_text_csv(path, **kw) -> pd.DataFrame:
+    """read_csv that keeps source text exactly (L5): literal "n/a", "NA", "null" stay
+    strings; only truly empty cells become missing."""
+    return pd.read_csv(path, keep_default_na=False, na_values=[""], **kw)
+
+
 def keyword_flags(text: str | None) -> dict[str, bool]:
     t = "" if text is None or (isinstance(text, float) and pd.isna(text)) else str(text)
     return {k: bool(re.search(p, t, flags=re.IGNORECASE)) for k, p in MI_KEYWORDS.items()}

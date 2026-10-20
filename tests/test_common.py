@@ -20,3 +20,11 @@ def test_provenance_prefers_downloaded_row(tmp_path, monkeypatch):
     (tmp_path / "data" / "x.hea").write_text("x")
     row = common.provenance([tmp_path / "data" / "x.hea"], m).iloc[0]
     assert row["download_utc"] == "T1" and row["checksum_match"] == "yes"
+
+
+def test_read_text_csv_keeps_literal_na(tmp_path):
+    p = tmp_path / "t.csv"
+    p.write_text("a,b\nn/a,NA\n,x\n")
+    df = common.read_text_csv(p)
+    assert df.loc[0, "a"] == "n/a" and df.loc[0, "b"] == "NA"
+    assert df["a"].isna().tolist() == [False, True]          # empty cell is still missing

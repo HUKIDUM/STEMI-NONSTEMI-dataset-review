@@ -29,7 +29,7 @@ from pathlib import Path
 import pandas as pd
 
 from stemi.review.common import (
-    MI_KEYWORDS, RESULTS_DIR, keyword_flags, md_table, provenance, write_summary,
+    MI_KEYWORDS, RESULTS_DIR, keyword_flags, md_table, provenance, read_text_csv, write_summary,
 )
 from stemi.review.hea_parser import header_row, parse_header
 
@@ -57,7 +57,7 @@ def load_maps(maps_dir: Path | None) -> pd.DataFrame:
         p = maps_dir / fname if maps_dir else None
         if p is None or not p.exists():
             continue
-        m = pd.read_csv(p, dtype=str)
+        m = read_text_csv(p, dtype=str)
         code = _col(m.columns, r"snomed")
         name = _col(m.columns, r"^(dx|full name)$") or _col(m.columns, r"name|dx")
         abbr = _col(m.columns, r"abbrev|acronym")
@@ -90,7 +90,7 @@ def map_file_counts(maps_dir: Path) -> pd.DataFrame:
     for fname in ("dx_mapping_scored.csv", "dx_mapping_unscored.csv"):
         p = maps_dir / fname
         if p.exists():
-            m = pd.read_csv(p, dtype={"SNOMEDCTCode": str})
+            m = read_text_csv(p, dtype={"SNOMEDCTCode": str})
             parts.append(m.assign(map_file=fname))
     if not parts:
         return pd.DataFrame()
