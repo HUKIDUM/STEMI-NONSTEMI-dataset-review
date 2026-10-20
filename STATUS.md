@@ -1,23 +1,39 @@
 # STATUS: Dataset review (STEMI / NSTEMI / non-MI)
 
-Owner: planner. A new session reads this first. Plan: `PLAN.md`.
+Owner: planner. A new session reads this first. Plan: `PLAN.md` (APPROVED 2026-10-20, with the user answers below).
 
 Last update: 2026-10-20
 
 ## Done
-- S0 (partial): `PLAN.md` drafted and sent to team-lead for user approval.
+- S0: `PLAN.md` approved by the user via team-lead (2026-10-20).
+- Environment: documenter installed `markdown_pdf` 1.13.3 (+ deps pymupdf 2.0, pymupdf_layout 2.0, pymupdf4llm 2.0, markdown-it-py 4.2.0, mdurl 0.1.2) into the project `.venv` only, for `docs/dataset_report.pdf`. Approved by the user (confirmed by team-lead). No weasyprint, no LaTeX.
 
-- Environment: documenter installed `markdown_pdf` 1.13.3 (+ deps pymupdf 2.0, pymupdf_layout 2.0, pymupdf4llm 2.0, markdown-it-py 4.2.0, mdurl 0.1.2) into the project `.venv` only, for building `docs/dataset_report.pdf`. Approved by the user via team-lead (as reported by documenter 2026-10-20; versions checked with `pip list`). This answers U6 (PDF engine) unless the lead says otherwise.
+## User answers to PLAN §7 (binding)
+- U1: No team login, credentials or credentialed files. Coder writes `src/stemi/review/mimic_icd_count.py` for the USER to run locally; it prints aggregate counts only (e.g. ECGs/admissions with I21.0–I21.3 vs I21.4, other I21/I22), never row-level data. Until the counts come back, the report says "not checked yet: needs credentialed access; the user will run the count script".
+- U2: Yes. Read the two Challenge `dx_mapping_*.csv` over plain HTTPS (raw file only; no git, account or API).
+- U3: Yes. Download all Challenge headers of the 5 sources (~46 MB).
+- U4: Yes. Download the optional Challenge PTB / PTB-XL headers (~16 MB).
+- U5: Yes. Download the MIMIC open CSVs (~298 MB).
+- **Every actual download still needs the user's OK via team-lead first** (files, URL, size). Plan approval does not replace this.
+- U6: Solved (markdown_pdf, see above).
+- U7: Code goes in `src/stemi/review/`, results in `results/`, report in `docs/dataset_report.*`.
 
 ## In progress
-- Waiting for "PLAN APPROVED" from team-lead. **No work starts before it.**
+- S1 coder: `fetch_samples.py` + tests; ask for download approval per dataset (PLAN §3).
+- S2 coder: `hea_parser.py` + tests.
 
 ## Next
-- S1 coder: `fetch_samples.py` + open metadata downloads (PLAN §3).
+- S3 `ptb_xl` → S4 `mimic_iv_ecg` (+ `mimic_icd_count.py`) → S5 `ptb_diagnostic` → S6 `sph` → S7 Challenge 5 → S8 `code15` → S9 `incart` → S10 overlap/summary → S11–S12 report → S13 final report.
 
-## Open questions for the user (PLAN §7)
-- U1 MIMIC credentialed access? U2 read GitHub-hosted dx_mapping CSVs? U3 all 65,826 Challenge headers vs g1 only?
-- U4 optional overlap headers? U5 MIMIC CSVs ~298 MB OK? U6 PDF engine: resolved by the markdown_pdf install (pending lead confirmation). U7 code in `src/stemi/review/`?
+## Open questions for the user
+- U1 details (which credentialed files and columns the count script reads) are being discussed between the lead and the user.
+
+## Files: this dataset review (2026-10-20)
+- `PLAN.md`, `STATUS.md`, `results/` (incl. `results/verified_facts.md`, `results/findings_<dataset>.md`, count CSVs, `download_manifest.csv`), `src/stemi/review/`, review tests in `tests/`, `docs/dataset_report.md` / `.pdf`, `data/samples/` (gitignored, never committed).
+
+## Files: earlier pipeline task (2026-10-19), left unchanged
+- `TASKS.md`, `NEXT_STEPS.md`, `docs/methods.md`, `docs/decision_log.md`, `docs/results.md`, `demo_results/`, `src/stemi/{registry,inventory,label_mapping,demo}.py` and their tests.
+- Shared governing docs (read-only for this team): `data_contract.md`, `research_plan.md`.
 
 ## Result files
 - (none yet) Verified facts will be in `results/verified_facts.md`.
