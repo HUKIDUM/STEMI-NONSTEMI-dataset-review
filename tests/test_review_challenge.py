@@ -53,3 +53,14 @@ def test_no_maps_all_unmapped(root, tmp_path):
     r, _ = root
     dx = rc.review("georgia", r, None, tmp_path / "out")["dx"]
     assert (dx["name"] == "unmapped").all()
+
+
+def test_map_file_counts(tmp_path):
+    pd.DataFrame({"Dx": ["myocardial infarction", "sinus rhythm"],
+                  "SNOMEDCTCode": ["164865005", "426783006"], "Abbreviation": ["MI", "SNR"],
+                  "CPSC": [0, 10], "Georgia": [7, 5], "Total": [7, 15]}
+                 ).to_csv(tmp_path / "dx_mapping_unscored.csv", index=False)
+    m = rc.write_map_counts(tmp_path, tmp_path / "out").set_index("Abbreviation")
+    assert m.loc["MI", "any_mi_st_keyword"] and not m.loc["SNR", "any_mi_st_keyword"]
+    assert m.loc["MI", "Georgia"] == 7
+    assert (tmp_path / "out" / "challenge_dx_mapping_counts.csv").exists()

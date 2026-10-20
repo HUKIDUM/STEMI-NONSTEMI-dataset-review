@@ -67,6 +67,30 @@ def load_maps(maps_dir: Path | None) -> pd.DataFrame:
     return pd.concat(parts, ignore_index=True).drop_duplicates("code")
 
 
+MAP_COUNT_COLUMNS = {"cpsc_2018": "CPSC", "cpsc_extra": "CPSC_Extra", "incart": "StPetersburg",
+                     "ptb_diagnostic_challenge": "PTB", "ptb_xl_challenge": "PTB_XL",
+                     "georgia": "Georgia", "chapman_shaoxing": "Chapman_Shaoxing",
+                     "ningbo": "Ningbo"}
+
+
+def map_file_counts(maps_dir: Path) -> pd.DataFrame:
+    """Per-source counts printed in dx_mapping_scored/unscored.csv (publisher file), one row
+    per SNOMED code, with keyword flags on the Dx name (listing only)."""
+    parts = []
+    for fname in ("dx_mapping_scored.csv", "dx_mapping_unscored.csv"):
+        p = maps_dir / fname
+        if p.exists():
+            m = pd.read_csv(p, dtype={"SNOMEDCTCode": str})
+            parts.append(m.assign(map_file=fname))
+    if not parts:
+        return pd.DataFrame()
+    m = pd.concat(parts, ignore_index=True)
+    flags = pd.DataFrame([keyword_flags(d) for d in m["Dx"]])
+    m = pd.concat([m, flags], axis=1)
+    m["any_mi_st_keyword"] = flags.any(axis=1)
+    return m
+
+
 def header_files(root: Path, folder: str) -> list[Path]:
     return sorted((root / "training" / folder).glob("g*/*.hea"))
 
@@ -166,11 +190,28 @@ def review(dataset_id: str, root: Path, maps_dir: Path | None,
     return {"headers": hdr, "dx": dx, "keys": keys, "basics": basics, "mi_records": len(mi_records)}
 
 
+def write_map_counts(maps_dir: Path, out_dir: Path = RESULTS_DIR) -> pd.DataFrame:
+    m = map_file_counts(maps_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    m.to_csv(out_dir / "challenge_dx_mapping_counts.csv", index=False)
+    return m
+
+
 def main(argv: list[str] | None = None) -> None:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    if argv is None:
+        import sys
+        argv = sys.argv[1:]
+    if argv[:1] == ["--map-counts"]:
+        m = write_map_counts(Path(argv[1]))
+        cols = ["Dx", "SNOMEDCTCode", "Abbreviation"] + [c for c in MAP_COUNT_COLUMNS.values()
+                                                         if c in m.columns] + ["Total"]
+        print(m.loc[m["any_mi_st_keyword"], cols].to_string(index=False))
+        return
     ap.add_argument("dataset_id", choices=sorted(FOLDERS))
     ap.add_argument("root", type=Path, help="data/samples/<dataset_id>")
     ap.add_argument("--maps", type=Path, default=None, help="folder with SNOMED map CSVs")
+    # also: review_challenge.py --map-counts <maps_dir>  -> results/challenge_dx_mapping_counts.csv
     ap.add_argument("--out-dir", type=Path, default=RESULTS_DIR)
     args = ap.parse_args(argv)
     res = review(args.dataset_id, args.root, args.maps, args.out_dir)

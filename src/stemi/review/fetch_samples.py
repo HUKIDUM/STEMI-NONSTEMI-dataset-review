@@ -457,7 +457,8 @@ def filter_groups(relpaths: list[str], groups: list[str] | None) -> list[str]:
 
 def run(dataset_id: str, *, approval: str, workers: int = 4, dry_run: bool = False,
         only: list[str] | None = None, skip_stages: bool = False,
-        skip_sha256sums: bool = False, groups: list[str] | None = None) -> list[dict]:
+        skip_sha256sums: bool = False, groups: list[str] | None = None,
+        max_stage: int | None = None) -> list[dict]:
     """``only``: subset of the fixed files; ``skip_stages``: no derived files this run."""
     if dataset_id not in MANIFEST:
         raise RefusedError(f"{dataset_id} is not in the manifest: {sorted(MANIFEST)}")
@@ -485,7 +486,8 @@ def run(dataset_id: str, *, approval: str, workers: int = 4, dry_run: bool = Fal
         for rp in only:
             check_allowed(source, rp, None)
         fixed = [rp for rp in fixed if rp in only]
-    batches = [(fixed, None)] + ([] if skip_stages else [(None, st) for st in source.stages])
+    stages = [] if skip_stages else list(source.stages)[:max_stage]
+    batches = [(fixed, None)] + [(None, st) for st in stages]
     for relpaths, stage in batches:
         if stage is not None:
             relpaths = filter_groups(stage.rule(local), groups)
@@ -515,13 +517,15 @@ def main(argv: list[str] | None = None) -> None:
     ap.add_argument("--only", default="", help="comma list: subset of the fixed files")
     ap.add_argument("--skip-stages", action="store_true", help="no derived files this run")
     ap.add_argument("--groups", default="", help="comma list of group folders, e.g. g1")
+    ap.add_argument("--max-stage", type=int, default=None,
+                    help="run only the first N derived stages (e.g. 1 = RECORDS lists only)")
     ap.add_argument("--skip-sha256sums", action="store_true",
                     help="do not stream SHA256SUMS.txt (checksum_match = not available)")
     args = ap.parse_args(argv)
     run(args.dataset_id, approval=args.approval, workers=args.workers, dry_run=args.dry_run,
         only=args.only.split(",") if args.only else None, skip_stages=args.skip_stages,
         skip_sha256sums=args.skip_sha256sums,
-        groups=args.groups.split(",") if args.groups else None)
+        groups=args.groups.split(",") if args.groups else None, max_stage=args.max_stage)
 
 
 if __name__ == "__main__":

@@ -212,6 +212,10 @@ Datasets that could mislead a model. *Waiting for verified facts.*
 
 *Waiting for verified facts.* Each "not found" item will be listed here, with where we looked and who could answer it.
 
+## Appendix A. Other datasets worth checking (not reviewed in depth)
+
+*Waiting for verified facts.* This part will briefly list a few other public datasets that may have STEMI or NSTEMI labels. They were **not** reviewed like the 11 datasets above. They are not in the tables in sections 3 and 4, in the advice in section 6, or in the table in section 7.
+
 ## 10. Sources
 
 *Will list every source used: the three PDFs (with page numbers), official web pages (with the date checked) and papers (with DOI or PMC link).*
