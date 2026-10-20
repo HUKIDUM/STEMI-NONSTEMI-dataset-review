@@ -1,0 +1,114 @@
+code,infarction_stadium1,infarction_stadium2,n_ecgs
+ALL_ECGS,<missing>,<missing>,16187
+ALL_ECGS,unknown,<missing>,3430
+ALL_ECGS,Stadium II-III,<missing>,943
+ALL_ECGS,Stadium III,<missing>,929
+ALL_ECGS,Stadium I,<missing>,136
+ALL_ECGS,Stadium II,<missing>,66
+ALL_ECGS,Stadium III,Stadium III,51
+ALL_ECGS,Stadium I,Stadium I,19
+ALL_ECGS,Stadium II,Stadium II,16
+ALL_ECGS,Stadium I,Stadium III,8
+ALL_ECGS,Stadium II,Stadium III,6
+ALL_ECGS,Stadium I-II,<missing>,5
+ALL_ECGS,Stadium I,Stadium II,3
+ALMI,unknown,<missing>,181
+ALMI,Stadium III,<missing>,31
+ALMI,Stadium II-III,<missing>,26
+ALMI,Stadium I,<missing>,13
+ALMI,Stadium II,Stadium II,10
+ALMI,Stadium III,Stadium III,10
+ALMI,Stadium I,Stadium I,8
+ALMI,Stadium II,<missing>,7
+ALMI,Stadium I,Stadium II,2
+AMI,unknown,<missing>,248
+AMI,Stadium II-III,<missing>,55
+AMI,Stadium III,<missing>,41
+AMI,Stadium I,<missing>,7
+AMI,Stadium II,<missing>,2
+ANY_LISTED_MI_OR_INJURY_CODE,unknown,<missing>,3372
+ANY_LISTED_MI_OR_INJURY_CODE,Stadium II-III,<missing>,910
+ANY_LISTED_MI_OR_INJURY_CODE,Stadium III,<missing>,899
+ANY_LISTED_MI_OR_INJURY_CODE,Stadium I,<missing>,116
+ANY_LISTED_MI_OR_INJURY_CODE,Stadium II,<missing>,66
+ANY_LISTED_MI_OR_INJURY_CODE,Stadium III,Stadium III,50
+ANY_LISTED_MI_OR_INJURY_CODE,Stadium I,Stadium I,19
+ANY_LISTED_MI_OR_INJURY_CODE,Stadium II,Stadium II,16
+ANY_LISTED_MI_OR_INJURY_CODE,Stadium I,Stadium III,8
+ANY_LISTED_MI_OR_INJURY_CODE,Stadium II,Stadium III,6
+ANY_LISTED_MI_OR_INJURY_CODE,Stadium I-II,<missing>,4
+ANY_LISTED_MI_OR_INJURY_CODE,Stadium I,Stadium II,3
+ASMI,unknown,<missing>,1343
+ASMI,Stadium III,<missing>,465
+ASMI,Stadium II-III,<missing>,346
+ASMI,Stadium I,<missing>,69
+ASMI,Stadium III,Stadium III,49
+ASMI,Stadium II,<missing>,31
+ASMI,Stadium I,Stadium I,19
+ASMI,Stadium II,Stadium II,15
+ASMI,Stadium I,Stadium III,8
+ASMI,Stadium II,Stadium III,6
+ASMI,Stadium I,Stadium II,3
+ASMI,Stadium I-II,<missing>,3
+ILMI,unknown,<missing>,277
+ILMI,Stadium III,<missing>,73
+ILMI,Stadium II-III,<missing>,72
+ILMI,Stadium II,<missing>,15
+ILMI,Stadium III,Stadium III,14
+ILMI,Stadium I,<missing>,11
+ILMI,Stadium I,Stadium I,8
+ILMI,Stadium I,Stadium III,3
+ILMI,Stadium II,Stadium III,3
+ILMI,Stadium I,Stadium II,1
+ILMI,Stadium II,Stadium II,1
+IMI,unknown,<missing>,1550
+IMI,Stadium II-III,<missing>,598
+IMI,Stadium III,<missing>,427
+IMI,Stadium I,<missing>,44
+IMI,Stadium II,<missing>,24
+IMI,Stadium III,Stadium III,16
+IMI,Stadium I,Stadium I,4
+IMI,Stadium I,Stadium III,4
+IMI,Stadium II,Stadium II,4
+IMI,Stadium II,Stadium III,3
+IMI,Stadium I-II,<missing>,2
+INJAL,unknown,<missing>,127
+INJAL,Stadium II-III,<missing>,9
+INJAL,Stadium III,<missing>,6
+INJAL,Stadium II,<missing>,2
+INJAL,Stadium I,<missing>,1
+INJAS,unknown,<missing>,197
+INJAS,Stadium II-III,<missing>,5
+INJAS,Stadium I,<missing>,4
+INJAS,Stadium III,<missing>,4
+INJAS,Stadium II,<missing>,3
+INJAS,Stadium III,Stadium III,1
+INJIL,unknown,<missing>,14
+INJIL,Stadium I,<missing>,1
+INJIN,unknown,<missing>,18
+INJLA,unknown,<missing>,14
+INJLA,Stadium III,<missing>,2
+INJLA,Stadium II,<missing>,1
+IPLMI,unknown,<missing>,36
+IPLMI,Stadium II-III,<missing>,7
+IPLMI,Stadium III,<missing>,5
+IPLMI,Stadium II,<missing>,2
+IPLMI,Stadium I,<missing>,1
+IPMI,unknown,<missing>,17
+IPMI,Stadium II-III,<missing>,6
+IPMI,Stadium III,<missing>,6
+IPMI,Stadium I,<missing>,2
+IPMI,Stadium II,<missing>,2
+LMI,unknown,<missing>,149
+LMI,Stadium III,<missing>,19
+LMI,Stadium II-III,<missing>,11
+LMI,Stadium III,Stadium III,11
+LMI,Stadium II,Stadium II,4
+LMI,Stadium I,<missing>,3
+LMI,Stadium II,<missing>,2
+LMI,Stadium I,Stadium I,1
+LMI,Stadium I,Stadium III,1
+PMI,unknown,<missing>,10
+PMI,Stadium I,<missing>,3
+PMI,Stadium III,<missing>,3
+PMI,Stadium II-III,<missing>,1

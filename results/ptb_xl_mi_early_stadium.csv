@@ -1,0 +1,7 @@
+selection,n_ecgs,n_patients
+any listed MI/injury code,5469,4670
+"any listed code AND stadium1 or stadium2 in ['Stadium I', 'Stadium I-II']",150,128
+any listed code at likelihood 100 AND early stadium,137,118
+early stadium WITHOUT any listed code,21,13
+"any INJ* code (INJAL, INJAS, INJIL, INJIN, INJLA)",323,293
+any INJ* code AND early stadium,5,5

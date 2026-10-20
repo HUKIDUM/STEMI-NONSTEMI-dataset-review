@@ -424,10 +424,13 @@ def fetch_files(source: Source, relpaths: list[str], stage: Stage | None, *, bud
     return rows, error
 
 
-def attach_checksums(source: Source, rows: list[dict]) -> None:
+def attach_checksums(source: Source, rows: list[dict], *, skip_sha256sums: bool = False) -> None:
     """Fill checksum_* columns from SHA256SUMS (streamed) or cited md5 values."""
     have = [r for r in rows if r.get("sha256")]
-    if source.sha256sums_url and have:
+    if skip_sha256sums:
+        for r in have:
+            r.update(checksum_source="SHA256SUMS skipped by approval (--skip-sha256sums)")
+    elif source.sha256sums_url and have:
         remote = {source.remote_names.get(r["_relpath"], r["_relpath"]) for r in have}
         sums = stream_sha256sums(source.sha256sums_url, remote)
         for r in have:
@@ -445,7 +448,10 @@ def attach_checksums(source: Source, rows: list[dict]) -> None:
         r.setdefault("checksum_match", "not available")
 
 
-def run(dataset_id: str, *, approval: str, workers: int = 4, dry_run: bool = False) -> list[dict]:
+def run(dataset_id: str, *, approval: str, workers: int = 4, dry_run: bool = False,
+        only: list[str] | None = None, skip_stages: bool = False,
+        skip_sha256sums: bool = False) -> list[dict]:
+    """``only``: subset of the fixed files; ``skip_stages``: no derived files this run."""
     if dataset_id not in MANIFEST:
         raise RefusedError(f"{dataset_id} is not in the manifest: {sorted(MANIFEST)}")
     source = MANIFEST[dataset_id]
@@ -467,7 +473,12 @@ def run(dataset_id: str, *, approval: str, workers: int = 4, dry_run: bool = Fal
         raise RefusedError("--approval is required (user OK via team-lead)")
     budget = Budget(folder_bytes(cap_root))
     all_rows = []
-    batches = [(list(source.files), None)] + [(None, st) for st in source.stages]
+    fixed = list(source.files)
+    if only:
+        for rp in only:
+            check_allowed(source, rp, None)
+        fixed = [rp for rp in fixed if rp in only]
+    batches = [(fixed, None)] + ([] if skip_stages else [(None, st) for st in source.stages])
     for relpaths, stage in batches:
         if stage is not None:
             relpaths = stage.rule(local)
@@ -475,7 +486,7 @@ def run(dataset_id: str, *, approval: str, workers: int = 4, dry_run: bool = Fal
         rows, error = fetch_files(source, relpaths, stage, budget=budget, approval=approval,
                                   workers=workers)
         try:
-            attach_checksums(source, rows)
+            attach_checksums(source, rows, skip_sha256sums=skip_sha256sums)
         finally:
             for r in rows:                    # log what completed, even on failure
                 append_log(r)
@@ -494,8 +505,14 @@ def main(argv: list[str] | None = None) -> None:
     ap.add_argument("--approval", default="", help="record of the user's OK (who/when)")
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--dry-run", action="store_true", help="HEAD sizes of fixed files only")
+    ap.add_argument("--only", default="", help="comma list: subset of the fixed files")
+    ap.add_argument("--skip-stages", action="store_true", help="no derived files this run")
+    ap.add_argument("--skip-sha256sums", action="store_true",
+                    help="do not stream SHA256SUMS.txt (checksum_match = not available)")
     args = ap.parse_args(argv)
-    run(args.dataset_id, approval=args.approval, workers=args.workers, dry_run=args.dry_run)
+    run(args.dataset_id, approval=args.approval, workers=args.workers, dry_run=args.dry_run,
+        only=args.only.split(",") if args.only else None, skip_stages=args.skip_stages,
+        skip_sha256sums=args.skip_sha256sums)
 
 
 if __name__ == "__main__":

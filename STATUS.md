@@ -22,9 +22,11 @@ Last update: 2026-10-20
 
 - S1 (code only) + S2: `src/stemi/review/fetch_samples.py` (manifest-only, 500 MB cap, .hea/RECORDS only for headers, 401/403 stop, no overwrite, append-only `results/download_manifest.csv`), `src/stemi/review/hea_parser.py`; tests `tests/test_fetch_samples.py`, `tests/test_hea_parser.py`. `pytest`: 101 passed (planner re-ran). **No files downloaded yet.**
 
+- S3 `ptb_xl`: 22 files downloaded (6.6 MB, all sha256 match), `review_ptbxl.py` run; results `results/ptb_xl_*.csv`, `results/ptb_xl_summary.md`, `results/findings_ptb_xl.md`. Planner recounted the key numbers independently and checked the PN/PAPER quotes → 10 rows in `results/verified_facts.md` (Q4 = not found; Q8 partial until S10). Main result: MI statements, but no STEMI/NSTEMI; 150 MI-coded ECGs with an early infarct stage.
+
 ## In progress
-- S1 downloads: PTB-XL approved (request #1). First run aborted on a dropped connection (retry bug: reused .part file). Fixed in `fetch_samples.py` (per-attempt .part, truncated body = retry, per-batch logging); `pytest` 110 passed (planner re-ran). Re-run in progress with --workers 2. PhysioNet speed ~4–5 KB/s: the MIMIC CSVs (~298 MB) may take many hours.
-- S3 coder: `review_ptbxl.py` on synthetic fixtures while approval is pending.
+- S1 downloads: PTB-XL done. First run aborted on a dropped connection (retry bug: reused .part file). Fixed in `fetch_samples.py` (per-attempt .part, truncated body = retry, per-batch logging); `pytest` 110 passed (planner re-ran). Re-run in progress with --workers 2. PhysioNet speed ~4–5 KB/s: the MIMIC CSVs (~298 MB) may take many hours.
+- S4 `mimic_iv_ecg`: download request sent to team-lead (312,005,553 B of fixed files; ~5 KB/s observed earlier → may take hours). `review_mimic.py` written, not yet run on data.
 
 ## Next
 - S3 `ptb_xl` → S4 `mimic_iv_ecg` (+ `mimic_icd_count.py`) → S5 `ptb_diagnostic` → S6 `sph` → S7 Challenge 5 → S8 `code15` → S9 `incart` → S10 overlap/summary → S11–S12 report → S13 final report.

@@ -196,3 +196,18 @@ def test_foreign_part_file_left_alone(server, tmp_path):
     with pytest.raises(FileExistsError):
         _fetch(_source(base), ["RECORDS"], None, tmp_path)
     assert part.read_text() == "someone else's"
+
+
+def test_only_must_name_fixed_files():
+    with pytest.raises(fs.RefusedError):
+        fs.run("mimic_iv_ecg", approval="x", only=["files/p1000/x.dat"])
+
+
+def test_skip_sha256sums_marks_not_available(server, tmp_path):
+    remote, base = server
+    (remote / "RECORDS").write_text("r1\n")
+    src = _source(base, sha256sums_url=base + "missing.txt")      # would 404 if streamed
+    rows = _fetch(src, ["RECORDS"], None, tmp_path)
+    fs.attach_checksums(src, rows, skip_sha256sums=True)
+    assert rows[0]["checksum_match"] == "not available"
+    assert "skipped" in rows[0]["checksum_source"]
