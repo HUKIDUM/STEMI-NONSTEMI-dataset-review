@@ -133,3 +133,4 @@ Question keys Q1–Q10: see `PLAN.md` §0.
 | ningbo | Q8 combine (technical part) | 500 Hz, 10 s, 12 leads (matches C1.3). No patient ID in the headers. Overlap: ecg-arrhythmia 45,152 = Chapman 10,247 + Ningbo 34,905 (count match only, O4). | OBS g1; CH21; ecg-arrhythmia page | verified (partial; rest in S10) | planner 2026-10-21 |
 | ningbo | Q9 access | Open (CH21; ecg-arrhythmia CC BY 4.0). | CH21; ecg-arrhythmia page | verified | planner 2026-10-21 |
 | ningbo | Q10 size_license | 34,905 recordings in the Challenge folder; CC BY 4.0. | CH21 | verified | planner 2026-10-21 |
+| challenge (all 5) | Q3 collection (age, g1) | Median age in the g1 samples (numeric ages only): cpsc_2018 64 (n=998), cpsc_extra 65 (999), georgia 63 (975), chapman_shaoxing 61 (999), ningbo 38 (997). Samples of one folder only. | OBS g1 headers (planner recount) | verified | planner 2026-10-21 |
