@@ -1,8 +1,22 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
 [project]
-name = "stemi-research"
-version = "0.1.0"
+name = "stemi-dataset-review"
+version = "1.0.0"
+description = "Source-checked review of 11 public ECG datasets for STEMI vs NSTEMI vs non-MI prediction"
+readme = "README.md"
+license = { text = "MIT" }
 requires-python = ">=3.11"
 dependencies = ["pandas"]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+report = ["markdown-pdf"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src", "tests"]

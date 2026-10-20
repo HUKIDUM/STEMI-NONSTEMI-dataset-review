@@ -5,7 +5,7 @@
 | Status | **FINAL (2026-10-21).** All facts come from rows marked verified in `results/verified_facts.md`. MIMIC STEMI/NSTEMI counts are pending the user's script. |
 | Date | 2026-10-21 |
 | Written by | documenter (team: planner, coder, team-lead) |
-| Plan | `PLAN.md` (approved by the user on 2026-10-20) |
+| Plan | `docs/project/PLAN.md` (approved by the user on 2026-10-20) |
 
 <!-- section: A4 -->
 

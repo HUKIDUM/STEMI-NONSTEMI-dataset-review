@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: "If you use this review, please cite it and the original datasets listed in the report."
+title: "ECG Datasets for STEMI vs NSTEMI Prediction: A Source-Checked Review"
+authors:
+  - alias: HUKIDUM
+version: 1.0.0
+date-released: 2026-10-21
+license: MIT
+repository-code: "https://github.com/HUKIDUM/STEMI-NONSTEMI-dataset-review"

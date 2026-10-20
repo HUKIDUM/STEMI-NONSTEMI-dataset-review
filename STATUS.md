@@ -1,5 +1,7 @@
 # STATUS: Dataset review (STEMI / NSTEMI / non-MI)
 
+> **File locations (2026-10-21, GitHub preparation):** `PLAN.md`, `TASKS.md`, `NEXT_STEPS.md`, `data_contract.md` and `research_plan.md` moved to `docs/project/`. `data_contract.backup.md` stays local only (git-ignored). Repository front page: `README.md`.
+
 Owner: planner. A new session reads this first. Plan: `PLAN.md` (APPROVED 2026-10-20, with the user answers below).
 
 Last update: 2026-10-21 (team-lead)
