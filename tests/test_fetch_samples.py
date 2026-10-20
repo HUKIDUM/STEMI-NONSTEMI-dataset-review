@@ -34,9 +34,12 @@ def _source(base, **kw):
 
 
 def _fetch(src, rels, stage, tmp_path, limit=fs.MAX_BYTES_PER_DATASET):
-    return fs.fetch_files(src, rels, stage, budget=fs.Budget(0, limit), approval="test",
-                          workers=2, log_path=tmp_path / "m.csv",
-                          samples_root=tmp_path / "samples")
+    rows, error = fs.fetch_files(src, rels, stage, budget=fs.Budget(0, limit), approval="test",
+                                 workers=2, log_path=tmp_path / "m.csv",
+                                 samples_root=tmp_path / "samples")
+    if error is not None:
+        raise error
+    return rows
 
 
 def test_downloads_and_hashes(server, tmp_path):
@@ -151,3 +154,45 @@ def test_run_requires_approval():
         fs.run("ptb_xl", approval=" ")
     with pytest.raises(fs.RefusedError):
         fs.run("not_a_dataset", approval="x")
+
+
+def test_retry_after_dropped_connection(tmp_path, monkeypatch):
+    """First GET sends half the body then closes; the retry must succeed (2026-10-20 bug)."""
+    monkeypatch.setattr(fs.time, "sleep", lambda s: None)
+    body = b"x" * 5000
+    calls = {"n": 0}
+
+    class Flaky(http.server.BaseHTTPRequestHandler):
+        def log_message(self, *a):
+            pass
+
+        def do_GET(self):
+            calls["n"] += 1
+            self.send_response(200)
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body if calls["n"] > 1 else body[:2000])
+            self.close_connection = True
+
+    httpd = http.server.ThreadingHTTPServer(("127.0.0.1", 0), Flaky)
+    threading.Thread(target=httpd.serve_forever, daemon=True).start()
+    try:
+        budget = fs.Budget(0, 6000)                       # would fail if charged twice
+        dest = tmp_path / "f.csv"
+        n, digest = fs.download(f"http://127.0.0.1:{httpd.server_address[1]}/f.csv", dest, budget)
+    finally:
+        httpd.shutdown()
+    assert calls["n"] == 2 and n == 5000 and dest.read_bytes() == body
+    assert budget.used == 5000
+    assert not (tmp_path / "f.csv.part").exists()
+
+
+def test_foreign_part_file_left_alone(server, tmp_path):
+    remote, base = server
+    (remote / "RECORDS").write_text("r1\n")
+    part = tmp_path / "samples" / "toy" / "RECORDS.part"
+    part.parent.mkdir(parents=True)
+    part.write_text("someone else's")
+    with pytest.raises(FileExistsError):
+        _fetch(_source(base), ["RECORDS"], None, tmp_path)
+    assert part.read_text() == "someone else's"

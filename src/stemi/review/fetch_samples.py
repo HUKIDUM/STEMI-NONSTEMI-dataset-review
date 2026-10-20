@@ -26,6 +26,7 @@ if __package__ in (None, ""):          # run as a file under ``python -I``
 import argparse
 import csv
 import hashlib
+import http.client
 import re
 import threading
 import time
@@ -48,7 +49,7 @@ SAMPLE_SEED = 20261020                          # PLAN §3
 USER_AGENT = "stemi-dataset-review/0.1 (metadata-only research sample; polite rate)"
 REQUEST_DELAY_S = 0.25                          # per worker, between requests
 TIMEOUT_S = 120
-RETRIES = 3
+RETRIES = 4
 
 MANIFEST_COLUMNS = [
     "dataset_id", "url", "local_path", "bytes", "sha256", "download_utc",
@@ -137,10 +138,14 @@ def _challenge(dataset_id: str, folder: str, local_dir: str | None = None) -> So
 
 
 # Publisher checksums, filled from the cited API record before download (empty = none)
-SPH_MD5: dict[str, str] = {}
-SPH_MD5_SOURCE = "https://api.figshare.com/v2/collections/5779802/articles"
-CODE15_MD5: dict[str, str] = {}
-CODE15_MD5_SOURCE = "https://zenodo.org/api/records/4916206"
+# (read 2026-10-20; figshare computed_md5 == supplied_md5 for all three, zenodo "checksum")
+SPH_MD5: dict[str, str] = {"metadata.csv": "8ef8e8789059a585c89c5302c7891909",
+                           "code.csv": "9fafec6cc6e1ef8117e2964116654d05",
+                           "rule.pdf": "8e84772f206d50f0e661c787cd4c905a"}
+SPH_MD5_SOURCE = ("https://api.figshare.com/v2/articles/17912441 (metadata.csv), "
+                  "/17912507 (code.csv), /19738468 (rule.pdf): computed_md5")
+CODE15_MD5: dict[str, str] = {"exams.csv": "0107516d3f63864498fb77d15799cc95"}
+CODE15_MD5_SOURCE = "https://zenodo.org/api/records/4916206 files[key=exams.csv].checksum"
 DX_MAPS_BASE = "https://raw.githubusercontent.com/physionetchallenges/evaluation-2021/main/"
 
 
@@ -269,7 +274,7 @@ def _with_retries(fn):
                 raise RefusedError(f"HTTP {e.code}: login/credential wall, stopping") from e
             if e.code == 404 or attempt == RETRIES - 1:
                 raise
-        except (urllib.error.URLError, TimeoutError, ConnectionError):
+        except (urllib.error.URLError, TimeoutError, ConnectionError, http.client.HTTPException):
             if attempt == RETRIES - 1:
                 raise
         time.sleep(2 ** attempt * 2)
@@ -283,34 +288,52 @@ def head_size(url: str) -> int | None:
     return _with_retries(go)
 
 
+class IncompleteDownload(ConnectionError):
+    pass
+
+
 def download(url: str, dest: Path, budget: Budget) -> tuple[int, str]:
-    """Stream ``url`` to ``dest`` (never overwriting); returns (bytes, sha256)."""
+    """Stream ``url`` to ``dest`` (never overwriting); returns (bytes, sha256).
+
+    A failed attempt removes only the ``.part`` file that this attempt created,
+    then retries. Bytes are charged to the budget once, not once per attempt.
+    """
     if dest.exists():
         raise FileExistsError(dest)
     dest.parent.mkdir(parents=True, exist_ok=True)
     part = dest.with_name(dest.name + ".part")
-    if part.exists():
+    if part.exists():                     # left by someone else: never touch it
         raise FileExistsError(part)
+    charged = 0
+
+    def charge_up_to(n: int) -> None:
+        nonlocal charged
+        if n > charged:
+            budget.take(n - charged)
+            charged = n
 
     def go():
         h, n = hashlib.sha256(), 0
-        with _request(url) as r, open(part, "xb") as out:
-            declared = r.headers.get("Content-Length")
-            budget.take(int(declared) if declared else 0)
-            for chunk in iter(lambda: r.read(1 << 16), b""):
-                n += len(chunk)
-                if not declared:
-                    budget.take(len(chunk))
-                h.update(chunk)
-                out.write(chunk)
+        out = open(part, "xb")            # created by this attempt
+        try:
+            with _request(url) as r, out:
+                declared = r.headers.get("Content-Length")
+                if declared:
+                    charge_up_to(int(declared))
+                for chunk in iter(lambda: r.read(1 << 16), b""):
+                    n += len(chunk)
+                    charge_up_to(n)
+                    h.update(chunk)
+                    out.write(chunk)
+                if declared and n != int(declared):
+                    raise IncompleteDownload(f"{url}: {n} of {declared} bytes")
+        except BaseException:
+            out.close()
+            part.unlink()
+            raise
         return n, h.hexdigest()
 
-    try:
-        n, digest = _with_retries(go)
-    except BaseException:
-        if part.exists():                 # our own partial file from this call
-            part.unlink()
-        raise
+    n, digest = _with_retries(go)
     part.rename(dest)                     # dest was checked absent above
     return n, digest
 
@@ -391,9 +414,14 @@ def fetch_files(source: Source, relpaths: list[str], stage: Stage | None, *, bud
         row["_relpath"] = rp
         return row
 
+    rows, error = [], None
     with ThreadPoolExecutor(max_workers=max(1, workers)) as pool:
-        rows = list(pool.map(one, relpaths))
-    return rows
+        for fut in [pool.submit(one, rp) for rp in relpaths]:
+            try:
+                rows.append(fut.result())
+            except Exception as e:            # keep completed rows for the log
+                error = error or e
+    return rows, error
 
 
 def attach_checksums(source: Source, rows: list[dict]) -> None:
@@ -444,12 +472,16 @@ def run(dataset_id: str, *, approval: str, workers: int = 4, dry_run: bool = Fal
         if stage is not None:
             relpaths = stage.rule(local)
             print(f"{dataset_id}: {stage.description}: {len(relpaths)} files")
-        rows = fetch_files(source, relpaths, stage, budget=budget, approval=approval,
-                           workers=workers)
+        rows, error = fetch_files(source, relpaths, stage, budget=budget, approval=approval,
+                                  workers=workers)
+        try:
+            attach_checksums(source, rows)
+        finally:
+            for r in rows:                    # log what completed, even on failure
+                append_log(r)
         all_rows += rows
-    attach_checksums(source, all_rows)
-    for r in all_rows:
-        append_log(r)
+        if error is not None:
+            raise error
     counts = pd.Series([r["status"] for r in all_rows]).value_counts().to_dict()
     print(f"{dataset_id}: {counts}; folder {folder_bytes(cap_root)} bytes; "
           f"checksum {pd.Series([r['checksum_match'] for r in all_rows]).value_counts().to_dict()}")

@@ -23,7 +23,7 @@ Last update: 2026-10-20
 - S1 (code only) + S2: `src/stemi/review/fetch_samples.py` (manifest-only, 500 MB cap, .hea/RECORDS only for headers, 401/403 stop, no overwrite, append-only `results/download_manifest.csv`), `src/stemi/review/hea_parser.py`; tests `tests/test_fetch_samples.py`, `tests/test_hea_parser.py`. `pytest`: 101 passed (planner re-ran). **No files downloaded yet.**
 
 ## In progress
-- S1 downloads: PTB-XL approval request #1 sent to team-lead (pending).
+- S1 downloads: PTB-XL approved (request #1). First run aborted on a dropped connection (retry bug: reused .part file). Fixed in `fetch_samples.py` (per-attempt .part, truncated body = retry, per-batch logging); `pytest` 110 passed (planner re-ran). Re-run in progress with --workers 2. PhysioNet speed ~4–5 KB/s: the MIMIC CSVs (~298 MB) may take many hours.
 - S3 coder: `review_ptbxl.py` on synthetic fixtures while approval is pending.
 
 ## Next
