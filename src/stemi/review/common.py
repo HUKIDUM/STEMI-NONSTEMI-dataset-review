@@ -43,8 +43,12 @@ def provenance(local_paths: list[Path], manifest: Path = MANIFEST_CSV) -> pd.Dat
     if manifest.exists():
         with open(manifest, newline="") as f:
             for r in csv.DictReader(f):
-                if r.get("sha256"):
-                    known[r["local_path"]] = r            # last row for a path wins
+                if not r.get("sha256"):
+                    continue
+                prev = known.get(r["local_path"])
+                # dedupe on path: the "downloaded" row wins over later skipped_exists rows
+                if prev is None or (r.get("status") == "downloaded") >= (prev.get("status") == "downloaded"):
+                    known[r["local_path"]] = r
     for p in local_paths:
         rel = Path(p).resolve()
         key = rel.relative_to(PROJECT_ROOT).as_posix() if rel.is_relative_to(PROJECT_ROOT) else str(p)
