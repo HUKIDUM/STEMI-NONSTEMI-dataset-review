@@ -26,7 +26,9 @@ Last update: 2026-10-20
 
 ## In progress
 - S1 downloads: PTB-XL done. First run aborted on a dropped connection (retry bug: reused .part file). Fixed in `fetch_samples.py` (per-attempt .part, truncated body = retry, per-batch logging); `pytest` 110 passed (planner re-ran). Re-run in progress with --workers 2. PhysioNet speed ~4–5 KB/s: the MIMIC CSVs (~298 MB) may take many hours.
-- S4 `mimic_iv_ecg`: download request sent to team-lead (312,005,553 B of fixed files; ~5 KB/s observed earlier → may take hours). `review_mimic.py` written, not yet run on data.
+- S4 `mimic_iv_ecg`: the user chose option E (public S3 mirror) → HTTP 404 → fallback option C (approved): `record_list.csv`, the data dictionary and 50 `.hea` headers from physionet.org, downloading now. **`machine_measurements.csv` and `waveform_note_links.csv` are NOT approved yet** (they need a new request). `review_mimic.py` is written, not yet run on data.
+- S5 `ptb_diagnostic`: download #3 approved and running (RECORDS, CONTROLS, README, 549 `.hea`, SHA256SUMS stream).
+- Credentials: the team never receives or uses any credentials, including AWS keys (user question answered by team-lead).
 
 ## Next
 - S3 `ptb_xl` → S4 `mimic_iv_ecg` (+ `mimic_icd_count.py`) → S5 `ptb_diagnostic` → S6 `sph` → S7 Challenge 5 → S8 `code15` → S9 `incart` → S10 overlap/summary → S11–S12 report → S13 final report.
