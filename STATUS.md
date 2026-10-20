@@ -24,6 +24,8 @@ Last update: 2026-10-20
 
 - S3 `ptb_xl`: 22 files downloaded (6.6 MB, all sha256 match), `review_ptbxl.py` run; results `results/ptb_xl_*.csv`, `results/ptb_xl_summary.md`, `results/findings_ptb_xl.md`. Planner recounted the key numbers independently and checked the PN/PAPER quotes → 10 rows in `results/verified_facts.md` (Q4 = not found; Q8 partial until S10). Main result: MI statements, but no STEMI/NSTEMI; 150 MI-coded ECGs with an early infarct stage.
 
+- S11 (part): PTB-XL filled in `docs/dataset_report.md` (§3 row, §4 row, §5.1, §10 sources); PDF rebuilt (7 pages). Planner checked it against the verified rows (4 fixes made first).
+
 ## In progress
 - S1 downloads: PTB-XL done. First run aborted on a dropped connection (retry bug: reused .part file). Fixed in `fetch_samples.py` (per-attempt .part, truncated body = retry, per-batch logging); `pytest` 110 passed (planner re-ran). Re-run in progress with --workers 2. PhysioNet speed ~4–5 KB/s: the MIMIC CSVs (~298 MB) may take many hours.
 - S4 `mimic_iv_ecg`: the user chose option E (public S3 mirror) → HTTP 404 → fallback option C (approved): `record_list.csv`, the data dictionary and 50 `.hea` headers from physionet.org, downloading now. **`machine_measurements.csv` and `waveform_note_links.csv` are NOT approved yet** (they need a new request). `review_mimic.py` is written, not yet run on data.
