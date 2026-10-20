@@ -1,5 +1,7 @@
 # STATUS: Dataset review (STEMI / NSTEMI / non-MI)
 
+> **GitHub (2026-10-21):** published at https://github.com/HUKIDUM/STEMI-NONSTEMI-dataset-review (public, branch `main`, CI tests passing). Commit emails use the GitHub noreply address; the local branch `backup-before-email-rewrite` keeps the original history. Push only with the user's OK.
+
 > **File locations (2026-10-21, GitHub preparation):** `PLAN.md`, `TASKS.md`, `NEXT_STEPS.md`, `data_contract.md` and `research_plan.md` moved to `docs/project/`. `data_contract.backup.md` stays local only (git-ignored). Repository front page: `README.md`.
 
 Owner: planner. A new session reads this first. Plan: `PLAN.md` (APPROVED 2026-10-20, with the user answers below).
