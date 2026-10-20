@@ -63,6 +63,8 @@ Last update: 2026-10-20
 ## Add-on (low priority, chosen by team-lead for the user, 2026-10-20)
 - **S-extra: other public ECG datasets that may have STEMI/NSTEMI or acute-MI labels.** Research only: official pages and papers; NO downloads and no requests. At most ~5 candidates. Per candidate: name, labels (verbatim), who labelled, access (open / credentialed / on request), size, source URLs. Every fact sourced or "not found"; planner verifies. Output `results/findings_extra_candidates.md` → verified rows in `results/verified_facts.md` (dataset key `extra:<name>`). Report: a separate appendix "Other datasets worth checking (not reviewed in depth)", NOT mixed into the 11-dataset tables or recommendations. Coder does it only while idle during downloads; it must not delay S3–S13. Its report appendix comes after the main review.
 
+- S-extra research done by coder (`results/findings_extra_candidates.md`); planner verified it → 6 `extra:` rows (wECGdb, STAFF III and the prehospital OMI cohort verified; UMich pending (page 403); HEEDB access/license only). Report appendix waits until the main review is done.
+
 ## Open questions for the user
 - U1 RESOLVED (team-lead 2026-10-20): `src/stemi/review/mimic_icd_count.py`, run by the USER only. It reads MIMIC-IV hosp `diagnoses_icd` + `admissions` + MIMIC-IV-ECG `record_list` (ext-ICD optional). ECG→admission link when `ecg_time` is between `admittime` and `dischtime` (ASSUMPTION, printed in the output). Aggregate counts only for I21.0–I21.3 / I21.4 / other I21 / I22 / ICD-9 410; counts <10 suppressed. Planner reviews it like any step.
 

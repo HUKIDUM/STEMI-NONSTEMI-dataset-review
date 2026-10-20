@@ -1,7 +1,7 @@
 # PTB-XL metadata review (local observation)
 
 - Dataset: `ptb_xl`, release 1.0.3 (records500)
-- Script: `src/stemi/review/review_ptbxl.py`; generated 2026-10-20T11:39:15+00:00
+- Script: `src/stemi/review/review_ptbxl.py`; generated 2026-10-20T12:14:32+00:00
 - Local observation of the downloaded file(s) named below; not a release-level fact (data_contract E2, E3). Labels are described, not converted into training labels (L1, L2).
 
 ## Input files

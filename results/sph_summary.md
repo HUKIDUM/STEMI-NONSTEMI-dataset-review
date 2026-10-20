@@ -1,7 +1,7 @@
 # SPH metadata review (local observation)
 
 - Dataset: `sph`, release figshare collection 5779802 v1
-- Script: `src/stemi/review/review_sph.py`; generated 2026-10-20T11:54:16+00:00
+- Script: `src/stemi/review/review_sph.py`; generated 2026-10-20T12:14:33+00:00
 - Local observation of the downloaded file(s) named below; not a release-level fact (data_contract E2, E3). Labels are described, not converted into training labels (L1, L2).
 
 ## Input files
