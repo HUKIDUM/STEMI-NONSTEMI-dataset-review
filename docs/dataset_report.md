@@ -59,7 +59,7 @@ Short answers only. Details and sources are in section 5.
 | Ningbo | | | | | | | | | | |
 | Chapman-Shaoxing | | | | | | | | | | |
 | CODE-15% | 6 yes/no rhythm and conduction labels ("ST" = sinus tachycardia, **not** ST elevation), plus "normal ECG" and death [ZEN-CODE15] | Full CODE: computer reports plus text from expert reports; unclear cases checked by medical students with a cardiologist. For this 15% part: not found [RIBEIRO2020; ZEN-CODE15] | Telehealth Network of Minas Gerais, Brazil; 2010–2016; 233,770 patients [ZEN-CODE15; RIBEIRO2020] | Full CODE: mostly primary care (local health centres) [RIBEIRO2020] | TEB ECGPC or Micromed ErgoPC 13; 12 leads; 400 Hz as shared; 7–10 s, padded with zeros [RIBEIRO2020; ZEN-CODE15] | Neither. No MI label at all [OBS-CODE15; ZEN-CODE15] | Pretraining only, or not useful. *Planner view, needs supervisor sign-off* | Needs a speed change (400 Hz) and a padding mask; has patient IDs; no MI labels. Full check later (S10) [ZEN-CODE15] | Open, no login [ZEN-CODE15] | 345,779 ECGs; 46.3 GB (all files); CC BY 4.0 [ZEN-CODE15] |
-| INCART | | | | | | | | | | |
+| INCART | Beat-by-beat marks; diagnosis text per patient; rhythm text per record [README-INCART; OBS-INCART] | Beat marks: computer, then corrected by people. Diagnoses: author not found [README-INCART] | St.-Petersburg Institute of Cardiological Technics, Russia; years not found; 32 patients tested for heart artery disease [README-INCART; PN-INCART] | Holter (long recording while the person goes about their day) [README-INCART] | Model not found; 12 leads; 257 Hz; 30 min [README-INCART; OBS-INCART] | Neither. "Acute MI" text: 2 patients only [OBS-INCART] | Not useful for MI tasks; at most pretraining on short pieces. *Planner view, needs supervisor sign-off* | Very different kind of recording; needs speed change and cutting; Challenge copy has 74 records, not 75. Full check later (S10) [MCR p.4; PA2020] | Open, no login [PN-INCART] | 75 records; 794.5 MB; ODC Attribution License v1.0 [PN-INCART] |
 
 <!-- section: A4 -->
 
@@ -79,7 +79,7 @@ Short answers only. Details and sources are in section 5.
 | Ningbo | | | | |
 | Chapman-Shaoxing | | | | |
 | CODE-15% | None. The "ST" column means sinus tachycardia (a fast heart rhythm that starts in the heart's normal pacemaker), not ST elevation [ZEN-CODE15] | 0 [OBS-CODE15] | No [OBS-CODE15] | No [OBS-CODE15; RIBEIRO2020] |
-| INCART | | | | |
+| INCART | Diagnosis text "Acute MI" and "Earlier MI" [OBS-INCART] | Acute MI: 6 records (2 patients). Earlier MI: 9 records (4 patients) [OBS-INCART] | Yes, as diagnosis text ("acute" / "earlier") [OBS-INCART] | No [OBS-INCART] |
 
 ## 5. Each dataset in detail
 
@@ -124,7 +124,7 @@ Each part answers the same 10 questions. Each answer gives its source.
 2. **Who labelled them.** **Not found.** The dataset page says most records include "a detailed clinical summary", but not who wrote it [PN-PTBDB].
 3. **Collection.** The ECGs were "collected from healthy volunteers and patients with different heart diseases by Professor Michael Oeff … at the Department of Cardiology of University Clinic Benjamin Franklin in Berlin, Germany". PTB put them together [PN-PTBDB]. Collection years: **not found**. The page does not state them [PN-PTBDB]. The dates in the headers are around 1990. The page does not say if they are real or moved, so we do not use them as collection years [PN-PTBDB; OBS-PTBDB]. Number of people: the files have 290 patient folders [OBS-PTBDB]. The page says "294 subjects" in one place and "549 records from 290 subjects" in another. The files support 290 [PN-PTBDB; OBS-PTBDB].
 4. **Setting.** A hospital cardiology department, with heart patients and healthy volunteers [PN-PTBDB]. Whether ward, intensive care, emergency room or clinic: **not found** [PN-PTBDB].
-5. **Device.** "A non-commercial, PTB prototype recorder" (a test machine, not one sold in shops). It stores 2,000 units per millivolt [PN-PTBDB]. All 549 headers have 15 channels: the 12 standard leads plus 3 extra "Frank" leads (vx, vy, vz). Lead names are in lower case [OBS-PTBDB]. 1000 Hz. The header has no unit field. The dataset page gives the scale (2,000 units per millivolt) [PN-PTBDB; OBS-PTBDB]. Length: 32 to 120 seconds in the files. The page does not state the length [OBS-PTBDB; PN-PTBDB].
+5. **Device.** "A non-commercial, PTB prototype recorder" (a test machine, not one sold in shops). It stores 2,000 units per millivolt [PN-PTBDB]. All 549 headers have 15 channels: the 12 standard leads plus 3 extra "Frank" leads (vx, vy, vz: extra leads that record the heart's electrical direction in 3D). Lead names are in lower case [OBS-PTBDB]. 1000 Hz. The header has no unit field. The dataset page gives the scale (2,000 units per millivolt) [PN-PTBDB; OBS-PTBDB]. Length: 32 to 120 seconds in the files. The page does not state the length [OBS-PTBDB; PN-PTBDB].
 6. **STEMI vs NSTEMI.** **No.** There is no STEMI or NSTEMI label [OBS-PTBDB]. It can give MI vs no MI: 148 MI patients (368 records) vs 52 healthy people (80 records), plus people with other heart diseases [OBS-PTBDB].
 
    **What is special here: documented time since infarction.** We took "ECG date" minus "Infarction date (acute)". The dates are read day first (day/month/year). We know this because in 374 of the 541 dated headers the first number is above 12, and the second number is never above 12 [OBS-PTBDB]. The time could be worked out for 343 of the 368 MI records [OBS-PTBDB]:
@@ -203,7 +203,26 @@ Each part answers the same 10 questions. Each answer gives its source.
 
 ### 5.11 INCART
 
-*Waiting for verified facts.*
+**In one line:** a small, open set of 30-minute Holter recordings (long recordings made while the person goes about their day) from 32 patients in Russia. Only 2 patients have "acute MI" in their diagnosis text. This is a very different kind of recording from a 10-second resting ECG.
+
+1. **Labels.** There are three kinds [README-INCART; OBS-INCART]:
+   - Beat marks: a mark on each heartbeat, "over 175,000 beat annotations in all". These are stored in `.atr` files, which we did not download.
+   - Diagnosis text for each patient, in `files-patients-diagnoses.txt` and in the first comment of each header (age, sex, diagnoses).
+   - Rhythm and wave-shape text for each record, in `record-descriptions.txt` and the header comments. For example, record I03 says "ST elevation, PVCs" (PVCs = extra early heartbeats).
+2. **Who labelled them.** Beat marks were "produced by an automatic algorithm and then corrected manually". However, their "locations have not been manually corrected" [README-INCART]. About the patient diagnoses, the README says: "Diagnoses were confirmed by enzyme check, coronary angiography, electrophysiological study, pressure monitoring where necessary." (These are a blood test, an X-ray test of the heart arteries, a test of the heart's electrical system, and pressure measurement.) Note the words "where necessary": this does **not** say that every diagnosis was confirmed by every test [README-INCART]. Who wrote the diagnoses: **not found**. "Additional verification was done by Sergey Ivanov and Alexei Rivin (Incart)" [README-INCART].
+3. **Collection.** The data came from the St.-Petersburg Institute of Cardiological Technics (Incart), Saint Petersburg, Russia [README-INCART; PN-INCART]. 32 patients "undergoing tests for coronary artery disease" (disease of the heart arteries): 17 men and 15 women, aged 18–80 (average 58). None had a pacemaker [README-INCART]. Records were chosen on purpose, mostly ones "with ECGs consistent with ischemia, coronary artery disease, conduction abnormalities, and arrhythmias" [README-INCART]. So the patients are not a random group. Years: **not found** [README-INCART; PN-INCART].
+4. **Setting.** Holter: "75 annotated recordings extracted from 32 Holter records" [README-INCART]. Whether patients were in hospital or outpatients: **not found** [README-INCART].
+5. **Device.** 12 standard leads, 257 Hz, 30 minutes [README-INCART]. All 75 headers show 12 signals, 257 Hz and 1,800 seconds, with leads in the order I, II, III, AVR, AVL, AVF, V1–V6 [OBS-INCART]. The scale differs between recordings: the headers show 12 different values, from 240 to 1,063 units per millivolt. The README says "250 to 1100", which does not quite match the headers [README-INCART; OBS-INCART]. The header has no unit field [OBS-INCART]. Machine brand and model: **not found** [README-INCART; PN-INCART].
+6. **STEMI vs NSTEMI.** **Neither** [OBS-INCART].
+   - "Acute MI" in the diagnosis text: 2 patients (patient 2: records I03–I05; patient 27: records I62–I64) = 6 records.
+   - "Earlier MI": 4 patients (11, 21, 24, 32) = 9 records.
+   - The record text "ST elevation" appears in I03, I59, I60 and I62. I59 and I60 belong to patient 26, who has no diagnosis text.
+
+   These are short diagnosis texts, not reviewed labels. Two patients are far too few to learn from.
+7. **Best model use.** *This is the planner's view. The clinical supervisor still needs to agree.* Not useful for STEMI vs NSTEMI, or for MI vs no MI: only 2 acute-MI patients, 30-minute Holter, 257 Hz. At most, it could be used for pretraining on short cut-out pieces. Whether INCART is in scope at all is still an open question (`data_contract.md` L11, Q8; [MCR p.8]).
+8. **Combining.** *(Partial. The full check comes in step S10.)* 257 Hz, so the speed must be changed. 30-minute Holter, so it must be cut into short pieces [OBS-INCART]. It is a different kind of recording from 10-second resting ECGs. All 10 "hard" dataset pairs in the earlier report involve INCART [MCR p.4]. Patient key: "patient N" (32 patients, 1 to 4 records each) [OBS-INCART]. The 2021 PhysioNet Challenge copy has 74 records instead of 75 [PA2020, Table 2]. **Never mix the two copies** (`data_contract.md` O3). Which record is missing: not checked.
+9. **Access.** Open: "Anyone can access the files…". We needed no login [PN-INCART; OBS-DOWNLOAD].
+10. **Size and license.** 75 records from 32 patients. 794.5 MB unpacked. License: ODC Attribution License v1.0 (free to use if you credit the source). DOI 10.13026/C2V88N. Published 1 May 2008 [PN-INCART].
 
 ## 6. Which datasets to use for which model
 
@@ -247,7 +266,11 @@ Datasets that could mislead a model. *Waiting for verified facts.*
 
 ## 9. What is not known yet
 
-*Waiting for verified facts.* Each "not found" item will be listed here, with where we looked and who could answer it.
+*More items will be added.* Each "not found" item will be listed here, with where we looked and who could answer it.
+
+**Conflicts inside the publishers' own files**
+
+- **INCART, number of patients with "transient ischemic attack (angina pectoris)".** The README says 5 patients. The file `files-patients-diagnoses.txt` lists 4 (patients 3, 7, 8 and 18 = 7 records). We could not resolve this. Only the publisher could [README-INCART; OBS-INCART].
 
 ## Appendix A. Other datasets worth checking (not reviewed in depth)
 
@@ -272,7 +295,9 @@ Datasets that could mislead a model. *Waiting for verified facts.*
 - **[ZEN-CODE15]** CODE-15% on Zenodo, record 4916206. https://zenodo.org/records/4916206 and https://zenodo.org/api/records/4916206 (checked 2026-10-20).
 - **[RIBEIRO2020]** Ribeiro A.H. et al., 2020 (the CODE dataset paper). https://pmc.ncbi.nlm.nih.gov/articles/PMC7145824/ (sections used: Methods > Dataset acquisition; Methods > Training and validation set annotation; Discussion; Data availability).
 - **[PN-PTBDB]** PTB Diagnostic ECG Database, release 1.0.0, PhysioNet. https://physionet.org/content/ptbdb/1.0.0/ (checked 2026-10-20).
-- **[PA2020]** Perez Alday E.A. et al., 2020 (the PhysioNet Challenge 2020 paper). https://pmc.ncbi.nlm.nih.gov/articles/PMC8015789/ (sections used: Table 2; §2.1.2).
+- **[PA2020]** Perez Alday E.A. et al., 2020. "Classification of 12-lead ECGs: the PhysioNet/Computing in Cardiology Challenge 2020", *Physiological Measurement*. https://pmc.ncbi.nlm.nih.gov/articles/PMC8015789/ (sections used: Table 2; §2.1.2).
+- **[PN-INCART]** St Petersburg INCART 12-lead Arrhythmia Database, release 1.0.0, PhysioNet. https://physionet.org/content/incartdb/1.0.0/ (checked 2026-10-20).
+- **[README-INCART]** The publisher's README file from the INCART release 1.0.0 file set (downloaded 2026-10-20; quoted word for word).
 - **[PN-CHALLENGE2021]** PhysioNet/Computing in Cardiology Challenge 2021, release 1.0.3. https://physionet.org/content/challenge-2021/1.0.3/ (checked 2026-10-20).
 
 ### Result files made by this team
@@ -283,5 +308,6 @@ All are in `results/`. Each one describes the files we downloaded on 2026-10-20,
 - **[OBS-SPH]** SPH counts from `metadata.csv` and `code.csv`: `sph_summary.md`, `sph_code_counts.csv`, `sph_code_modifier_counts.csv`, `sph_mi_timing.csv` (recounted by the planner).
 - **[OBS-CODE15]** CODE-15% counts from `exams.csv`: `code15_summary.md`, `code15_label_counts.csv` (recounted by the planner).
 - **[OBS-PTBDB]** PTB Diagnostic counts from all 549 headers and the `RECORDS` / `CONTROLS` lists: `ptb_diagnostic_summary.md`, `ptb_diagnostic_comment_counts.csv`, `ptb_diagnostic_records.csv`, `ptb_diagnostic_mi_timing.csv`, `ptb_diagnostic_mi_patient_timing.csv`, `ptb_diagnostic_mi_lytic_agent.csv` (recounted by the planner).
+- **[OBS-INCART]** INCART checks of all 75 headers, `files-patients-diagnoses.txt` and `record-descriptions.txt`: `incart_summary.md`, `incart_headers.csv` (checked by the planner).
 - **[OBS-DOWNLOAD]** `download_manifest.csv`: what was downloaded, from where, and its checksum.
 - All checked facts: `verified_facts.md`.
