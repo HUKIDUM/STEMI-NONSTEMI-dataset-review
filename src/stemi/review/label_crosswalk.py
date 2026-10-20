@@ -112,8 +112,8 @@ MAPPING: dict[str, dict] = {
     "Old MI": {"sph": ["160+332", "161+332", "165+332", "166+332"], "challenge": ["164867002"],
                "ptb_diagnostic": [("Former infarction (localization)", "not_in", PTBDB_NOT_OLD)],
                "incart": [("dx", "Earlier MI")],
-               "note": "PTB-XL has no 'old MI' statement (infarction_stadium is a separate field, not "
-                       "mapped); SPH = MI code + modifier 332 Old; PTB-DB = 'Former infarction "
+               "note": "PTB-XL has no 'old MI' statement; the infarction_stadium field (not a label) gives "
+                       "MI-coded ECGs with Stadium III in either field: 963 ECGs / 923 patients; SPH = MI code + modifier 332 Old; PTB-DB = 'Former infarction "
                        "(localization)' other than no / n/a / unknown"},
     "ST elevation": {"ptb_xl": ["STE_"], "sph": ["145+363"], "challenge": ["164931005"],
                      "incart": [("rec", "ST elevation")],
