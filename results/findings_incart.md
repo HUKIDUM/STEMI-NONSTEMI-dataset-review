@@ -1,0 +1,27 @@
+# Findings: `incart` (St Petersburg INCART 12-lead Arrhythmia Database 1.0.0, native)
+
+Author: coder, 2026-10-20. Status: **for planner verification**.
+
+Source keys:
+- **PN** = https://physionet.org/content/incartdb/1.0.0/ (read 2026-10-20 through WebFetch; please check the quotes on the page).
+- **PA2020** = Perez Alday et al. 2020, https://pmc.ncbi.nlm.nih.gov/articles/PMC8015789/ (Challenge copy: 74 records).
+- **OBS** = local observation of `data/samples/incart/` (RECORDS, README, record-descriptions.txt, files-patients-diagnoses.txt, ANNOTATORS, I01–I75 `.hea`), downloaded 2026-10-20 from https://physionet.org/files/incartdb/1.0.0/ (approval #6; all 80 files sha256-matched against the publisher's SHA256SUMS.txt, `results/download_manifest.csv`). Made by `src/stemi/review/review_incart.py`; the text files are copied verbatim into `results/incart_summary.md`.
+- **DXM** = publisher's counts from `dx_mapping_unscored.csv` (column StPetersburg = the Challenge INCART copy; counts as listed, meaning not defined by the publisher; see `results/challenge_dx_mapping_counts.csv`).
+
+| Key | Finding | Source |
+|---|---|---|
+| Q1 `labels` | (a) **Beat annotations** (`.atr`, not downloaded): "over 175,000" beat labels from an automatic algorithm, then manual correction. (b) **Per-patient diagnosis text** in `files-patients-diagnoses.txt` and in each header comment (`<age>: … <sex>: … <diagnoses> …`). (c) **Per-record rhythm/morphology text** in `record-descriptions.txt` (e.g. I03 "ST elevation, PVCs"; I12 "ST depression, ventricular couplets"; I06 "ST changes, PVCs"). | PN, Data Description; OBS `data/samples/incart/*.txt`, `results/incart_headers.csv` column `comments` |
+| Q2 `labellers` | Beat annotations: automatic algorithm, "then corrected manually". Patient diagnoses: "confirmed by enzyme assays, coronary angiography, electrophysiological study, and pressure monitoring where necessary" (per PN, through WebFetch); who wrote them is **not found**. | PN |
+| Q3 `collection` | St. Petersburg Institute of Cardiological Technics (Incart), St. Petersburg, Russia. 32 patients "undergoing tests for coronary artery disease" (17 men, 15 women, aged 18–80; mean 58) (README, OBS = PN). Years: **not found**. | PN; OBS `README` |
+| Q4 `setting` | **Holter** recordings (75 records extracted from 32 Holter records). Clinical setting (in/outpatient): not found. | PN; [CMP p.3] Holter context |
+| Q5 `device` | 12 leads, 257 Hz, 30 min per record. OBS (all 75 headers): n_sig 12; fs 257; 462,600 samples = 1,800 s; lead names `I II III AVR AVL AVF V1–V6`; gains vary per record (240–1,063 ADC units; 12 distinct values), no units field. Device model: **not found**. | PN; OBS `results/incart_headers.csv`, `results/incart_summary.md` |
+| Q6 `stemi_nstemi` | **Neither STEMI nor NSTEMI.** Per-patient diagnosis "Acute MI": **2 patients** (patient 2: I03, I04, I05; patient 27: I62, I63, I64) = 6 records. "Earlier MI": 4 patients (11, 21, 24, 32) = 9 records. "Transient ischemic attack": 4 patients in the file (3, 7, 8, 18), while README/PN say "Transient ischemic attack (angina pectoris) 5". Record-level text "ST elevation" appears for I03 (an acute-MI patient). These match DXM StPetersburg: acute myocardial infarction 6, myocardial infarction 9, transient ischemic attack 7 (DXM counts the 74-record Challenge copy). | OBS `files-patients-diagnoses.txt`, `record-descriptions.txt`, README; DXM |
+| Q7 `model_use` | ASSUMPTION (coder proposal): **not useful** for STEMI/NSTEMI or MI-vs-non-MI (2 acute-MI patients, 30-min Holter at 257 Hz). At most windowed pretraining (L11), and contract Q8 is still open. | Q5, Q6; contract L11, Q8; [MCR p.8] Hold |
+| Q8 `combine` | Preliminary (final in S10): 257 Hz (resampling), 30-min Holter (windowing), domain differs (Holter vs resting) [MCR p.4: all 10 High-effort pairs involve INCART]. Patient key: "patient N" in headers and the diagnosis file (32 patients, 2–4 records each). Overlap: the Challenge 2021 copy has 74 records vs 75 native; never mix (O3). Which record is missing: not checked (needs the Challenge RECORDS list; not requested). | OBS; contract O3; PA2020 |
+| Q9 `access` | **Open** ("Anyone can access the files…"); downloaded without login (OBS). | PN, Access |
+| Q10 `size_license` | 75 records / 32 patients; 794.5 MB uncompressed; **ODC Attribution License v1.0**; DOI 10.13026/C2V88N. | PN; OBS |
+
+## Notes for planner
+
+1. Transient-ischemic-attack count: README says 5 patients, while `files-patients-diagnoses.txt` lists 4 patients with that text (OBS). Reported as a conflict, not resolved.
+2. Each header's first comment carries age/sex/diagnoses, e.g. I01: `<age>: 65 <sex>: F <diagnoses> Coronary artery disease, arterial hypertension`. The generic `key: value` parser does not split this line; the raw text is kept.
