@@ -52,13 +52,13 @@ Short answers only. Details and sources are in section 5.
 | PTB-XL | 71 SCP-ECG report codes; diagnosis codes have a wording-based "likelihood"; infarct stage (new/old), filled in mainly for MI-coded ECGs [PN-PTBXL; WAGNER2020; OBS-PTBXL] | Up to 2 cardiologists; about 31% of first reports were written by the ECG machine [PN-PTBXL; WAGNER2020] | PTB (Physikalisch-Technische Bundesanstalt); Oct 1989 – Jun 1996; 18,869 patients; country not stated on the dataset page [PN-PTBXL; WAGNER2020] | Not found (site names are hidden) [PN-PTBXL; WAGNER2020] | Schiller AG, 11 device types; 12 leads; 500 Hz (first recorded at 400 Hz); 10 s [WAGNER2020; PN-PTBXL] | No. Only "MI" report statements: 5,469 ECGs [OBS-PTBXL] | Not STEMI vs NSTEMI. Maybe MI vs non-MI after doctor review; pretraining. *Planner view, needs supervisor sign-off* | Same rate, length and leads as the planned model input; has patient IDs. Full check later (S10) [PN-PTBXL] | Open, no login [PN-PTBXL] | 21,799 ECGs; 3.0 GB; CC BY 4.0 [PN-PTBXL] |
 | MIMIC-IV-ECG | | | | | | not checked yet: needs credentialed access; the user will run the count script | | | | |
 | PTB Diagnostic | | | | | | | | | | |
-| SPH (Shandong) | | | | | | | | | | |
+| SPH (Shandong) | AHA report statements: 44 main codes plus add-on words (like "acute", "old") [LIU2022; OBS-SPH] | Cardiologist's final report; all re-checked by an experienced cardiologist [LIU2022] | Shandong Provincial Hospital, Jinan, China; Aug 2019 – Aug 2020; adults; 24,666 patients [LIU2022; OBS-SPH] | Not found [LIU2022] | MedEx MECG-200; 12 leads; 500 Hz; 10–60 s [LIU2022] | No. "MI" statements in 260 ECGs; only 7 say "acute" [OBS-SPH] | Not STEMI vs NSTEMI. Maybe test set for "MI statement or not" after review; pretraining. *Planner view, needs supervisor sign-off* | Same rate and leads; longer ECGs need cutting; has patient IDs; different label system. Full check later (S10) [LIU2022] | Open, no login [FIGSHARE-SPH] | 25,770 ECGs; 2.28 GB of signals; data CC0, paper CC BY 4.0 [FIGSHARE-SPH; LIU2022] |
 | CPSC 2018 | | | | | | | | | | |
 | CPSC-Extra | | | | | | | | | | |
 | Georgia | | | | | | | | | | |
 | Ningbo | | | | | | | | | | |
 | Chapman-Shaoxing | | | | | | | | | | |
-| CODE-15% | | | | | | | | | | |
+| CODE-15% | 6 yes/no rhythm and conduction labels ("ST" = sinus tachycardia, **not** ST elevation), plus "normal ECG" and death [ZEN-CODE15] | Full CODE: computer reports plus text from expert reports; unclear cases checked by medical students with a cardiologist. For this 15% part: not found [RIBEIRO2020; ZEN-CODE15] | Telehealth Network of Minas Gerais, Brazil; 2010–2016; 233,770 patients [ZEN-CODE15; RIBEIRO2020] | Full CODE: mostly primary care (local health centres) [RIBEIRO2020] | TEB ECGPC or Micromed ErgoPC 13; 12 leads; 400 Hz as shared; 7–10 s, padded with zeros [RIBEIRO2020; ZEN-CODE15] | Neither. No MI label at all [OBS-CODE15; ZEN-CODE15] | Pretraining only, or not useful. *Planner view, needs supervisor sign-off* | Needs a speed change (400 Hz) and a padding mask; has patient IDs; no MI labels. Full check later (S10) [ZEN-CODE15] | Open, no login [ZEN-CODE15] | 345,779 ECGs; 46.3 GB (all files); CC BY 4.0 [ZEN-CODE15] |
 | INCART | | | | | | | | | | |
 
 <!-- section: A4 -->
@@ -72,13 +72,13 @@ Short answers only. Details and sources are in section 5.
 | PTB-XL | 14 "MI" report codes (5 of them are "injury" codes) [OBS-PTBXL] | 5,469 ECGs from 4,670 patients [OBS-PTBXL] | Partly. 150 MI-coded ECGs have an "early" stage; 3,372 have stage "unknown" [OBS-PTBXL] | No. No code says STEMI or NSTEMI [OBS-PTBXL] |
 | MIMIC-IV-ECG | | not checked yet: needs credentialed access; the user will run the count script | | not checked yet: needs credentialed access; the user will run the count script |
 | PTB Diagnostic | | | | |
-| SPH (Shandong) | | | | |
+| SPH (Shandong) | 4 "MI" codes (anterior, inferior, anteroseptal, extensive anterior) [OBS-SPH; LIU2022] | 260 ECGs from 242 patients [OBS-SPH] | Yes, as report words: "acute" 7 ECGs, "recent" 12, "old" 233, none 8 [OBS-SPH] | No. No statement says STEMI or NSTEMI [OBS-SPH] |
 | CPSC 2018 | | | | |
 | CPSC-Extra | | | | |
 | Georgia | | | | |
 | Ningbo | | | | |
 | Chapman-Shaoxing | | | | |
-| CODE-15% | | | | |
+| CODE-15% | None. The "ST" column means sinus tachycardia (a fast heart rhythm that starts in the heart's normal pacemaker), not ST elevation [ZEN-CODE15] | 0 [OBS-CODE15] | No [OBS-CODE15] | No [OBS-CODE15; RIBEIRO2020] |
 | INCART | | | | |
 
 ## 5. Each dataset in detail
@@ -110,7 +110,24 @@ Each part answers the same 10 questions. Each answer gives its source.
 
 ### 5.4 SPH (Shandong Provincial Hospital)
 
-*Waiting for verified facts.*
+**In one line:** an open set of adult ECGs from one Chinese hospital, re-checked by a cardiologist. It has "MI" statements with "acute / recent / old" words, but only 7 ECGs say "acute", and none says STEMI or NSTEMI.
+
+1. **Labels.** The labels are standard report statements from the AHA (American Heart Association) list. There are 44 main codes, grouped A to M, plus add-on codes that change their meaning (codes 308–367, for example "acute" or "old"). One statement is a main code plus optional add-ons joined by "+". Several statements are separated by ";" [OBS-SPH; LIU2022, Table 2]. The most common are: normal ECG (13,905 ECGs), slow heart rhythm (sinus bradycardia, 2,711), T-wave abnormality (2,218) and ST deviation (1,829) [OBS-SPH].
+2. **Who labelled them.** "The responsible cardiologist made the final diagnosis in consideration of the patient health record." Then "an experienced cardiologist re-checked all original diagnostic statements and made corrections" [LIU2022]. The statements were in Chinese. They were turned into AHA codes with translation rules. Any ECG with a statement that could not be translated was left out [LIU2022]. The MedEx system measured ECG features, but only as a reference for the doctors [LIU2022].
+3. **Collection.** Shandong Provincial Hospital, Jinan, China. August 2019 to August 2020. Adults only (age above 18). 25,770 ECGs from 24,666 patients, with at most 5 ECGs per patient [LIU2022; OBS-SPH]. Ages 18–95. 14,265 ECGs are from men and 11,505 from women [OBS-SPH]. The stored dates were moved by a random amount for each patient, so they are not the real collection dates [LIU2022]. Whether patients were in hospital or outpatients: not found [LIU2022].
+4. **Setting.** **Not found.** We read the full paper. It does not mention inpatients, outpatients, emergency care or health check-ups [LIU2022].
+5. **Device.** MedEx MECG-200. 500 Hz. 12 leads in the order I, II, III, aVR, aVL, aVF, V1–V6 [LIU2022]. The paper says "the record length is between 10 and 60 seconds" [LIU2022]. In the file, lengths are 10 to 56 seconds, and 18,842 ECGs are exactly 10 seconds [OBS-SPH].
+6. **STEMI vs NSTEMI.** **No.** No statement says STEMI or NSTEMI [OBS-SPH]. Four "MI" codes exist: anterior (160), inferior (161), anteroseptal (165) and extensive anterior (166) MI (these name the part of the heart that is damaged). 260 ECGs from 242 patients have one [OBS-SPH]. Time words on these MI statements [OBS-SPH]:
+   - "Acute" (code 330): 7 ECGs (7 patients).
+   - "Recent" (331): 12 ECGs (9 patients).
+   - "Old" (332): 233 ECGs (219 patients).
+   - No time word: 8 ECGs.
+
+   Most MI statements are "old": for example inferior + old 114, anteroseptal + old 75, anterior + old 47 [OBS-SPH; LIU2022, Table 2]. "ST deviation" with "elevation" appears in 37 ECGs (34 patients). Only 1 ECG has both an acute MI statement and ST elevation [OBS-SPH]. **The word "acute" here is part of the written report. It is not a confirmed new heart attack.** These are report statements, not checked diagnoses (`data_contract.md` L2, L3). **So SPH gives "MI statement or not" only. New (acute) MI is far too rare to learn from.**
+7. **Best model use.** *This is the planner's view. The clinical supervisor still needs to agree.* Not usable for STEMI vs NSTEMI (only 7 acute MI statements). It could be an external test set (data kept apart, used only to check a finished model) for "MI statement or not", after doctors review the statements. It could also be used for pretraining (`data_contract.md` L1, L4, L11).
+8. **Combining.** *(Partial. The full check comes in step S10.)* 500 Hz and 12 leads match the planned model input (`data_contract.md` C1.3). The ECGs are 10–56 seconds long, so a rule for cutting them to the model's length is needed (`data_contract.md` Q9). Each ECG has a patient number. The paper warns against putting "records from the same patient" in both training and testing, and gives code to split them [LIU2022]. The label system (AHA) is different from PTB-XL (SCP-ECG) and the Challenge sets (SNOMED), so labels must be matched first [LIU2022]. The paper does not mention any overlap with other datasets [LIU2022].
+9. **Access.** Open download from figshare. No login needed [FIGSHARE-SPH; OBS-DOWNLOAD].
+10. **Size and license.** 25,770 ECGs from 24,666 patients [OBS-SPH]. The signal file `records.tar.gz` is about 2.28 GB (we did not download it). `metadata.csv` is about 1 MB [FIGSHARE-SPH]. The **data** is CC0 (no rights kept, free for any use) on figshare [FIGSHARE-SPH]. The **paper** is CC BY 4.0 [LIU2022]. Both are true: they apply to different things.
 
 ### 5.5 CPSC 2018
 
@@ -134,7 +151,18 @@ Each part answers the same 10 questions. Each answer gives its source.
 
 ### 5.10 CODE-15%
 
-*Waiting for verified facts.*
+**In one line:** a very large, open set of Brazilian tele-ECGs (ECGs sent to a distant centre to be read). It has no heart-attack label of any kind.
+
+1. **Labels.** Six yes/no labels: `1dAVb`, `RBBB`, `LBBB`, `SB`, `AF` and `ST` [ZEN-CODE15]. These are heart rhythm and conduction problems (problems with how the electrical signal travels). **Careful: `ST` means "sinus tachycardia" (a fast heart rhythm that starts in the heart's normal pacemaker). It does NOT mean ST elevation** [ZEN-CODE15]. There are also `normal_ecg` (set by an automatic system), `death`, `timey` (for the first exam only) and an age guessed by a computer model [ZEN-CODE15]. Number of "yes" answers: 1dAVb 5,716; RBBB 9,672; LBBB 6,026; SB 5,605; ST 7,584; AF 7,033; normal_ecg 134,657 [OBS-CODE15]. 308,004 exams have none of the six labels. 173,347 have none of the six and are also not marked "normal" [OBS-CODE15].
+2. **Who labelled them.** For the full CODE dataset (the larger set this 15% comes from), labels came from three places: automatic statements from the Uni-G program, Minnesota codes (a standard coding system for ECGs), and "text labels extracted from the expert text reports" [RIBEIRO2020]. 34,512 unclear exams were "manually reviewed by medical students … under the supervision of a certified cardiologist" [RIBEIRO2020]. `normal_ecg` comes from an automatic system [ZEN-CODE15]. Whether the 15% part was labelled in exactly the same way: **not found**. The dataset page does not say [ZEN-CODE15].
+3. **Collection.** Telehealth Network of Minas Gerais (TNMG), Brazil. It covers "811 out of the 853 municipalities" of the state. 2010 to 2016 [ZEN-CODE15; RIBEIRO2020]. 345,779 exams from 233,770 patients. 66,929 patients have more than one exam (at most 38) [OBS-CODE15].
+4. **Setting.** For the full CODE dataset: "performed mostly in primary care facilities" (local health centres, not hospitals) [RIBEIRO2020]. For the 15% part, the paper's statement about full CODE is the only information we found.
+5. **Device.** Full CODE: TEB ECGPC (Tecnologia Eletrônica Brasileira) or Micromed ErgoPC 13 machines. 7–10 seconds, first recorded at 300 to 600 Hz [RIBEIRO2020]. The shared files are all at 400 Hz. Each ECG is stored as 4,096 samples × 12 leads, in the order DI, DII, DIII, AVR, AVL, AVF, V1–V6 [ZEN-CODE15]. Shorter ECGs are filled with zeros at both ends. For example, a 7-second ECG has 2,800 real samples and 648 zeros at each end [ZEN-CODE15]. The unit of the stored numbers (for example millivolts): **not found** on the dataset page [ZEN-CODE15].
+6. **STEMI vs NSTEMI.** **Neither.** There is no MI label, no ischaemia (low blood flow to the heart muscle) label, and no ST-segment label. The `ST` column is sinus tachycardia [OBS-CODE15; ZEN-CODE15]. The paper says it "did not test the accuracy of the DNN in the diagnosis of other classes", and names MI as future work [RIBEIRO2020].
+7. **Best model use.** *This is the planner's view. The clinical supervisor still needs to agree.* Pretraining only, or not useful for the heart-attack task (`data_contract.md` L11). Before use, someone must check the number scale (units) and change the speed from 400 Hz to the model's rate (`data_contract.md` C2.2).
+8. **Combining.** *(Partial. The full check comes in step S10.)* 400 Hz, so the speed must be changed. 7–10 seconds with zero padding, so the model needs a "padding mask" that marks which samples are not real (`data_contract.md` P2) [ZEN-CODE15]. Each exam has a patient number [OBS-CODE15]. Full CODE: mostly primary care [RIBEIRO2020]. There are no MI labels to combine. Related releases exist (full CODE and the CODE test set). Check for shared ECGs before using them together (`data_contract.md` O10).
+9. **Access.** CODE-15% is open, and we downloaded it without a login [ZEN-CODE15; OBS-DOWNLOAD]. The full CODE training data is **not** open: "Restrictions apply to the availability of the training set". It needs an individual request, is for non-commercial use only, and needs a data use agreement [RIBEIRO2020].
+10. **Size and license.** 345,779 exams from 233,770 patients. `exams.csv` is 35.5 MB. The signals are in 18 zip files (17 of about 2.7 GB each, plus one of 782.6 MB). All files together are 46.3 GB. License: CC BY 4.0 [ZEN-CODE15].
 
 ### 5.11 INCART
 
@@ -198,6 +226,10 @@ Datasets that could mislead a model. *Waiting for verified facts.*
 
 - **[PN-PTBXL]** PTB-XL, release 1.0.3, PhysioNet. https://physionet.org/content/ptb-xl/1.0.3/ (checked 2026-10-20).
 - **[WAGNER2020]** Wagner P. et al. "PTB-XL, a large publicly available electrocardiography dataset." *Scientific Data*, 2020. https://pmc.ncbi.nlm.nih.gov/articles/PMC7248071/ (sections used: Methods > Data acquisition; Methods > Preprocessing; Data Records, Table 2; Table 11; Technical Validation > Quality Assessment for Annotation Data; Abstract).
+- **[LIU2022]** Liu H. et al., 2022, *Scientific Data* (the SPH dataset paper). https://pmc.ncbi.nlm.nih.gov/articles/PMC9174207/ (sections used: Abstract; Methods > Data acquisition; Methods > Data processing; Data Records; Table 2; Usage Notes; Open Access statement).
+- **[FIGSHARE-SPH]** SPH data on figshare, collection 5779802. https://doi.org/10.6084/m9.figshare.c.5779802.v1 ; file list and licenses from https://api.figshare.com/v2/collections/5779802/articles (data articles 17912441, 17912444, 17912507; checked 2026-10-20).
+- **[ZEN-CODE15]** CODE-15% on Zenodo, record 4916206. https://zenodo.org/records/4916206 and https://zenodo.org/api/records/4916206 (checked 2026-10-20).
+- **[RIBEIRO2020]** Ribeiro A.H. et al., 2020 (the CODE dataset paper). https://pmc.ncbi.nlm.nih.gov/articles/PMC7145824/ (sections used: Methods > Dataset acquisition; Methods > Training and validation set annotation; Discussion; Data availability).
 - **[PN-CHALLENGE2021]** PhysioNet/Computing in Cardiology Challenge 2021, release 1.0.3. https://physionet.org/content/challenge-2021/1.0.3/ (checked 2026-10-20).
 
 ### Result files made by this team
@@ -205,5 +237,7 @@ Datasets that could mislead a model. *Waiting for verified facts.*
 All are in `results/`. Each one describes the files we downloaded on 2026-10-20, not every copy of the dataset.
 
 - **[OBS-PTBXL]** PTB-XL counts: `ptb_xl_summary.md`, `ptb_xl_scp_counts.csv`, `ptb_xl_field_counts.csv`, `ptb_xl_mi_by_stadium.csv`, `ptb_xl_mi_early_stadium.csv`, `ptb_xl_headers.csv` (recounted by the planner).
+- **[OBS-SPH]** SPH counts from `metadata.csv` and `code.csv`: `sph_summary.md`, `sph_code_counts.csv`, `sph_code_modifier_counts.csv`, `sph_mi_timing.csv` (recounted by the planner).
+- **[OBS-CODE15]** CODE-15% counts from `exams.csv`: `code15_summary.md`, `code15_label_counts.csv` (recounted by the planner).
 - **[OBS-DOWNLOAD]** `download_manifest.csv`: what was downloaded, from where, and its checksum.
 - All checked facts: `verified_facts.md`.
