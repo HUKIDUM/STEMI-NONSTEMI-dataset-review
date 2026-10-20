@@ -34,7 +34,7 @@ Last update: 2026-10-20
 - S3 `ptb_xl` → S4 `mimic_iv_ecg` (+ `mimic_icd_count.py`) → S5 `ptb_diagnostic` → S6 `sph` → S7 Challenge 5 → S8 `code15` → S9 `incart` → S10 overlap/summary → S11–S12 report → S13 final report.
 
 ## Open questions for the user
-- U1 details (which credentialed files and columns the count script reads) are being discussed between the lead and the user.
+- U1 RESOLVED (team-lead 2026-10-20): `src/stemi/review/mimic_icd_count.py`, run by the USER only. It reads MIMIC-IV hosp `diagnoses_icd` + `admissions` + MIMIC-IV-ECG `record_list` (ext-ICD optional). ECG→admission link when `ecg_time` is between `admittime` and `dischtime` (ASSUMPTION, printed in the output). Aggregate counts only for I21.0–I21.3 / I21.4 / other I21 / I22 / ICD-9 410; counts <10 suppressed. Planner reviews it like any step.
 
 ## Files: this dataset review (2026-10-20)
 - `PLAN.md`, `STATUS.md`, `docs/report_build/`, `results/` (incl. `results/verified_facts.md`, `results/findings_<dataset>.md`, count CSVs, `download_manifest.csv`), `src/stemi/review/`, review tests in `tests/`, `docs/dataset_report.md` / `.pdf`, `data/samples/` (gitignored, never committed).
