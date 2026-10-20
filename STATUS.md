@@ -18,6 +18,8 @@ Last update: 2026-10-20
 - U6: Solved (markdown_pdf, see above).
 - U7: Code goes in `src/stemi/review/`, results in `results/`, report in `docs/dataset_report.*`.
 
+- S11 (skeleton): `docs/dataset_report.md` outline (no dataset facts), PDF build `docs/report_build/build_pdf.py` + `report.css` (markdown_pdf), test build `docs/dataset_report.pdf` (6 pages). Planner checked: it holds no dataset facts; section 2 matches PLAN §0/§3 and U1.
+
 ## In progress
 - S1 coder: `fetch_samples.py` + tests; ask for download approval per dataset (PLAN §3).
 - S2 coder: `hea_parser.py` + tests.
@@ -29,7 +31,7 @@ Last update: 2026-10-20
 - U1 details (which credentialed files and columns the count script reads) are being discussed between the lead and the user.
 
 ## Files: this dataset review (2026-10-20)
-- `PLAN.md`, `STATUS.md`, `results/` (incl. `results/verified_facts.md`, `results/findings_<dataset>.md`, count CSVs, `download_manifest.csv`), `src/stemi/review/`, review tests in `tests/`, `docs/dataset_report.md` / `.pdf`, `data/samples/` (gitignored, never committed).
+- `PLAN.md`, `STATUS.md`, `docs/report_build/`, `results/` (incl. `results/verified_facts.md`, `results/findings_<dataset>.md`, count CSVs, `download_manifest.csv`), `src/stemi/review/`, review tests in `tests/`, `docs/dataset_report.md` / `.pdf`, `data/samples/` (gitignored, never committed).
 
 ## Files: earlier pipeline task (2026-10-19), left unchanged
 - `TASKS.md`, `NEXT_STEPS.md`, `docs/methods.md`, `docs/decision_log.md`, `docs/results.md`, `demo_results/`, `src/stemi/{registry,inventory,label_mapping,demo}.py` and their tests.
