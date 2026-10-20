@@ -1,0 +1,8 @@
+dataset_id,label_kind,label_as_written,code,code_system,count,count_type,n_patients,extra_count,extra_count_type,extra,source_file
+code15,boolean label column,1dAVb,1dAVb,CODE-15% exams.csv column,5716,records (exams),4701,,,meaning per https://zenodo.org/records/4916206: first degree AV block,data/samples/code15/exams.csv
+code15,boolean label column,RBBB,RBBB,CODE-15% exams.csv column,9672,records (exams),6672,,,meaning per https://zenodo.org/records/4916206: right bundle branch block,data/samples/code15/exams.csv
+code15,boolean label column,LBBB,LBBB,CODE-15% exams.csv column,6026,records (exams),4193,,,meaning per https://zenodo.org/records/4916206: left bundle branch block,data/samples/code15/exams.csv
+code15,boolean label column,SB,SB,CODE-15% exams.csv column,5605,records (exams),4976,,,meaning per https://zenodo.org/records/4916206: sinus bradycardia,data/samples/code15/exams.csv
+code15,boolean label column,AF,AF,CODE-15% exams.csv column,7033,records (exams),4799,,,meaning per https://zenodo.org/records/4916206: atrial fibrillation,data/samples/code15/exams.csv
+code15,boolean label column,ST,ST,CODE-15% exams.csv column,7584,records (exams),6894,,,meaning per https://zenodo.org/records/4916206: sinus tachycardia (NOT ST elevation),data/samples/code15/exams.csv
+code15,boolean label column,normal_ecg,normal_ecg,CODE-15% exams.csv column,134657,records (exams),109623,,,meaning per https://zenodo.org/records/4916206: normal ECG per automatic annotation system,data/samples/code15/exams.csv

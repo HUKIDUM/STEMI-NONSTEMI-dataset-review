@@ -1,0 +1,67 @@
+dataset_id,label_kind,label_as_written,code,code_system,count,count_type,n_patients,extra_count,extra_count_type,extra,source_file
+incart,patient diagnosis (raw text),(no diagnosis text),,free text,34,records,14.0,,,,data/samples/incart/files-patients-diagnoses.txt
+incart,patient diagnosis (raw text),Acute MI,,free text,6,records,2.0,,,,data/samples/incart/files-patients-diagnoses.txt
+incart,patient diagnosis (raw text),"Coronary artery disease, arterial hypertension",,free text,6,records,3.0,,,,data/samples/incart/files-patients-diagnoses.txt
+incart,patient diagnosis (raw text),"Coronary artery disease, arterial hypertension, left ventricular hypertrophy",,free text,11,records,4.0,,,,data/samples/incart/files-patients-diagnoses.txt
+incart,patient diagnosis (raw text),Earlier MI,,free text,9,records,4.0,,,,data/samples/incart/files-patients-diagnoses.txt
+incart,patient diagnosis (raw text),Sinus node dysfunction,,free text,2,records,1.0,,,,data/samples/incart/files-patients-diagnoses.txt
+incart,patient diagnosis (raw text),Transient ischemic attack,,free text,7,records,4.0,,,,data/samples/incart/files-patients-diagnoses.txt
+incart,patient diagnosis term (raw text split on commas),Coronary artery disease,,free text,17,records,7.0,,,,data/samples/incart/files-patients-diagnoses.txt
+incart,patient diagnosis term (raw text split on commas),arterial hypertension,,free text,17,records,7.0,,,,data/samples/incart/files-patients-diagnoses.txt
+incart,patient diagnosis term (raw text split on commas),left ventricular hypertrophy,,free text,11,records,4.0,,,,data/samples/incart/files-patients-diagnoses.txt
+incart,record description term,APCs,,free text,3,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,AV nodal block 2 degree Moebits 1,,free text,3,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,PVCs,,free text,34,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,PVCs and couplets on bradycardia,,free text,1,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,PVCs and couplets on tachycardia,,free text,1,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,PVCs and paroxysmal VT on bradycardia,,free text,1,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,PVCs and ventricular couplets on bradycardia,,free text,1,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,PVCs on bradycardia,,free text,6,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,PVCs on sinus arrhythmia,,free text,1,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,PVCs on tachycardia,,free text,2,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,ST change,,free text,1,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,ST changes,,free text,1,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,ST depression,,free text,4,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,ST elevation,,free text,4,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,SVEBs,,free text,3,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,SVEBs with wide QRS,,free text,1,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,VT,,free text,1,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,WPW,,free text,4,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,atrial couplets,,free text,3,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,atrial fibrillation,,free text,2,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,baseline wander,,free text,2,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,bigeminy,,free text,1,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,blocked APCs,,free text,3,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,bradycardia,,free text,3,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,bundle-branch blocks,,free text,1,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,couplets,,free text,5,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,fusion beats,,free text,3,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,fusion beats on tachycardia,,free text,2,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,intraventricular block,,free text,1,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,negative T,,free text,1,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,noise,,free text,7,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,numerous fusion beats,,free text,1,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,numerous fusion beats and PVCs on tachycardia,,free text,1,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,paroxysmal VT,,free text,13,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,paroxysmal VT on tachycardia,,free text,1,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,paroxysmal atrial fibrillation,,free text,1,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,paroxysmal supraventricular tachycardia,,free text,2,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,paroxysmal supraventricular tachycardia with aberrated QRS,,free text,1,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,polymorphic PVCs,,free text,2,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,positional changes,,free text,1,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,positional form and HR change,,free text,1,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,right bundle branch block,,free text,2,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,sinus arrhythmia,,free text,1,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,supraventricular couplets,,free text,1,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,supraventricular triplets,,free text,1,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,tachycardia,,free text,3,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,trigeminy,,free text,2,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,triplets on tachycardia,,free text,1,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,ventricular bigeminy,,free text,8,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,ventricular couplets,,free text,14,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,ventricular couplets and R-on-T,,free text,1,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,ventricular couplets as bigeminy,,free text,1,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,ventricular couplets on tachycardia,,free text,1,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,ventricular escape beats,,free text,1,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,ventricular rhythm,,free text,2,records,,,,,data/samples/incart/record-descriptions.txt
+incart,record description term,ventricular trigeminy,,free text,2,records,,,,,data/samples/incart/record-descriptions.txt

@@ -1,0 +1,50 @@
+dataset_id,label_kind,label_as_written,code,code_system,count,count_type,n_patients,extra_count,extra_count_type,extra,source_file
+ptb_diagnostic,header comment: Reason for admission,Bundle branch block,,free text (PTB-DB .hea comments),17,records,15,,,,data/samples/ptb_diagnostic/patient*/*.hea
+ptb_diagnostic,header comment: Reason for admission,Cardiomyopathy,,free text (PTB-DB .hea comments),17,records,15,,,,data/samples/ptb_diagnostic/patient*/*.hea
+ptb_diagnostic,header comment: Reason for admission,Dysrhythmia,,free text (PTB-DB .hea comments),16,records,14,,,,data/samples/ptb_diagnostic/patient*/*.hea
+ptb_diagnostic,header comment: Reason for admission,Healthy control,,free text (PTB-DB .hea comments),80,records,52,,,,data/samples/ptb_diagnostic/patient*/*.hea
+ptb_diagnostic,header comment: Reason for admission,Heart failure (NYHA 2),,free text (PTB-DB .hea comments),1,records,1,,,,data/samples/ptb_diagnostic/patient*/*.hea
+ptb_diagnostic,header comment: Reason for admission,Heart failure (NYHA 3),,free text (PTB-DB .hea comments),1,records,1,,,,data/samples/ptb_diagnostic/patient*/*.hea
+ptb_diagnostic,header comment: Reason for admission,Heart failure (NYHA 4),,free text (PTB-DB .hea comments),1,records,1,,,,data/samples/ptb_diagnostic/patient*/*.hea
+ptb_diagnostic,header comment: Reason for admission,Hypertrophy,,free text (PTB-DB .hea comments),7,records,7,,,,data/samples/ptb_diagnostic/patient*/*.hea
+ptb_diagnostic,header comment: Reason for admission,Myocardial infarction,,free text (PTB-DB .hea comments),368,records,148,,,,data/samples/ptb_diagnostic/patient*/*.hea
+ptb_diagnostic,header comment: Reason for admission,Myocarditis,,free text (PTB-DB .hea comments),4,records,4,,,,data/samples/ptb_diagnostic/patient*/*.hea
+ptb_diagnostic,header comment: Reason for admission,Palpitation,,free text (PTB-DB .hea comments),1,records,1,,,,data/samples/ptb_diagnostic/patient*/*.hea
+ptb_diagnostic,header comment: Reason for admission,Stable angina,,free text (PTB-DB .hea comments),2,records,2,,,,data/samples/ptb_diagnostic/patient*/*.hea
+ptb_diagnostic,header comment: Reason for admission,Unstable angina,,free text (PTB-DB .hea comments),1,records,1,,,,data/samples/ptb_diagnostic/patient*/*.hea
+ptb_diagnostic,header comment: Reason for admission,Valvular heart disease,,free text (PTB-DB .hea comments),6,records,6,,,,data/samples/ptb_diagnostic/patient*/*.hea
+ptb_diagnostic,header comment: Reason for admission,n/a,,free text (PTB-DB .hea comments),27,records,22,,,,data/samples/ptb_diagnostic/patient*/*.hea
+ptb_diagnostic,header comment: Acute infarction (localization),anterior,,free text (PTB-DB .hea comments),47,records,17,,,,data/samples/ptb_diagnostic/patient*/*.hea
+ptb_diagnostic,header comment: Acute infarction (localization),antero-lateral,,free text (PTB-DB .hea comments),43,records,16,,,,data/samples/ptb_diagnostic/patient*/*.hea
+ptb_diagnostic,header comment: Acute infarction (localization),antero-septal,,free text (PTB-DB .hea comments),77,records,27,,,,data/samples/ptb_diagnostic/patient*/*.hea
+ptb_diagnostic,header comment: Acute infarction (localization),antero-septo-lateral,,free text (PTB-DB .hea comments),2,records,1,,,,data/samples/ptb_diagnostic/patient*/*.hea
+ptb_diagnostic,header comment: Acute infarction (localization),inferior,,free text (PTB-DB .hea comments),89,records,30,,,,data/samples/ptb_diagnostic/patient*/*.hea
+ptb_diagnostic,header comment: Acute infarction (localization),infero-latera,,free text (PTB-DB .hea comments),3,records,1,,,,data/samples/ptb_diagnostic/patient*/*.hea
+ptb_diagnostic,header comment: Acute infarction (localization),infero-lateral,,free text (PTB-DB .hea comments),53,records,22,,,,data/samples/ptb_diagnostic/patient*/*.hea
+ptb_diagnostic,header comment: Acute infarction (localization),infero-poster-lateral,,free text (PTB-DB .hea comments),3,records,1,,,,data/samples/ptb_diagnostic/patient*/*.hea
+ptb_diagnostic,header comment: Acute infarction (localization),infero-posterior,,free text (PTB-DB .hea comments),1,records,1,,,,data/samples/ptb_diagnostic/patient*/*.hea
+ptb_diagnostic,header comment: Acute infarction (localization),infero-postero-lateral,,free text (PTB-DB .hea comments),16,records,7,,,,data/samples/ptb_diagnostic/patient*/*.hea
+ptb_diagnostic,header comment: Acute infarction (localization),lateral,,free text (PTB-DB .hea comments),3,records,1,,,,data/samples/ptb_diagnostic/patient*/*.hea
+ptb_diagnostic,header comment: Acute infarction (localization),n/a,,free text (PTB-DB .hea comments),27,records,22,,,,data/samples/ptb_diagnostic/patient*/*.hea
+ptb_diagnostic,header comment: Acute infarction (localization),no,,free text (PTB-DB .hea comments),175,records,140,,,,data/samples/ptb_diagnostic/patient*/*.hea
+ptb_diagnostic,header comment: Acute infarction (localization),posterior,,free text (PTB-DB .hea comments),4,records,1,,,,data/samples/ptb_diagnostic/patient*/*.hea
+ptb_diagnostic,header comment: Acute infarction (localization),postero-lateral,,free text (PTB-DB .hea comments),5,records,2,,,,data/samples/ptb_diagnostic/patient*/*.hea
+ptb_diagnostic,header comment: Acute infarction (localization),unknown,,free text (PTB-DB .hea comments),1,records,1,,,,data/samples/ptb_diagnostic/patient*/*.hea
+ptb_diagnostic,header comment: Former infarction (localization),anterior,,free text (PTB-DB .hea comments),27,records,14,,,,data/samples/ptb_diagnostic/patient*/*.hea
+ptb_diagnostic,header comment: Former infarction (localization),"anterior (1), anterior (2)",,free text (PTB-DB .hea comments),1,records,1,,,,data/samples/ptb_diagnostic/patient*/*.hea
+ptb_diagnostic,header comment: Former infarction (localization),"anterior (1), inferior (2)",,free text (PTB-DB .hea comments),2,records,2,,,,data/samples/ptb_diagnostic/patient*/*.hea
+ptb_diagnostic,header comment: Former infarction (localization),anterior ?,,free text (PTB-DB .hea comments),1,records,1,,,,data/samples/ptb_diagnostic/patient*/*.hea
+ptb_diagnostic,header comment: Former infarction (localization),antero-lateral,,free text (PTB-DB .hea comments),6,records,3,,,,data/samples/ptb_diagnostic/patient*/*.hea
+ptb_diagnostic,header comment: Former infarction (localization),antero-septal,,free text (PTB-DB .hea comments),4,records,1,,,,data/samples/ptb_diagnostic/patient*/*.hea
+ptb_diagnostic,header comment: Former infarction (localization),antero-septal ?,,free text (PTB-DB .hea comments),1,records,1,,,,data/samples/ptb_diagnostic/patient*/*.hea
+ptb_diagnostic,header comment: Former infarction (localization),inferior,,free text (PTB-DB .hea comments),23,records,13,,,,data/samples/ptb_diagnostic/patient*/*.hea
+ptb_diagnostic,header comment: Former infarction (localization),inferior (1+2),,free text (PTB-DB .hea comments),2,records,1,,,,data/samples/ptb_diagnostic/patient*/*.hea
+ptb_diagnostic,header comment: Former infarction (localization),inferior ?,,free text (PTB-DB .hea comments),3,records,1,,,,data/samples/ptb_diagnostic/patient*/*.hea
+ptb_diagnostic,header comment: Former infarction (localization),infero-lateral,,free text (PTB-DB .hea comments),4,records,2,,,,data/samples/ptb_diagnostic/patient*/*.hea
+ptb_diagnostic,header comment: Former infarction (localization),infero-posterior,,free text (PTB-DB .hea comments),5,records,3,,,,data/samples/ptb_diagnostic/patient*/*.hea
+ptb_diagnostic,header comment: Former infarction (localization),"infero-posterior (1), inferior (2)",,free text (PTB-DB .hea comments),1,records,1,,,,data/samples/ptb_diagnostic/patient*/*.hea
+ptb_diagnostic,header comment: Former infarction (localization),infero-postero-lateral,,free text (PTB-DB .hea comments),1,records,1,,,,data/samples/ptb_diagnostic/patient*/*.hea
+ptb_diagnostic,header comment: Former infarction (localization),n/a,,free text (PTB-DB .hea comments),27,records,22,,,,data/samples/ptb_diagnostic/patient*/*.hea
+ptb_diagnostic,header comment: Former infarction (localization),no,,free text (PTB-DB .hea comments),423,records,209,,,,data/samples/ptb_diagnostic/patient*/*.hea
+ptb_diagnostic,header comment: Former infarction (localization),postero-lateral,,free text (PTB-DB .hea comments),4,records,1,,,,data/samples/ptb_diagnostic/patient*/*.hea
+ptb_diagnostic,header comment: Former infarction (localization),unknown,,free text (PTB-DB .hea comments),14,records,13,,,,data/samples/ptb_diagnostic/patient*/*.hea

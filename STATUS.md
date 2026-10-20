@@ -89,6 +89,7 @@ Last update: 2026-10-20
 ## In progress
 - **S12-L (label inventory add-on, user request via team-lead 2026-10-21):** full label list per dataset + a common-label crosswalk, in the PDF. NO new downloads; only files already in `data/samples/`. Steps:
   - L1 coder: `src/stemi/review/label_inventory.py` + tests → `results/label_inventory_<dataset>.csv` (label as written, code, code system, count, count type) for ptb_xl, sph, code15, cpsc_2018, cpsc_extra, georgia, ningbo, chapman_shaoxing (publisher's counts as listed), ptb_diagnostic, incart; mimic_iv_ecg = "not checked: label file not downloaded".
+  - L1 DONE (planner verified; 0 mismatches in the recounts): `results/label_inventory_*.csv`, `label_inventory.py` + tests (pytest 164).
   - L2 coder: `results/label_crosswalk_common.csv` (~15–20 common labels × 11 datasets). Cross-system matching = TEAM MAPPING for supervisor review, with the exact source codes per cell; "not present" vs "not checked" kept apart.
   - L3 planner: verify the counts against the files → verified rows.
   - L4 documenter: new section "Which labels each dataset has" + Appendix B (full lists); rebuild the PDF. Existing findings unchanged.
