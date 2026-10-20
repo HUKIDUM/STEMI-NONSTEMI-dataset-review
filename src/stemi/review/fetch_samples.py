@@ -103,8 +103,11 @@ def mimic_record_list_check(path: Path) -> dict:
             "rows": len(df),
             "distinct_study_id": df["study_id"].nunique() if "study_id" in df else None,
             "distinct_subject_id": df["subject_id"].nunique() if "subject_id" in df else None,
-            "reference": "800,035 ECGs [MCR p.3]; the PN page says part of the data is withheld, "
-                         "so a difference is reported, not fixed"}
+            "reference": ("registry: 800,035 ECGs [MCR p.3]; https://physionet.org/content/"
+                          "mimic-iv-ecg/1.0/: \"approximately 800,000 diagnostic electrocardiograms "
+                          "across nearly 160,000 unique patients\" and \"Around 5% of the available "
+                          "diagnostic ECGs were withheld from this release so they can be used as a "
+                          "hidden test set\"; a difference is reported, not fixed")}
 
 
 def _read_lines(path: Path) -> list[str]:
