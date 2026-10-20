@@ -75,6 +75,8 @@ Last update: 2026-10-20
 
 - S11 (part): Chapman-Shaoxing (§5.9), §3/§4 rows, two §9 conflict entries and sources filled; PDF rebuilt (21 pages). Planner checked them.
 
+- #9 done (Challenge ptb-xl/ptb RECORDS lists, 25 files) + `overlap_ids.py` run: `results/overlap_ids.csv`, `results/overlap_ids_summary.md`. Verified (planner recount): Challenge ptb-xl = HR1–21,837, covering all 21,799 native ecg_ids + 38 extra; Challenge ptb = 516 of 549 (the 33 missing include all 27 'n/a' records). Mappings stay ASSUMPTIONS.
+
 ## In progress
 - S1 downloads: PTB-XL done. First run aborted on a dropped connection (retry bug: reused .part file). Fixed in `fetch_samples.py` (per-attempt .part, truncated body = retry, per-batch logging); `pytest` 110 passed (planner re-ran). Re-run in progress with --workers 2. PhysioNet speed ~4–5 KB/s: the MIMIC CSVs (~298 MB) may take many hours.
 - S4 `mimic_iv_ecg`: the user chose option E (public S3 mirror) → HTTP 404 → fallback option C (approved): `record_list.csv`, the data dictionary and 50 `.hea` headers from physionet.org, downloading now. **`machine_measurements.csv` and `waveform_note_links.csv` are NOT approved yet** (they need a new request). `review_mimic.py` is written, not yet run on data.
