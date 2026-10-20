@@ -53,6 +53,8 @@ Last update: 2026-10-20
 
 - S5 `ptb_diagnostic`: 552 files (sha256 match). Results `results/ptb_diagnostic_*`, `results/findings_ptb_diagnostic.md`. Verified (planner recount, date order confirmed day-first): 148 MI patients; 60 with an ECG 0–1 days after the documented infarction date; 52 healthy controls; no STEMI/NSTEMI label. Also verified: Georgia = Emory (PA2020) and the Challenge general label-quality statement.
 
+- S11 (part): PTB Diagnostic (§5.3) filled in the report, plus §3/§4 rows and sources; Appendix A heading reserved; PDF rebuilt (12 pages). Planner checked it against the verified rows; the timing table totals reconcile (343+25 records, 123+25 patients).
+
 ## In progress
 - S1 downloads: PTB-XL done. First run aborted on a dropped connection (retry bug: reused .part file). Fixed in `fetch_samples.py` (per-attempt .part, truncated body = retry, per-batch logging); `pytest` 110 passed (planner re-ran). Re-run in progress with --workers 2. PhysioNet speed ~4–5 KB/s: the MIMIC CSVs (~298 MB) may take many hours.
 - S4 `mimic_iv_ecg`: the user chose option E (public S3 mirror) → HTTP 404 → fallback option C (approved): `record_list.csv`, the data dictionary and 50 `.hea` headers from physionet.org, downloading now. **`machine_measurements.csv` and `waveform_note_links.csv` are NOT approved yet** (they need a new request). `review_mimic.py` is written, not yet run on data.

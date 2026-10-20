@@ -51,7 +51,7 @@ Short answers only. Details and sources are in section 5.
 |---|---|---|---|---|---|---|---|---|---|---|
 | PTB-XL | 71 SCP-ECG report codes; diagnosis codes have a wording-based "likelihood"; infarct stage (new/old), filled in mainly for MI-coded ECGs [PN-PTBXL; WAGNER2020; OBS-PTBXL] | Up to 2 cardiologists; about 31% of first reports were written by the ECG machine [PN-PTBXL; WAGNER2020] | PTB (Physikalisch-Technische Bundesanstalt); Oct 1989 – Jun 1996; 18,869 patients; country not stated on the dataset page [PN-PTBXL; WAGNER2020] | Not found (site names are hidden) [PN-PTBXL; WAGNER2020] | Schiller AG, 11 device types; 12 leads; 500 Hz (first recorded at 400 Hz); 10 s [WAGNER2020; PN-PTBXL] | No. Only "MI" report statements: 5,469 ECGs [OBS-PTBXL] | Not STEMI vs NSTEMI. Maybe MI vs non-MI after doctor review; pretraining. *Planner view, needs supervisor sign-off* | Same rate, length and leads as the planned model input; has patient IDs. Full check later (S10) [PN-PTBXL] | Open, no login [PN-PTBXL] | 21,799 ECGs; 3.0 GB; CC BY 4.0 [PN-PTBXL] |
 | MIMIC-IV-ECG | | | | | | not checked yet: needs credentialed access; the user will run the count script | | | | |
-| PTB Diagnostic | | | | | | | | | | |
+| PTB Diagnostic | Free-text clinical notes in each header: reason for admission, infarct place, infarction date, ECG date [OBS-PTBDB; PN-PTBDB] | Not found [PN-PTBDB] | University Clinic Benjamin Franklin, Berlin, Germany; years not found; 290 people [PN-PTBDB; OBS-PTBDB] | Hospital cardiology department; ward type not found [PN-PTBDB] | PTB prototype (not a commercial machine); 15 channels (12 standard + 3 extra); 1000 Hz; 32–120 s [PN-PTBDB; OBS-PTBDB] | No. MI (148 patients) vs healthy (52). Has documented time since infarction [OBS-PTBDB] | Possible external test set for new MI vs healthy, after clinical review; too small for STEMI vs NSTEMI. *Planner view, needs supervisor sign-off* | Needs a speed change (1000 Hz), 12 of 15 channels and cutting; patient = folder; a Challenge copy exists. Full check later (S10) [PA2020] | Open, no login [PN-PTBDB] | 549 records; 1.7 GB; ODC Attribution License v1.0 [PN-PTBDB] |
 | SPH (Shandong) | AHA report statements: 44 main codes plus add-on words (like "acute", "old") [LIU2022; OBS-SPH] | Cardiologist's final report; all re-checked by an experienced cardiologist [LIU2022] | Shandong Provincial Hospital, Jinan, China; Aug 2019 – Aug 2020; adults; 24,666 patients [LIU2022; OBS-SPH] | Not found [LIU2022] | MedEx MECG-200; 12 leads; 500 Hz; 10–60 s [LIU2022] | No. "MI" statements in 260 ECGs; only 7 say "acute" [OBS-SPH] | Not STEMI vs NSTEMI. Maybe test set for "MI statement or not" after review; pretraining. *Planner view, needs supervisor sign-off* | Same rate and leads; longer ECGs need cutting; has patient IDs; different label system. Full check later (S10) [LIU2022] | Open, no login [FIGSHARE-SPH] | 25,770 ECGs; 2.28 GB of signals; data CC0, paper CC BY 4.0 [FIGSHARE-SPH; LIU2022] |
 | CPSC 2018 | | | | | | | | | | |
 | CPSC-Extra | | | | | | | | | | |
@@ -71,7 +71,7 @@ Short answers only. Details and sources are in section 5.
 |---|---|---|---|---|
 | PTB-XL | 14 "MI" report codes (5 of them are "injury" codes) [OBS-PTBXL] | 5,469 ECGs from 4,670 patients [OBS-PTBXL] | Partly. 150 MI-coded ECGs have an "early" stage; 3,372 have stage "unknown" [OBS-PTBXL] | No. No code says STEMI or NSTEMI [OBS-PTBXL] |
 | MIMIC-IV-ECG | | not checked yet: needs credentialed access; the user will run the count script | | not checked yet: needs credentialed access; the user will run the count script |
-| PTB Diagnostic | | | | |
+| PTB Diagnostic | Reason for admission "Myocardial infarction"; infarct place; infarction date [OBS-PTBDB] | 368 records from 148 patients [OBS-PTBDB] | Yes, as documented time since infarction: 60 patients have an ECG 0–1 days after the infarction date [OBS-PTBDB] | No. No STEMI or NSTEMI label [OBS-PTBDB] |
 | SPH (Shandong) | 4 "MI" codes (anterior, inferior, anteroseptal, extensive anterior) [OBS-SPH; LIU2022] | 260 ECGs from 242 patients [OBS-SPH] | Yes, as report words: "acute" 7 ECGs, "recent" 12, "old" 233, none 8 [OBS-SPH] | No. No statement says STEMI or NSTEMI [OBS-SPH] |
 | CPSC 2018 | | | | |
 | CPSC-Extra | | | | |
@@ -106,7 +106,44 @@ Each part answers the same 10 questions. Each answer gives its source.
 
 ### 5.3 PTB Diagnostic
 
-*Waiting for verified facts.*
+**In one line:** a small, open, older set of long ECGs from one hospital cardiology department in Berlin. It is the only one of the 11 datasets that records **when** the heart attack happened. It has no STEMI or NSTEMI label.
+
+1. **Labels.** There are no codes. Each recording's header has free-text clinical notes. These include fields such as "Reason for admission", "Acute infarction (localization)" (where the heart attack is), "Former infarction (localization)", "Infarction date (acute)", "ECG date", "Catheterization date" (date of a heart artery test), narrowing of the main heart arteries, and "Lytic agent" (a clot-dissolving drug) [OBS-PTBDB]. Reasons for admission, as records / patients [OBS-PTBDB]:
+   - Myocardial infarction: 368 / 148
+   - Healthy control: 80 / 52
+   - n/a: 27 / 22
+   - Cardiomyopathy (heart muscle disease): 17 records
+   - Bundle branch block: 17 records
+   - Dysrhythmia (abnormal heart rhythm): 16 records
+   - Hypertrophy (thickened heart muscle): 7 records
+   - Valvular heart disease: 6 records
+   - Myocarditis (inflamed heart muscle): 4 records
+   - Others: 2 records or fewer each
+
+   The 148 MI patients and 52 healthy people match the class table on the dataset page [PN-PTBDB; OBS-PTBDB].
+2. **Who labelled them.** **Not found.** The dataset page says most records include "a detailed clinical summary", but not who wrote it [PN-PTBDB].
+3. **Collection.** The ECGs were "collected from healthy volunteers and patients with different heart diseases by Professor Michael Oeff … at the Department of Cardiology of University Clinic Benjamin Franklin in Berlin, Germany". PTB put them together [PN-PTBDB]. Collection years: **not found**. The page does not state them [PN-PTBDB]. The dates in the headers are around 1990. The page does not say if they are real or moved, so we do not use them as collection years [PN-PTBDB; OBS-PTBDB]. Number of people: the files have 290 patient folders [OBS-PTBDB]. The page says "294 subjects" in one place and "549 records from 290 subjects" in another. The files support 290 [PN-PTBDB; OBS-PTBDB].
+4. **Setting.** A hospital cardiology department, with heart patients and healthy volunteers [PN-PTBDB]. Whether ward, intensive care, emergency room or clinic: **not found** [PN-PTBDB].
+5. **Device.** "A non-commercial, PTB prototype recorder" (a test machine, not one sold in shops). It stores 2,000 units per millivolt [PN-PTBDB]. All 549 headers have 15 channels: the 12 standard leads plus 3 extra "Frank" leads (vx, vy, vz). Lead names are in lower case [OBS-PTBDB]. 1000 Hz. The header has no unit field. The dataset page gives the scale (2,000 units per millivolt) [PN-PTBDB; OBS-PTBDB]. Length: 32 to 120 seconds in the files. The page does not state the length [OBS-PTBDB; PN-PTBDB].
+6. **STEMI vs NSTEMI.** **No.** There is no STEMI or NSTEMI label [OBS-PTBDB]. It can give MI vs no MI: 148 MI patients (368 records) vs 52 healthy people (80 records), plus people with other heart diseases [OBS-PTBDB].
+
+   **What is special here: documented time since infarction.** We took "ECG date" minus "Infarction date (acute)". The dates are read day first (day/month/year). We know this because in 374 of the 541 dated headers the first number is above 12, and the second number is never above 12 [OBS-PTBDB]. The time could be worked out for 343 of the 368 MI records [OBS-PTBDB]:
+
+   | Days from infarction to ECG | MI records | MI patients (earliest ECG on or after the infarction date) |
+   |---|---|---|
+   | 0–1 | 61 | 60 |
+   | 2–3 | 35 | 18 |
+   | 4–7 | 68 | 20 |
+   | 8–28 | 115 | 23 |
+   | more than 28 | 63 | 2 |
+   | ECG before the infarction date | 1 | – |
+   | Could not be worked out | 25 | 25 |
+
+   So 60 MI patients have an ECG 0–1 days after the recorded infarction date [OBS-PTBDB]. **These are a documented time since infarction. They are not reviewed acute-MI labels. Doctors must review them first.** The two infarction-date fields disagree in 3 records [OBS-PTBDB]. There is also a field for where the heart attack is (for example inferior, antero-septal, infero-lateral) [OBS-PTBDB]. The "Lytic agent" field says, as written: Streptokinase (60 patients), Urokinase (20), Gamma-TPA (15) [OBS-PTBDB]. Whether this field says anything about STEMI is a question for the clinical supervisor. This report does not use it as a label.
+7. **Best model use.** *This is the planner's view. The clinical supervisor still needs to agree.* This is the only one of the 11 datasets with documented infarction dates. It gives a small review set: MI ECGs taken 0–1 days after the infarction (60 patients), plus 52 healthy people. After clinical review, it could be an external test set (data kept apart, used only to check a finished model) for "new MI vs healthy". It is too small, and has no STEMI/NSTEMI labels, so it cannot train a STEMI-vs-NSTEMI model (`data_contract.md` L4, L7).
+8. **Combining.** *(Partial. The full check comes in step S10.)* 1000 Hz, so it must be changed to 500 Hz (`data_contract.md` C2.3). 15 channels: keep the 12 standard ones, which all 549 records have by name [OBS-PTBDB]. 32–120 seconds, so a rule for cutting is needed. Patient = the folder [OBS-PTBDB]. A copy is inside the 2021 PhysioNet Challenge (the `ptb` folder). It has 516 recordings instead of 549, and the paper gives no reason [PA2020, Table 2]. Do not use both without checking which ECGs are the same (`data_contract.md` O10). The Challenge says it "did not change the original data or labels", except for approximate SNOMED CT codes, hidden age and sex, and amplitude resolution [PA2020, §2.1.2].
+9. **Access.** Open: "Anyone can access the files, as long as they conform to the terms of the specified license." We needed no login [PN-PTBDB; OBS-DOWNLOAD].
+10. **Size and license.** 549 records from 290 people (the page also says 294 in one place). 1.7 GB unpacked. License: ODC Attribution License v1.0 (free to use if you credit the source). DOI 10.13026/C28C71. Published 25 Sept 2004 [PN-PTBDB; OBS-PTBDB].
 
 ### 5.4 SPH (Shandong Provincial Hospital)
 
@@ -234,6 +271,8 @@ Datasets that could mislead a model. *Waiting for verified facts.*
 - **[FIGSHARE-SPH]** SPH data on figshare, collection 5779802. https://doi.org/10.6084/m9.figshare.c.5779802.v1 ; file list and licenses from https://api.figshare.com/v2/collections/5779802/articles (data articles 17912441, 17912444, 17912507; checked 2026-10-20).
 - **[ZEN-CODE15]** CODE-15% on Zenodo, record 4916206. https://zenodo.org/records/4916206 and https://zenodo.org/api/records/4916206 (checked 2026-10-20).
 - **[RIBEIRO2020]** Ribeiro A.H. et al., 2020 (the CODE dataset paper). https://pmc.ncbi.nlm.nih.gov/articles/PMC7145824/ (sections used: Methods > Dataset acquisition; Methods > Training and validation set annotation; Discussion; Data availability).
+- **[PN-PTBDB]** PTB Diagnostic ECG Database, release 1.0.0, PhysioNet. https://physionet.org/content/ptbdb/1.0.0/ (checked 2026-10-20).
+- **[PA2020]** Perez Alday E.A. et al., 2020 (the PhysioNet Challenge 2020 paper). https://pmc.ncbi.nlm.nih.gov/articles/PMC8015789/ (sections used: Table 2; §2.1.2).
 - **[PN-CHALLENGE2021]** PhysioNet/Computing in Cardiology Challenge 2021, release 1.0.3. https://physionet.org/content/challenge-2021/1.0.3/ (checked 2026-10-20).
 
 ### Result files made by this team
@@ -243,5 +282,6 @@ All are in `results/`. Each one describes the files we downloaded on 2026-10-20,
 - **[OBS-PTBXL]** PTB-XL counts: `ptb_xl_summary.md`, `ptb_xl_scp_counts.csv`, `ptb_xl_field_counts.csv`, `ptb_xl_mi_by_stadium.csv`, `ptb_xl_mi_early_stadium.csv`, `ptb_xl_headers.csv` (recounted by the planner).
 - **[OBS-SPH]** SPH counts from `metadata.csv` and `code.csv`: `sph_summary.md`, `sph_code_counts.csv`, `sph_code_modifier_counts.csv`, `sph_mi_timing.csv` (recounted by the planner).
 - **[OBS-CODE15]** CODE-15% counts from `exams.csv`: `code15_summary.md`, `code15_label_counts.csv` (recounted by the planner).
+- **[OBS-PTBDB]** PTB Diagnostic counts from all 549 headers and the `RECORDS` / `CONTROLS` lists: `ptb_diagnostic_summary.md`, `ptb_diagnostic_comment_counts.csv`, `ptb_diagnostic_records.csv`, `ptb_diagnostic_mi_timing.csv`, `ptb_diagnostic_mi_patient_timing.csv`, `ptb_diagnostic_mi_lytic_agent.csv` (recounted by the planner).
 - **[OBS-DOWNLOAD]** `download_manifest.csv`: what was downloaded, from where, and its checksum.
 - All checked facts: `verified_facts.md`.
