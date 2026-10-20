@@ -112,17 +112,54 @@ def mi_timing(rec: pd.DataFrame, keys: dict) -> pd.DataFrame:
     return out
 
 
+DAY_BINS = [-10**6, -1, 1, 3, 7, 28, 10**6]
+DAY_LABELS = ["<0", "0-1", "2-3", "4-7", "8-28", ">28"]
+
+
+def patient_timing(timing: pd.DataFrame) -> pd.DataFrame:
+    """Per MI patient: band of the EARLIEST ECG after the acute infarction date (listing only)."""
+    if "days_ecg_minus_infarction" not in timing.columns:
+        return pd.DataFrame({"note": ["dates not available"]})
+    t = timing.dropna(subset=["days_ecg_minus_infarction"])
+    t = t[t["days_ecg_minus_infarction"] >= 0]
+    first = t.groupby("patient")["days_ecg_minus_infarction"].min()
+    band = pd.cut(first, DAY_BINS, labels=DAY_LABELS).value_counts(sort=False)
+    out = band.rename_axis("earliest_ecg_days_after_infarction").rename("n_patients").reset_index()
+    out = out[out["earliest_ecg_days_after_infarction"] != "<0"]
+    no_date = timing["patient"].nunique() - first.index.nunique()
+    return pd.concat([out, pd.DataFrame({"earliest_ecg_days_after_infarction":
+                                         ["no ECG with both dates parsed (and >= 0 days)"],
+                                         "n_patients": [no_date]})], ignore_index=True)
+
+
+def raw_field_by_patient(rec: pd.DataFrame, mask: pd.Series, key: str | None) -> pd.DataFrame:
+    """Raw values of one comment field over the masked records: records and patients."""
+    if not key or f"c:{key}" not in rec.columns:
+        return pd.DataFrame({"note": [f"{key} not found"]})
+    sub = rec[mask].assign(v=rec.loc[mask, f"c:{key}"].fillna(MISSING).astype(str))
+    g = sub.groupby("v")
+    return (pd.DataFrame({"value": g.size().index, "n_records": g.size().to_numpy(),
+                          "n_patients": g["patient"].nunique().to_numpy()})
+            .sort_values("n_records", ascending=False))
+
+
 def review(root: Path, out_dir: Path = RESULTS_DIR) -> dict:
     rec = record_table(root)
     allkeys = [c[2:] for c in rec.columns if c.startswith("c:")]
     keys = {name: find_key(allkeys, pat) for name, pat in KEY_PATTERNS.items()}
     counts = comment_counts(rec)
     timing = mi_timing(rec, keys)
+    ptiming = patient_timing(timing)
+    mi_mask = rec[f"c:{keys['reason']}"].astype(str).str.contains("infarct", case=False, na=False) \
+        if keys["reason"] else pd.Series(False, index=rec.index)
+    lytic = raw_field_by_patient(rec, mi_mask, find_key(allkeys, r"^lytic agent$"))
 
     out_dir.mkdir(parents=True, exist_ok=True)
     rec.to_csv(out_dir / "ptb_diagnostic_records.csv", index=False)
     counts.to_csv(out_dir / "ptb_diagnostic_comment_counts.csv", index=False)
     timing.to_csv(out_dir / "ptb_diagnostic_mi_timing.csv", index=False)
+    ptiming.to_csv(out_dir / "ptb_diagnostic_mi_patient_timing.csv", index=False)
+    lytic.to_csv(out_dir / "ptb_diagnostic_mi_lytic_agent.csv", index=False)
 
     found = rec[rec["header_found"]]
     controls = root / "CONTROLS"
@@ -152,13 +189,26 @@ def review(root: Path, out_dir: Path = RESULTS_DIR) -> dict:
                        + md_table(d.describe().rename("days").reset_index())
                        + "\n\nDay bands (records): "
                        + ", ".join(f"{k}: {v}" for k, v in pd.cut(
-                           d, [-10**6, -1, 1, 3, 7, 28, 10**6],
-                           labels=["<0", "0-1", "2-3", "4-7", "8-28", ">28"]).value_counts(sort=False).items()))
+                           d, DAY_BINS,
+                           labels=DAY_LABELS).value_counts(sort=False).items()))
     sections = [
         ("Basic counts", md_table(pd.DataFrame(list(basics.items()), columns=["item", "value"]))),
         ("Reason for admission (records / patients)", md_table(reason_tbl)),
         ("MI timing: ECG date minus infarction date (listing only; not an acute label, L2)",
          timing_note),
+    ]
+    plain = find_key(allkeys, r"^infarction date$")
+    if keys["infarct_date"] and plain and plain != keys["infarct_date"]:
+        a, b = rec[f"c:{keys['infarct_date']}"], rec[f"c:{plain}"]
+        both = a.notna() & b.notna()
+        basics[f"records where '{keys['infarct_date']}' != '{plain}'"] = int((a[both] != b[both]).sum())
+        sections[0] = ("Basic counts", md_table(pd.DataFrame(list(basics.items()),
+                                                             columns=["item", "value"])))
+    sections += [
+        ("MI patients by their earliest ECG after the acute infarction date (listing only)",
+         md_table(ptiming)),
+        ("'Lytic agent' field over MI records (raw text; no clinical meaning assigned)",
+         md_table(lytic)),
     ]
     for k in ("acute_loc", "former_loc"):
         if keys[k]:

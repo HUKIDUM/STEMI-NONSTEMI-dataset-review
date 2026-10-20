@@ -1,0 +1,7 @@
+earliest_ecg_days_after_infarction,n_patients
+0-1,60
+2-3,18
+4-7,20
+8-28,23
+>28,2
+no ECG with both dates parsed (and >= 0 days),25

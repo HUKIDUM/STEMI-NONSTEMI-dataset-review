@@ -1,5 +1,6 @@
 """review_ptbdb on invented PTB-Diagnostic-shaped headers (no real data)."""
 
+import pandas as pd
 import pytest
 
 import synthetic as syn
@@ -53,3 +54,10 @@ def test_parse_date_formats():
     assert rp.parse_date("29-Sep-90").year == 1990
     assert rp.parse_date("01/10/1990").month == 10
     assert rp.parse_date("n/a") is None
+
+
+def test_patient_timing_uses_earliest_ecg(root, tmp_path):
+    res = rp.review(root, tmp_path / "out")
+    pt = pd.read_csv(tmp_path / "out" / "ptb_diagnostic_mi_patient_timing.csv")
+    row = pt.set_index("earliest_ecg_days_after_infarction")["n_patients"]
+    assert row["2-3"] == 1 and row["8-28"] == 0          # patient001: ECGs at 2 and 16 days

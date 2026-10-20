@@ -51,10 +51,11 @@ Last update: 2026-10-20
 - Documenter's accidental private artifact of the draft report was deleted at the user's request. Documenter now uses file edits only (no artifacts).
 - U4 cheap overlap check approved in principle: coder sends request #9 for the Challenge `ptb-xl` / `ptb` RECORDS lists (~0.3 MB) before any GET. (Replaces "U4 on hold".)
 
+- S5 `ptb_diagnostic`: 552 files (sha256 match). Results `results/ptb_diagnostic_*`, `results/findings_ptb_diagnostic.md`. Verified (planner recount, date order confirmed day-first): 148 MI patients; 60 with an ECG 0–1 days after the documented infarction date; 52 healthy controls; no STEMI/NSTEMI label. Also verified: Georgia = Emory (PA2020) and the Challenge general label-quality statement.
+
 ## In progress
 - S1 downloads: PTB-XL done. First run aborted on a dropped connection (retry bug: reused .part file). Fixed in `fetch_samples.py` (per-attempt .part, truncated body = retry, per-batch logging); `pytest` 110 passed (planner re-ran). Re-run in progress with --workers 2. PhysioNet speed ~4–5 KB/s: the MIMIC CSVs (~298 MB) may take many hours.
 - S4 `mimic_iv_ecg`: the user chose option E (public S3 mirror) → HTTP 404 → fallback option C (approved): `record_list.csv`, the data dictionary and 50 `.hea` headers from physionet.org, downloading now. **`machine_measurements.csv` and `waveform_note_links.csv` are NOT approved yet** (they need a new request). `review_mimic.py` is written, not yet run on data.
-- S5 `ptb_diagnostic`: download #3 approved and running (RECORDS, CONTROLS, README, 549 `.hea`, SHA256SUMS stream).
 - Credentials: the team never receives or uses any credentials, including AWS keys (user question answered by team-lead).
 
 ## Next
