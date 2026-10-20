@@ -6,7 +6,8 @@ Last update: 2026-10-20
 
 ## Team rule: what needs a download request (team-lead 2026-10-20; the user may overrule)
 - **No request needed:** reading official web pages, papers and small API metadata (e.g. figshare/Zenodo JSON for license and md5) to check facts. Cite the URL.
-- **Request needed first, even if nothing is saved:** anything from a dataset's file tree (physionet.org/files/..., ndownloader.figshare.com, zenodo.org/.../files/, raw dataset files), including index files, RECORDS lists and checksum lists (SHA256SUMS).
+- **No request needed (adjustment, team-lead 2026-10-20):** HEAD requests (headers only, no file body) to learn a file's size, because every download request must give sizes.
+- **Request needed first, even if nothing is saved:** any GET of file content from a dataset's file tree (physionet.org/files/..., ndownloader.figshare.com, zenodo.org/.../files/, raw dataset files), including index files, RECORDS lists and checksum lists (SHA256SUMS).
 
 ## Done
 - S0: `PLAN.md` approved by the user via team-lead (2026-10-20).
