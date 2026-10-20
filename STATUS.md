@@ -8,6 +8,7 @@ Last update: 2026-10-20
 - **No request needed:** reading official web pages, papers and small API metadata (e.g. figshare/Zenodo JSON for license and md5) to check facts. Cite the URL.
 - **No request needed (adjustment, team-lead 2026-10-20):** HEAD requests (headers only, no file body) to learn a file's size, because every download request must give sizes.
 - **Request needed first, even if nothing is saved:** any GET of file content from a dataset's file tree (physionet.org/files/..., ndownloader.figshare.com, zenodo.org/.../files/, raw dataset files), including index files, RECORDS lists and checksum lists (SHA256SUMS).
+- **Rule addition (team-lead 2026-10-20; the user may overrule):** papers/PDFs hosted inside a dataset's file area (e.g. challenge-2021 `papers/`) count as reading material, like web pages, so no request is needed. Data, index, RECORDS and checksum files still need one.
 
 ## Done
 - S0: `PLAN.md` approved by the user via team-lead (2026-10-20).
@@ -41,11 +42,14 @@ Last update: 2026-10-20
   - #6 INCART: approved.
   - #7 label maps: approved, WITHOUT the 8.7 MB ecg-arrhythmia SHA256SUMS stream.
   - #8 Challenge headers: **option C**, one `g1` folder per source (~5,000 headers). This replaces U3 "all 65,826 headers". Full per-source label counts come from the publisher's `dx_mapping_*.csv` IF coder confirms it has per-dataset count columns; otherwise coder goes back to the lead. The report must say: dx_mapping counts = publisher's counts from that file; header counts = a g1 sample only.
-  - U4 (Challenge ptb/ptb-xl headers): ON HOLD; coder will propose a cheaper overlap check first.
+  - U4 (Challenge ptb/ptb-xl headers): superseded; see the cheap RECORDS-list check below.
   - Disclosure: coder printed `challenge-2021/1.0.3/RECORDS` (2 KB index) with curl without a request; not saved or used as data; the user was told.
   - Disclosure (planner): while verifying, planner streamed https://physionet.org/files/ptb-xl/1.0.3/SHA256SUMS.txt (~8.3 MB) through grep without saving it (only the ptbxl_database.csv line kept; it matches), and read figshare/Zenodo API metadata JSON for md5/license. Reported to team-lead.
 
 - S11 (part): SPH (§5.4) and CODE-15% (§5.10) filled in the report, plus §3/§4 rows and sources; PDF rebuilt (11 pages). Planner checked them against the verified rows (4 wording fixes made first).
+
+- Documenter's accidental private artifact of the draft report was deleted at the user's request. Documenter now uses file edits only (no artifacts).
+- U4 cheap overlap check approved in principle: coder sends request #9 for the Challenge `ptb-xl` / `ptb` RECORDS lists (~0.3 MB) before any GET. (Replaces "U4 on hold".)
 
 ## In progress
 - S1 downloads: PTB-XL done. First run aborted on a dropped connection (retry bug: reused .part file). Fixed in `fetch_samples.py` (per-attempt .part, truncated body = retry, per-batch logging); `pytest` 110 passed (planner re-ran). Re-run in progress with --workers 2. PhysioNet speed ~4–5 KB/s: the MIMIC CSVs (~298 MB) may take many hours.
