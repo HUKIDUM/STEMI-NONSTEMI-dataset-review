@@ -55,7 +55,7 @@ def statement_table(mm: pd.DataFrame) -> pd.DataFrame:
                         "n_subjects": g["subject_id"].nunique()})
     flags = pd.DataFrame([keyword_flags(s) for s in out.index], index=out.index)
     out = out.join(flags)
-    out["any_mi_st_keyword"] = flags.any(axis=1)
+    out["any_mi_st_keyword"] = flags.drop(columns="kw_st_other").any(axis=1)
     return out.reset_index().sort_values("n_ecgs", ascending=False)
 
 

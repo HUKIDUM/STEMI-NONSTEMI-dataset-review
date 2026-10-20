@@ -64,3 +64,12 @@ def test_map_file_counts(tmp_path):
     assert m.loc["MI", "any_mi_st_keyword"] and not m.loc["SNR", "any_mi_st_keyword"]
     assert m.loc["MI", "Georgia"] == 7
     assert (tmp_path / "out" / "challenge_dx_mapping_counts.csv").exists()
+
+
+def test_st_other_is_listed_but_not_mi(tmp_path):
+    pd.DataFrame({"Dx": ["nonspecific st t abnormality", "inferior ST segment depression"],
+                  "SNOMEDCTCode": ["428750005", "704997005"], "Abbreviation": ["NSSTTA", "ISTD"],
+                  "Total": [1, 1]}).to_csv(tmp_path / "dx_mapping_unscored.csv", index=False)
+    m = rc.map_file_counts(tmp_path).set_index("Abbreviation")
+    assert m.loc["NSSTTA", "kw_st_other"] and not m.loc["NSSTTA", "any_mi_st_keyword"]
+    assert m.loc["ISTD", "kw_st_depr"] and m.loc["ISTD", "any_mi_st_keyword"]

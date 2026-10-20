@@ -87,7 +87,7 @@ def map_file_counts(maps_dir: Path) -> pd.DataFrame:
     m = pd.concat(parts, ignore_index=True)
     flags = pd.DataFrame([keyword_flags(d) for d in m["Dx"]])
     m = pd.concat([m, flags], axis=1)
-    m["any_mi_st_keyword"] = flags.any(axis=1)
+    m["any_mi_st_keyword"] = flags.drop(columns="kw_st_other").any(axis=1)
     return m
 
 
@@ -116,7 +116,7 @@ def dx_counts(hdr: pd.DataFrame, maps: pd.DataFrame) -> pd.DataFrame:
     out["name"] = out["name"].fillna("unmapped")
     flags = pd.DataFrame([keyword_flags(n if n != "unmapped" else "") for n in out["name"]])
     out = pd.concat([out, flags], axis=1)
-    out["any_mi_st_keyword"] = flags.any(axis=1)
+    out["any_mi_st_keyword"] = flags.drop(columns="kw_st_other").any(axis=1)
     return out.sort_values("n_records", ascending=False)
 
 
@@ -176,6 +176,9 @@ def review(dataset_id: str, root: Path, maps_dir: Path | None,
          + "; ".join(f"{k} = `{v}`" for k, v in MI_KEYWORDS.items()) + "\n\n"
          + md_table(mi[["code", "name", "abbreviation", "n_records", "map_source"]
                        + list(MI_KEYWORDS)])),
+        ("Other ST codes for review (kw_st_other; NOT MI-related by themselves)",
+         md_table(dx[dx["kw_st_other"] & ~dx["any_mi_st_keyword"]][["code", "name", "abbreviation",
+                                                                    "n_records", "map_source"]])),
         ("All SNOMED codes (top 40 by records; full list in dx_counts.csv)",
          md_table(dx[["code", "name", "abbreviation", "n_records"]], max_rows=40)),
     ]
@@ -206,7 +209,7 @@ def main(argv: list[str] | None = None) -> None:
         m = write_map_counts(Path(argv[1]))
         cols = ["Dx", "SNOMEDCTCode", "Abbreviation"] + [c for c in MAP_COUNT_COLUMNS.values()
                                                          if c in m.columns] + ["Total"]
-        print(m.loc[m["any_mi_st_keyword"], cols].to_string(index=False))
+        print(m.loc[m["any_mi_st_keyword"] | m["kw_st_other"], cols + ["kw_st_other"]].to_string(index=False))
         return
     ap.add_argument("dataset_id", choices=sorted(FOLDERS))
     ap.add_argument("root", type=Path, help="data/samples/<dataset_id>")

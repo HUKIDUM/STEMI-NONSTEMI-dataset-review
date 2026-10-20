@@ -21,11 +21,13 @@ OBSERVATION_NOTE = ("Local observation of the downloaded file(s) named below; no
 MI_KEYWORDS = {
     "kw_infarct": r"infarct|\bMI\b|STEMI",
     "kw_injury": r"injury",
-    "kw_st_elev": r"ST[\s-]*elev|\bSTE\b",
-    "kw_st_depr": r"ST[\s-]*depr|\bSTD\b",
+    "kw_st_elev": r"ST[\s-]*(segment[\s-]*)?elev|\bSTE\b",
+    "kw_st_depr": r"ST[\s-]*(segment[\s-]*)?depr|\bSTD\b",
     "kw_ischemi": r"isch[a]?emi",
     "kw_acute": r"acute",
     "kw_q_wave": r"q[\s-]*wave",
+    # other ST findings: listed for review, never MI-related by themselves
+    "kw_st_other": r"\bST[\s-]*T\b|\bST[\s-]*interval|\bST[\s-]*segment|non-?specific\s+ST",
 }
 
 
