@@ -59,6 +59,8 @@ Last update: 2026-10-20
 
 - S9 `incart`: 80 files (sha256 match). Results `results/incart_*`, `results/findings_incart.md`. Verified (planner check): 2 acute-MI patients (6 records), 4 earlier-MI patients; Holter at 257 Hz; README vs file conflict (TIA 5 vs 4 patients).
 
+- MIMIC download (team-lead's instruction): the old fetcher pid 63141 was stopped (SIGTERM, after checking its command line); resumed as pid 70658 with `--resume --workers 1 --skip-sha256sums --only record_list.csv,machine_measurements_data_dictionary.csv` from a 6,291,456 B .part (approval #2 + resume note). Planner check 20:27 local: .part growing (6,488,064 B), lock held by 70658, 63141 gone. Expected total 70,403,124 B.
+
 ## In progress
 - S1 downloads: PTB-XL done. First run aborted on a dropped connection (retry bug: reused .part file). Fixed in `fetch_samples.py` (per-attempt .part, truncated body = retry, per-batch logging); `pytest` 110 passed (planner re-ran). Re-run in progress with --workers 2. PhysioNet speed ~4–5 KB/s: the MIMIC CSVs (~298 MB) may take many hours.
 - S4 `mimic_iv_ecg`: the user chose option E (public S3 mirror) → HTTP 404 → fallback option C (approved): `record_list.csv`, the data dictionary and 50 `.hea` headers from physionet.org, downloading now. **`machine_measurements.csv` and `waveform_note_links.csv` are NOT approved yet** (they need a new request). `review_mimic.py` is written, not yet run on data.
