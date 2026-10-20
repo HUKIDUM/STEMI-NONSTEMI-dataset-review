@@ -63,6 +63,8 @@ Last update: 2026-10-20
 
 - S11 (part): INCART (§5.11), §3/§4 rows, the first §9 conflict entry and sources filled; PDF rebuilt (14 pages). Planner checked them against the verified rows (one wording tweak pending: record selection, not patient randomness).
 
+- S7 part 1 (`cpsc_2018`, `cpsc_extra`, `georgia`, g1 sample of 999 headers each): results `results/challenge_*`, `results/findings_{cpsc_2018,cpsc_extra,georgia}.md`. Planner recounted the g1 headers and checked CH21/PA2020 → 30 rows. None has STEMI/NSTEMI; there is no patient ID although repeat patients exist (PA2020). Fix: dx_mapping names now win over ConditionNames.
+
 ## In progress
 - S1 downloads: PTB-XL done. First run aborted on a dropped connection (retry bug: reused .part file). Fixed in `fetch_samples.py` (per-attempt .part, truncated body = retry, per-batch logging); `pytest` 110 passed (planner re-ran). Re-run in progress with --workers 2. PhysioNet speed ~4–5 KB/s: the MIMIC CSVs (~298 MB) may take many hours.
 - S4 `mimic_iv_ecg`: the user chose option E (public S3 mirror) → HTTP 404 → fallback option C (approved): `record_list.csv`, the data dictionary and 50 `.hea` headers from physionet.org, downloading now. **`machine_measurements.csv` and `waveform_note_links.csv` are NOT approved yet** (they need a new request). `review_mimic.py` is written, not yet run on data.

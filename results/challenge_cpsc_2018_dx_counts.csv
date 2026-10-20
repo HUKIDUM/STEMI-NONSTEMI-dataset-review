@@ -1,0 +1,10 @@
+code,n_records,name,abbreviation,map_source,alt_name,kw_infarct,kw_injury,kw_st_elev,kw_st_depr,kw_ischemi,kw_acute,kw_q_wave,kw_st_other,any_mi_st_keyword,publisher_count_full_source
+59118001,270,right bundle branch block,RBBB,dx_mapping_scored.csv,,False,False,False,False,False,False,False,False,False,1857
+164889003,180,atrial fibrillation,AF,dx_mapping_scored.csv,,False,False,False,False,False,False,False,False,False,1221
+426783006,135,sinus rhythm,NSR,dx_mapping_scored.csv,,False,False,False,False,False,False,False,False,False,918
+429622005,114,st depression,STD,dx_mapping_unscored.csv,ST drop down,False,False,False,True,False,False,False,False,True,869
+164884008,102,ventricular ectopics,VEB,dx_mapping_unscored.csv,,False,False,False,False,False,False,False,False,False,700
+270492004,102,1st degree av block,IAVB,dx_mapping_scored.csv,1 degree atrioventricular block,False,False,False,False,False,False,False,False,False,722
+284470004,99,premature atrial contraction,PAC,dx_mapping_scored.csv,atrial premature beats,False,False,False,False,False,False,False,False,False,616
+164931005,31,st elevation,STE,dx_mapping_unscored.csv,ST tilt up,False,False,True,False,False,False,False,False,True,220
+164909002,30,left bundle branch block,LBBB,dx_mapping_scored.csv,left back bundle branch block | left front bundle branch block,False,False,False,False,False,False,False,False,False,236

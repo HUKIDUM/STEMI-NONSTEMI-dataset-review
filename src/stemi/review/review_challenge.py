@@ -38,7 +38,10 @@ SCRIPT = "src/stemi/review/review_challenge.py"
 FOLDERS = {"cpsc_2018": "cpsc_2018", "cpsc_extra": "cpsc_2018_extra", "georgia": "georgia",
            "ningbo": "ningbo", "chapman_shaoxing": "chapman_shaoxing",
            "ptb_xl_challenge": "ptb-xl", "ptb_diagnostic_challenge": "ptb"}
-MAP_FILES = ("ConditionNames_SNOMED-CT.csv", "dx_mapping_scored.csv", "dx_mapping_unscored.csv")
+# Challenge-2021 dx_mapping names come first (they are the Challenge's own names);
+# ConditionNames (ecg-arrhythmia) names are kept as alt_name, e.g. 164931005 is
+# "st elevation" in dx_mapping but "ST tilt up" in ConditionNames.
+MAP_FILES = ("dx_mapping_scored.csv", "dx_mapping_unscored.csv", "ConditionNames_SNOMED-CT.csv")
 
 
 def _col(cols, pattern):
@@ -47,7 +50,8 @@ def _col(cols, pattern):
 
 
 def load_maps(maps_dir: Path | None) -> pd.DataFrame:
-    """code -> name (first map file that has it wins, in MAP_FILES order), abbreviation."""
+    """code -> name (first map file that has it wins, in MAP_FILES order), abbreviation,
+    map_source, and alt_name = every other distinct name for the code (joined by ' | ')."""
     parts = []
     for fname in MAP_FILES:
         p = maps_dir / fname if maps_dir else None
@@ -63,8 +67,14 @@ def load_maps(maps_dir: Path | None) -> pd.DataFrame:
                                    "abbreviation": m[abbr].str.strip() if abbr else None,
                                    "map_source": fname}))
     if not parts:
-        return pd.DataFrame(columns=["code", "name", "abbreviation", "map_source"])
-    return pd.concat(parts, ignore_index=True).drop_duplicates("code")
+        return pd.DataFrame(columns=["code", "name", "abbreviation", "map_source", "alt_name"])
+    allm = pd.concat(parts, ignore_index=True)
+    first = allm.drop_duplicates("code").set_index("code")
+    alt = {}
+    for code, grp in allm.groupby("code"):
+        main = str(first.at[code, "name"]).lower()
+        alt[code] = " | ".join(sorted({n for n in grp["name"].dropna() if n.lower() != main}))
+    return first.assign(alt_name=pd.Series(alt)).reset_index()
 
 
 MAP_COUNT_COLUMNS = {"cpsc_2018": "CPSC", "cpsc_extra": "CPSC_Extra", "incart": "StPetersburg",
@@ -114,7 +124,9 @@ def dx_counts(hdr: pd.DataFrame, maps: pd.DataFrame) -> pd.DataFrame:
     out = long.groupby("code").size().rename("n_records").reset_index()
     out = out.merge(maps, on="code", how="left")
     out["name"] = out["name"].fillna("unmapped")
-    flags = pd.DataFrame([keyword_flags(n if n != "unmapped" else "") for n in out["name"]])
+    texts = [("" if n == "unmapped" else n) + " " + ("" if pd.isna(a) else a)
+             for n, a in zip(out["name"], out.get("alt_name", pd.Series([None] * len(out))))]
+    flags = pd.DataFrame([keyword_flags(t) for t in texts])
     out = pd.concat([out, flags], axis=1)
     out["any_mi_st_keyword"] = flags.drop(columns="kw_st_other").any(axis=1)
     return out.sort_values("n_records", ascending=False)
@@ -129,6 +141,13 @@ def review(dataset_id: str, root: Path, maps_dir: Path | None,
     hdr = read_headers(files, root)
     maps = load_maps(maps_dir)
     dx = dx_counts(hdr, maps)
+    pub_col = MAP_COUNT_COLUMNS.get(dataset_id)
+    if maps_dir is not None and pub_col:
+        pub = map_file_counts(maps_dir)
+        if len(pub) and pub_col in pub.columns:
+            pub = (pub[["SNOMEDCTCode", pub_col]].drop_duplicates("SNOMEDCTCode")
+                   .rename(columns={"SNOMEDCTCode": "code", pub_col: "publisher_count_full_source"}))
+            dx = dx.merge(pub, on="code", how="left")
     keys = (hdr["comment_keys"].str.split("|").explode().value_counts()
             .rename_axis("comment_key").rename("n_records").reset_index())
 
@@ -171,16 +190,23 @@ def review(dataset_id: str, root: Path, maps_dir: Path | None,
         lambda cs: bool(set(c.strip() for c in cs) & set(mi["code"])))]
     sections = [
         ("Basic counts", md_table(pd.DataFrame(list(basics.items()), columns=["item", "value"]))),
+        ("Scope", f"**g1 sample only ({len(hdr)} of {len(listed)} records listed in g1/RECORDS; "
+                  f"not the full source).** `publisher_count_full_source` = the "
+                  f"`{pub_col}` column of dx_mapping_*.csv (publisher's counts, meaning not defined "
+                  f"by the publisher). Header checksums: not available (SHA256SUMS stream not "
+                  f"approved); see results/download_manifest.csv."),
         ("SNOMED codes whose name matches an MI / ST / ischaemia keyword (listing only; L2)",
          f"Records with any: {len(mi_records)}. Keyword regexes: "
          + "; ".join(f"{k} = `{v}`" for k, v in MI_KEYWORDS.items()) + "\n\n"
-         + md_table(mi[["code", "name", "abbreviation", "n_records", "map_source"]
-                       + list(MI_KEYWORDS)])),
+         + md_table(mi[[c for c in ["code", "name", "alt_name", "abbreviation", "n_records",
+                                     "publisher_count_full_source", "map_source"] if c in mi.columns]])),
         ("Other ST codes for review (kw_st_other; NOT MI-related by themselves)",
-         md_table(dx[dx["kw_st_other"] & ~dx["any_mi_st_keyword"]][["code", "name", "abbreviation",
-                                                                    "n_records", "map_source"]])),
+         md_table(dx[dx["kw_st_other"] & ~dx["any_mi_st_keyword"]][
+             [c for c in ["code", "name", "alt_name", "abbreviation", "n_records",
+                          "publisher_count_full_source"] if c in dx.columns]])),
         ("All SNOMED codes (top 40 by records; full list in dx_counts.csv)",
-         md_table(dx[["code", "name", "abbreviation", "n_records"]], max_rows=40)),
+         md_table(dx[[c for c in ["code", "name", "abbreviation", "n_records",
+                                   "publisher_count_full_source"] if c in dx.columns]], max_rows=40)),
     ]
     inputs = provenance(sorted((root / "training" / folder).glob("g*/RECORDS"))[:3]
                         + [maps_dir / f for f in MAP_FILES if maps_dir and (maps_dir / f).exists()])

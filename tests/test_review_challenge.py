@@ -39,6 +39,18 @@ def test_dx_counts_and_mapping(root, tmp_path):
     assert res["basics"]["unmapped codes"] == "999"
 
 
+def test_dx_mapping_name_wins_and_alt_name_kept(tmp_path):
+    maps = tmp_path / "maps"
+    maps.mkdir()
+    pd.DataFrame({"Dx": ["st elevation"], "SNOMEDCTCode": ["164931005"], "Abbreviation": ["STE"]}
+                 ).to_csv(maps / "dx_mapping_unscored.csv", index=False)
+    pd.DataFrame({"Acronym Name": ["STTU"], "Full Name": ["ST tilt up"],
+                  "Snomed_CT": ["164931005"]}).to_csv(maps / "ConditionNames_SNOMED-CT.csv", index=False)
+    m = rc.load_maps(maps).set_index("code")
+    assert m.loc["164931005", "name"] == "st elevation"
+    assert m.loc["164931005", "alt_name"] == "ST tilt up"
+
+
 def test_header_stats(root, tmp_path):
     r, maps = root
     b = rc.review("georgia", r, maps, tmp_path / "out")["basics"]

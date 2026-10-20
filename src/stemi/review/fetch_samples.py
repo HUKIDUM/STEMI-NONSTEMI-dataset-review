@@ -653,7 +653,7 @@ def _run_locked(source: Source, local: Path, cap_root: Path, *, approval, worker
             raise error
     counts = pd.Series([r["status"] for r in all_rows]).value_counts().to_dict()
     print(f"{dataset_id}: {counts}; folder {folder_bytes(cap_root)} bytes; "
-          f"checksum {pd.Series([r['checksum_match'] for r in all_rows]).value_counts().to_dict()}")
+          f"checksum {pd.Series([r.get('checksum_match', 'n/a (not downloaded)') for r in all_rows]).value_counts().to_dict()}")
     return all_rows
 
 
