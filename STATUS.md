@@ -87,7 +87,12 @@ Last update: 2026-10-20
 - S13: final report to team-lead (planner).
 
 ## In progress
-- None. Waiting for the user's MIMIC ICD count output (U1).
+- **S12-L (label inventory add-on, user request via team-lead 2026-10-21):** full label list per dataset + a common-label crosswalk, in the PDF. NO new downloads; only files already in `data/samples/`. Steps:
+  - L1 coder: `src/stemi/review/label_inventory.py` + tests → `results/label_inventory_<dataset>.csv` (label as written, code, code system, count, count type) for ptb_xl, sph, code15, cpsc_2018, cpsc_extra, georgia, ningbo, chapman_shaoxing (publisher's counts as listed), ptb_diagnostic, incart; mimic_iv_ecg = "not checked: label file not downloaded".
+  - L2 coder: `results/label_crosswalk_common.csv` (~15–20 common labels × 11 datasets). Cross-system matching = TEAM MAPPING for supervisor review, with the exact source codes per cell; "not present" vs "not checked" kept apart.
+  - L3 planner: verify the counts against the files → verified rows.
+  - L4 documenter: new section "Which labels each dataset has" + Appendix B (full lists); rebuild the PDF. Existing findings unchanged.
+- Still waiting for the user's MIMIC ICD count output (U1).
 
 ## Next
 - When the user sends the `mimic_icd_count.py` output: planner verifies it (aggregates only), adds mimic_iv_ecg Q6 rows, documenter updates §1/§4/§5.2/§6, rebuild the PDF, commit.
