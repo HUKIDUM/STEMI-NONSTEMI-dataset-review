@@ -1,0 +1,65 @@
+code,n_records,name,abbreviation,map_source,alt_name,kw_infarct,kw_injury,kw_st_elev,kw_st_depr,kw_ischemi,kw_acute,kw_q_wave,kw_st_other,any_mi_st_keyword,publisher_count_full_source
+427084000,433,sinus tachycardia,STach,dx_mapping_scored.csv,,False,False,False,False,False,False,False,False,False,5687
+426783006,166,sinus rhythm,NSR,dx_mapping_scored.csv,,False,False,False,False,False,False,False,False,False,6299
+426177001,158,sinus bradycardia,SB,dx_mapping_scored.csv,,False,False,False,False,False,False,False,False,False,12670
+164934002,144,t wave abnormal,TAb,dx_mapping_scored.csv,T wave Change,False,False,False,False,False,False,False,False,False,5167
+270492004,126,1st degree av block,IAVB,dx_mapping_scored.csv,1 degree atrioventricular block,False,False,False,False,False,False,False,False,False,893
+427393009,117,sinus arrhythmia,SA,dx_mapping_scored.csv,Sinus Irregularity,False,False,False,False,False,False,False,False,False,2550
+55930002,100,s t changes,STC,dx_mapping_unscored.csv,,False,False,False,False,False,False,False,False,False,4232
+164890007,97,atrial flutter,AFL,dx_mapping_scored.csv,,False,False,False,False,False,False,False,False,False,7615
+284470004,84,premature atrial contraction,PAC,dx_mapping_scored.csv,atrial premature beats,False,False,False,False,False,False,False,False,False,1054
+59931005,69,t wave inversion,TInv,dx_mapping_scored.csv,T wave opposite,False,False,False,False,False,False,False,False,False,2720
+55827005,64,left ventricular high voltage,LVHV,dx_mapping_unscored.csv,,False,False,False,False,False,False,False,False,False,4106
+429622005,31,st depression,STD,dx_mapping_unscored.csv,ST drop down,False,False,False,True,False,False,False,False,True,1266
+251146004,24,low qrs voltages,LQRSV,dx_mapping_scored.csv,lower voltage QRS in all lead,False,False,False,False,False,False,False,False,False,794
+39732003,24,left axis deviation,LAD,dx_mapping_scored.csv,Axis left shift,False,False,False,False,False,False,False,False,False,1163
+164930006,22,st interval abnormal,STIAb,dx_mapping_unscored.csv,ST extension,False,False,False,False,False,False,False,True,False,799
+427172004,22,premature ventricular contractions,PVC,dx_mapping_scored.csv,,False,False,False,False,False,False,False,False,False,1091
+426761007,22,supraventricular tachycardia,SVT,dx_mapping_unscored.csv,,False,False,False,False,False,False,False,False,False,137
+47665007,21,right axis deviation,RAD,dx_mapping_scored.csv,Axis right shift,False,False,False,False,False,False,False,False,False,638
+713422000,21,atrial tachycardia,ATach,dx_mapping_unscored.csv,,False,False,False,False,False,False,False,False,False,176
+365413008,20,poor R wave Progression,PRWP,dx_mapping_scored.csv,,False,False,False,False,False,False,False,False,False,638
+61721007,20,clockwise or counterclockwise vectorcardiographic loop,CVCL/CCVCL,dx_mapping_unscored.csv,,False,False,False,False,False,False,False,False,False,653
+713427006,18,complete right bundle branch block,CRBBB,dx_mapping_scored.csv,,False,False,False,False,False,False,False,False,False,1096
+164873001,16,left ventricular hypertrophy,LVH,dx_mapping_unscored.csv,left ventricle hypertrophy,False,False,False,False,False,False,False,False,False,632
+698252002,15,nonspecific intraventricular conduction disorder,NSIVCB,dx_mapping_scored.csv,Interior differences conduction | Intraventricular block,False,False,False,False,False,False,False,False,False,536
+445118002,14,left anterior fascicular block,LAnFB,dx_mapping_scored.csv,,False,False,False,False,False,False,False,False,False,380
+164917005,11,qwave abnormal,QAb,dx_mapping_scored.csv,abnormal Q wave,False,False,False,False,False,False,True,False,True,828
+251170000,10,blocked premature atrial contraction,BPAC,dx_mapping_unscored.csv,,False,False,False,False,False,False,False,False,False,62
+111975006,10,prolonged qt interval,LQT,dx_mapping_scored.csv,QT interval extension,False,False,False,False,False,False,False,False,False,337
+106068003,10,atrial rhythm,ARH,dx_mapping_unscored.csv,,False,False,False,False,False,False,False,False,False,215
+251223006,9,tall p wave,TPW,dx_mapping_unscored.csv,,False,False,False,False,False,False,False,False,False,215
+6374002,9,bundle branch block,BBB,dx_mapping_scored.csv,,False,False,False,False,False,False,False,False,False,385
+10370003,7,pacing rhythm,PR,dx_mapping_scored.csv,,False,False,False,False,False,False,False,False,False,1182
+733534002,6,complete left bundle branch block,CLBBB,dx_mapping_scored.csv,,False,False,False,False,False,False,False,False,False,213
+428417006,6,early repolarization,ERe,dx_mapping_unscored.csv,Early repolarization of the ventricles,False,False,False,False,False,False,False,False,False,344
+426995002,6,junctional escape,JE,dx_mapping_unscored.csv,junctional escape beat,False,False,False,False,False,False,False,False,False,60
+75532003,6,ventricular escape beat,VEsB,dx_mapping_unscored.csv,,False,False,False,False,False,False,False,False,False,49
+425856008,5,paroxysmal ventricular tachycardia,PVT,dx_mapping_unscored.csv,,False,False,False,False,False,False,False,False,False,109
+195042002,5,2nd degree av block,IIAVB,dx_mapping_unscored.csv,2 degree atrioventricular block,False,False,False,False,False,False,False,False,False,58
+713426002,4,incomplete right bundle branch block,IRBBB,dx_mapping_scored.csv,,False,False,False,False,False,False,False,False,False,246
+251205003,4,prolonged P wave,PPW,dx_mapping_unscored.csv,,False,False,False,False,False,False,False,False,False,106
+81898007,4,ventricular escape rhythm,VEsR,dx_mapping_unscored.csv,,False,False,False,False,False,False,False,False,False,96
+164865005,4,myocardial infarction,MI,dx_mapping_unscored.csv,Myocardial infgraction in the front wall | Myocardial infraction in the lower wall | Myocardial infraction in the side wall | myocardial infraction in back wall,True,False,False,False,False,False,False,False,True,83
+29320008,3,atrioventricular junctional rhythm,AVJR,dx_mapping_unscored.csv,,False,False,False,False,False,False,False,False,False,139
+54329005,3,anterior myocardial infarction,AnMI,dx_mapping_unscored.csv,,True,False,False,False,False,False,False,False,True,57
+74390002,3,wolff parkinson white pattern,WPW,dx_mapping_unscored.csv,WPW,False,False,False,False,False,False,False,False,False,68
+164909002,2,left bundle branch block,LBBB,dx_mapping_scored.csv,left back bundle branch block | left front bundle branch block,False,False,False,False,False,False,False,False,False,35
+61277005,2,accelerated idioventricular rhythm,AIVR,dx_mapping_unscored.csv,,False,False,False,False,False,False,False,False,False,14
+89792004,2,right ventricular hypertrophy,RVH,dx_mapping_unscored.csv,right ventricle hypertrophy,False,False,False,False,False,False,False,False,False,106
+50799005,2,atrioventricular dissociation,AVD,dx_mapping_unscored.csv,,False,False,False,False,False,False,False,False,False,59
+27885002,2,complete heart block,CHB,dx_mapping_unscored.csv,3 degree atrioventricular block,False,False,False,False,False,False,False,False,False,75
+426183003,2,mobitz type II atrioventricular block,IIAVBII,dx_mapping_unscored.csv,,False,False,False,False,False,False,False,False,False,7
+54016002,2,mobitz type i wenckebach atrioventricular block,MoI,dx_mapping_unscored.csv,2 degree atrioventricular block(Type one),False,False,False,False,False,False,False,False,False,25
+77867006,1,decreased qt interval,SQT,dx_mapping_unscored.csv,,False,False,False,False,False,False,False,False,False,2
+111288001,1,ventricular flutter,VFL,dx_mapping_unscored.csv,,False,False,False,False,False,False,False,False,False,7
+426627000,1,bradycardia,Brady,dx_mapping_scored.csv,,False,False,False,False,False,False,False,False,False,7
+164896001,1,ventricular fibrillation,VF,dx_mapping_unscored.csv,,False,False,False,False,False,False,False,False,False,59
+65778007,1,sinoatrial block,SAB,dx_mapping_unscored.csv,,False,False,False,False,False,False,False,False,False,5
+164937009,1,u wave abnormal,UAb,dx_mapping_unscored.csv,U wave,False,False,False,False,False,False,False,False,False,114
+57054005,1,acute myocardial infarction,AMI,dx_mapping_unscored.csv,,True,False,False,False,False,True,False,False,True,49
+233897008,1,atrioventricular reentrant tachycardia,AVRT,dx_mapping_unscored.csv,,False,False,False,False,False,False,False,False,False,18
+233917008,1,av block,AVB,dx_mapping_unscored.csv,atrioventricular block,False,False,False,False,False,False,False,False,False,78
+251187003,1,atrial escape beat,AED,dx_mapping_unscored.csv,,False,False,False,False,False,False,False,False,False,17
+446358003,1,right atrial hypertrophy,RAH,dx_mapping_unscored.csv,,False,False,False,False,False,False,False,False,False,33
+59118001,1,right bundle branch block,RBBB,dx_mapping_scored.csv,,False,False,False,False,False,False,False,False,False,195
