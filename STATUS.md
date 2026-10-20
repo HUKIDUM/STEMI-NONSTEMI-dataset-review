@@ -83,13 +83,15 @@ Last update: 2026-10-20
 
 - S11 (part): Ningbo (§5.8) filled, with the §8 age-mix warning (planner's note); all 11 dataset sections are now in the report.
 
+- **S11 + S12 DONE:** `docs/dataset_report.md` + `docs/dataset_report.pdf` (27 pages) marked FINAL (2026-10-21). Planner read the whole report against `results/verified_facts.md` (130 rows: verified / not found / 1 pending = UMich, not used) and checked all 110 matrix cells against `results/combine_matrix.csv` by script (0 mismatches). `pytest` 161 passed.
+- S13: final report to team-lead (planner).
+
 ## In progress
-- S1 downloads: PTB-XL done. First run aborted on a dropped connection (retry bug: reused .part file). Fixed in `fetch_samples.py` (per-attempt .part, truncated body = retry, per-batch logging); `pytest` 110 passed (planner re-ran). Re-run in progress with --workers 2. PhysioNet speed ~4–5 KB/s: the MIMIC CSVs (~298 MB) may take many hours.
-- S4 `mimic_iv_ecg`: the user chose option E (public S3 mirror) → HTTP 404 → fallback option C (approved): `record_list.csv`, the data dictionary and 50 `.hea` headers from physionet.org, downloading now. **`machine_measurements.csv` and `waveform_note_links.csv` are NOT approved yet** (they need a new request). `review_mimic.py` is written, not yet run on data.
-- Credentials: the team never receives or uses any credentials, including AWS keys (user question answered by team-lead).
+- None. Waiting for the user's MIMIC ICD count output (U1).
 
 ## Next
-- S3 `ptb_xl` → S4 `mimic_iv_ecg` (+ `mimic_icd_count.py`) → S5 `ptb_diagnostic` → S6 `sph` → S7 Challenge 5 → S8 `code15` → S9 `incart` → S10 overlap/summary → S11–S12 report → S13 final report.
+- When the user sends the `mimic_icd_count.py` output: planner verifies it (aggregates only), adds mimic_iv_ecg Q6 rows, documenter updates §1/§4/§5.2/§6, rebuild the PDF, commit.
+- Supervisor decisions listed in report §9 (STEMI/NSTEMI code list, acute window, non-MI evidence, record-level splits, INCART scope).
 
 ## Add-on (low priority, chosen by team-lead for the user, 2026-10-20)
 - **S-extra: other public ECG datasets that may have STEMI/NSTEMI or acute-MI labels.** Research only: official pages and papers; NO downloads and no requests. At most ~5 candidates. Per candidate: name, labels (verbatim), who labelled, access (open / credentialed / on request), size, source URLs. Every fact sourced or "not found"; planner verifies. Output `results/findings_extra_candidates.md` → verified rows in `results/verified_facts.md` (dataset key `extra:<name>`). Report: a separate appendix "Other datasets worth checking (not reviewed in depth)", NOT mixed into the 11-dataset tables or recommendations. Coder does it only while idle during downloads; it must not delay S3–S13. Its report appendix comes after the main review.
