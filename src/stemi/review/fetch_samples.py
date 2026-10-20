@@ -83,6 +83,28 @@ class Source:
     expected_md5: dict[str, str] = field(default_factory=dict)   # relpath -> md5 (cited)
     md5_source: str | None = None
     remote_names: dict[str, str] = field(default_factory=dict)   # relpath -> remote path
+    plausibility: dict[str, Callable[[Path], dict]] = field(default_factory=dict)
+
+
+PLAUSIBILITY_CSV = PROJECT_ROOT / "results" / "download_plausibility.csv"
+NO_CHECKSUM_NOTE = "none (SHA256SUMS not approved); plausibility check only"
+
+
+def mimic_record_list_check(path: Path) -> dict:
+    """Parse record_list.csv; columns, rows, distinct IDs vs the documented 800,035 ECGs."""
+    need = {"subject_id", "study_id", "path", "ecg_time"}
+    try:
+        df = pd.read_csv(path)
+    except Exception as e:                       # report, never fix
+        return {"parses": False, "detail": f"{type(e).__name__}: {e}"}
+    missing = sorted(need - set(df.columns))
+    return {"parses": True, "columns": "|".join(df.columns),
+            "missing_expected_columns": "|".join(missing) or "none",
+            "rows": len(df),
+            "distinct_study_id": df["study_id"].nunique() if "study_id" in df else None,
+            "distinct_subject_id": df["subject_id"].nunique() if "subject_id" in df else None,
+            "reference": "800,035 ECGs [MCR p.3]; the PN page says part of the data is withheld, "
+                         "so a difference is reported, not fixed"}
 
 
 def _read_lines(path: Path) -> list[str]:
@@ -164,6 +186,7 @@ def _build_manifest() -> dict[str, Source]:
             "mimic_iv_ecg", PHYSIONET + "mimic-iv-ecg/1.0/", "mimic_iv_ecg",
             files=("record_list.csv", "machine_measurements.csv",
                    "machine_measurements_data_dictionary.csv", "waveform_note_links.csv"),
+            plausibility={"record_list.csv": mimic_record_list_check},
             stages=(Stage(f"50 .hea, seed {SAMPLE_SEED} over record_list.csv:path",
                           lambda d: [f"{p}.hea" for p in
                                      seeded_sample(d / "record_list.csv", "path", 50)],
@@ -239,6 +262,11 @@ def check_allowed(source: Source, relpath: str, stage: Stage | None) -> None:
         raise RefusedError(f"{relpath} does not match {stage.pattern} ({source.dataset_id})")
 
 
+def _lock_bytes(folder: Path) -> int:
+    p = folder / ".fetch.lock"
+    return p.stat().st_size if p.exists() else 0
+
+
 def folder_bytes(path: Path) -> int:
     return sum(f.stat().st_size for f in path.rglob("*") if f.is_file()) if path.exists() else 0
 
@@ -292,19 +320,70 @@ class IncompleteDownload(ConnectionError):
     pass
 
 
-def download(url: str, dest: Path, budget: Budget) -> tuple[int, str]:
+class TotalChanged(ValueError):
+    """The file size reported upstream changed between attempts: never splice."""
+
+
+TRANSIENT_HTTP = (429, 500, 502, 503, 504)
+
+
+def _fetch_into(url: str, part: Path, have: int, charge_up_to, pinned: list) -> None:
+    """One GET into ``part``. With ``have`` > 0 it asks for ``bytes=have-``; a 206 is
+    appended only if Content-Range starts exactly at ``have``, a 200 restarts cleanly.
+    ``pinned`` holds the expected total ([None] until first known); any response whose
+    total differs raises TotalChanged before ``part`` is touched."""
+    headers = {"User-Agent": USER_AGENT}
+    if have:
+        headers["Range"] = f"bytes={have}-"
+    req = urllib.request.Request(url, headers=headers)
+    with urllib.request.urlopen(req, timeout=TIMEOUT_S) as r:
+        if have and r.status == 206:
+            m = re.fullmatch(r"bytes (\d+)-(\d+)/(\d+)", r.headers.get("Content-Range", ""))
+            if not m or int(m[1]) != have:
+                raise IncompleteDownload(f"{url}: unexpected Content-Range "
+                                         f"{r.headers.get('Content-Range')!r} for offset {have}")
+            total, mode, n = int(m[3]), "ab", have
+        elif r.status == 200:
+            cl = r.headers.get("Content-Length")
+            total, n = (int(cl) if cl else None), 0
+            mode = "wb" if part.exists() else "xb"      # 200 on a resume: restart cleanly
+        else:
+            raise IncompleteDownload(f"{url}: unexpected HTTP status {r.status}")
+        if total is not None:
+            if pinned[0] is None:
+                pinned[0] = total
+            elif total != pinned[0]:
+                raise TotalChanged(f"{url}: size changed upstream ({pinned[0]} -> {total}); "
+                                   f".part left untouched")
+            charge_up_to(total)
+        with open(part, mode) as out:
+            for chunk in iter(lambda: r.read(1 << 16), b""):
+                n += len(chunk)
+                charge_up_to(n)
+                out.write(chunk)
+        if total is not None and n != total:
+            raise IncompleteDownload(f"{url}: {n} of {total} bytes")
+
+
+def download(url: str, dest: Path, budget: Budget, *, resume: bool = False) -> tuple[int, str]:
     """Stream ``url`` to ``dest`` (never overwriting); returns (bytes, sha256).
 
-    A failed attempt removes only the ``.part`` file that this attempt created,
-    then retries. Bytes are charged to the budget once, not once per attempt.
+    A dropped connection keeps the partial ``.part`` file and the next attempt asks
+    for the rest with an HTTP Range request. Attempts are limited per stall: the
+    count resets whenever an attempt added bytes. A ``.part`` that existed before
+    this call is continued only with ``resume=True``; otherwise it is left alone
+    (FileExistsError). On final failure without ``resume`` the partial file this
+    call created is removed; with ``resume`` it is kept for a later run.
+    Bytes are charged to the budget once (a resumed .part is already counted by
+    folder_bytes()).
     """
     if dest.exists():
         raise FileExistsError(dest)
     dest.parent.mkdir(parents=True, exist_ok=True)
     part = dest.with_name(dest.name + ".part")
-    if part.exists():                     # left by someone else: never touch it
+    if part.exists() and not resume:      # left by someone else: never touch it
         raise FileExistsError(part)
-    charged = 0
+    charged = part.stat().st_size if part.exists() else 0   # already in folder_bytes()
 
     def charge_up_to(n: int) -> None:
         nonlocal charged
@@ -312,28 +391,42 @@ def download(url: str, dest: Path, budget: Budget) -> tuple[int, str]:
             budget.take(n - charged)
             charged = n
 
-    def go():
-        h, n = hashlib.sha256(), 0
-        out = open(part, "xb")            # created by this attempt
-        try:
-            with _request(url) as r, out:
-                declared = r.headers.get("Content-Length")
-                if declared:
-                    charge_up_to(int(declared))
-                for chunk in iter(lambda: r.read(1 << 16), b""):
-                    n += len(chunk)
-                    charge_up_to(n)
-                    h.update(chunk)
-                    out.write(chunk)
-                if declared and n != int(declared):
-                    raise IncompleteDownload(f"{url}: {n} of {declared} bytes")
-        except BaseException:
-            out.close()
+    # Expected total: pinned from HEAD when continuing an earlier run's .part,
+    # otherwise from the first response; every later response must agree.
+    pinned = [head_size(url) if part.exists() else None]
+    stalls = 0
+    try:
+        while True:
+            have = part.stat().st_size if part.exists() else 0
+            try:
+                _fetch_into(url, part, have, charge_up_to, pinned)
+                break
+            except urllib.error.HTTPError as e:
+                if e.code in (401, 403):
+                    raise RefusedError(f"HTTP {e.code}: login/credential wall, stopping") from e
+                if e.code == 416 and have and have == pinned[0]:
+                    break                     # the .part already holds the whole file
+                if e.code not in TRANSIENT_HTTP:
+                    raise
+                stalls += 1
+                if stalls >= RETRIES:
+                    raise
+                time.sleep(min(2 ** stalls * 2, 60))
+            except (urllib.error.URLError, TimeoutError, ConnectionError,
+                    http.client.HTTPException):
+                now = part.stat().st_size if part.exists() else 0
+                stalls = 0 if now > have else stalls + 1
+                if stalls >= RETRIES:
+                    raise
+                time.sleep(min(2 ** stalls * 2, 60))
+    except TotalChanged:
+        raise                                 # keep the .part exactly as it is
+    except BaseException:
+        if not resume and part.exists():  # our own partial file from this call
             part.unlink()
-            raise
-        return n, h.hexdigest()
-
-    n, digest = _with_retries(go)
+        raise
+    n = part.stat().st_size               # checked against Content-Range / -Length above
+    digest = sha256_of(part)
     part.rename(dest)                     # dest was checked absent above
     return n, digest
 
@@ -389,7 +482,7 @@ def _url(source: Source, relpath: str) -> str:
 
 
 def fetch_files(source: Source, relpaths: list[str], stage: Stage | None, *, budget: Budget,
-                approval: str, workers: int, log_path: Path = MANIFEST_CSV,
+                approval: str, workers: int, log_path: Path = MANIFEST_CSV, resume: bool = False,
                 samples_root: Path = SAMPLES_ROOT) -> list[dict]:
     for rp in relpaths:                                   # refuse before any request
         check_allowed(source, rp, stage)
@@ -406,7 +499,7 @@ def fetch_files(source: Source, relpaths: list[str], stage: Stage | None, *, bud
             row.update(status="skipped_exists", bytes=dest.stat().st_size, sha256=sha256_of(dest))
         else:
             try:
-                n, digest = download(row["url"], dest, budget)
+                n, digest = download(row["url"], dest, budget, resume=resume)
                 row.update(status="downloaded", bytes=n, sha256=digest)
             except urllib.error.HTTPError as e:
                 row.update(status=f"http_{e.code}")
@@ -448,6 +541,32 @@ def attach_checksums(source: Source, rows: list[dict], *, skip_sha256sums: bool 
         r.setdefault("checksum_match", "not available")
 
 
+class FolderLock:
+    """One fetcher per dataset folder: ``.fetch.lock`` created with "x", removed only
+    by the process that created it."""
+
+    def __init__(self, folder: Path):
+        self.path = folder / ".fetch.lock"
+        self.held = False
+
+    def __enter__(self):
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            with open(self.path, "x") as f:
+                f.write(f"pid {__import__('os').getpid()} "
+                        f"{datetime.now(timezone.utc).isoformat(timespec='seconds')}\n")
+        except FileExistsError:
+            raise RefusedError(f"{self.path} exists: another fetcher is using this folder "
+                               f"(remove it by hand only if that process is gone)") from None
+        self.held = True
+        return self
+
+    def __exit__(self, *exc):
+        if self.held:
+            self.path.unlink()
+            self.held = False
+
+
 def filter_groups(relpaths: list[str], groups: list[str] | None) -> list[str]:
     """Keep only paths inside the named group folders (e.g. ['g1']); None keeps all."""
     if not groups:
@@ -455,10 +574,27 @@ def filter_groups(relpaths: list[str], groups: list[str] | None) -> list[str]:
     return [rp for rp in relpaths if any(f"/{g}/" in f"/{rp}" for g in groups)]
 
 
+def run_plausibility(source: Source, rows: list[dict], local: Path, skip_sha256sums: bool,
+                     out: Path | None = None) -> None:
+    out = out or PLAUSIBILITY_CSV
+    for r in rows:
+        check = source.plausibility.get(r.get("_relpath"))
+        if not check or not r.get("sha256"):
+            continue
+        res = {"dataset_id": source.dataset_id, "local_path": r["local_path"],
+               "sha256": r["sha256"], "checked_utc":
+               datetime.now(timezone.utc).isoformat(timespec="seconds"), **check(local / r["_relpath"])}
+        out.parent.mkdir(parents=True, exist_ok=True)
+        pd.DataFrame([res]).to_csv(out, mode="a", header=not out.exists(), index=False)
+        print(f"plausibility {r['_relpath']}: {res}")
+        if skip_sha256sums:
+            r["checksum_source"] = NO_CHECKSUM_NOTE
+
+
 def run(dataset_id: str, *, approval: str, workers: int = 4, dry_run: bool = False,
         only: list[str] | None = None, skip_stages: bool = False,
         skip_sha256sums: bool = False, groups: list[str] | None = None,
-        max_stage: int | None = None) -> list[dict]:
+        max_stage: int | None = None, resume: bool = False) -> list[dict]:
     """``only``: subset of the fixed files; ``skip_stages``: no derived files this run."""
     if dataset_id not in MANIFEST:
         raise RefusedError(f"{dataset_id} is not in the manifest: {sorted(MANIFEST)}")
@@ -479,7 +615,16 @@ def run(dataset_id: str, *, approval: str, workers: int = 4, dry_run: bool = Fal
         return []
     if not approval.strip():
         raise RefusedError("--approval is required (user OK via team-lead)")
-    budget = Budget(folder_bytes(cap_root))
+    with FolderLock(cap_root):
+        return _run_locked(source, local, cap_root, approval=approval, workers=workers,
+                           only=only, skip_stages=skip_stages, skip_sha256sums=skip_sha256sums,
+                           groups=groups, max_stage=max_stage, resume=resume)
+
+
+def _run_locked(source: Source, local: Path, cap_root: Path, *, approval, workers, only,
+                skip_stages, skip_sha256sums, groups, max_stage, resume) -> list[dict]:
+    dataset_id = source.dataset_id
+    budget = Budget(folder_bytes(cap_root) - _lock_bytes(cap_root))
     all_rows = []
     fixed = list(source.files)
     if only:
@@ -493,9 +638,10 @@ def run(dataset_id: str, *, approval: str, workers: int = 4, dry_run: bool = Fal
             relpaths = filter_groups(stage.rule(local), groups)
             print(f"{dataset_id}: {stage.description}: {len(relpaths)} files")
         rows, error = fetch_files(source, relpaths, stage, budget=budget, approval=approval,
-                                  workers=workers)
+                                  workers=workers, resume=resume)
         try:
             attach_checksums(source, rows, skip_sha256sums=skip_sha256sums)
+            run_plausibility(source, rows, local, skip_sha256sums)
         finally:
             for r in rows:                    # log what completed, even on failure
                 append_log(r)
@@ -517,6 +663,8 @@ def main(argv: list[str] | None = None) -> None:
     ap.add_argument("--only", default="", help="comma list: subset of the fixed files")
     ap.add_argument("--skip-stages", action="store_true", help="no derived files this run")
     ap.add_argument("--groups", default="", help="comma list of group folders, e.g. g1")
+    ap.add_argument("--resume", action="store_true",
+                    help="continue an existing .part file with HTTP Range requests")
     ap.add_argument("--max-stage", type=int, default=None,
                     help="run only the first N derived stages (e.g. 1 = RECORDS lists only)")
     ap.add_argument("--skip-sha256sums", action="store_true",
@@ -525,7 +673,8 @@ def main(argv: list[str] | None = None) -> None:
     run(args.dataset_id, approval=args.approval, workers=args.workers, dry_run=args.dry_run,
         only=args.only.split(",") if args.only else None, skip_stages=args.skip_stages,
         skip_sha256sums=args.skip_sha256sums,
-        groups=args.groups.split(",") if args.groups else None, max_stage=args.max_stage)
+        groups=args.groups.split(",") if args.groups else None, max_stage=args.max_stage,
+        resume=args.resume)
 
 
 if __name__ == "__main__":

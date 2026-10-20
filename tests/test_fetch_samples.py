@@ -218,3 +218,188 @@ def test_filter_groups():
              "training/georgia/g1/E00001.hea", "training/georgia/g2/E01001.hea"]
     assert fs.filter_groups(paths, ["g1"]) == [paths[0], paths[2]]
     assert fs.filter_groups(paths, None) == paths
+
+
+class _RangeServer:
+    """Serves one body; honours Range with 206. Request 1 is cut off after `cut` bytes."""
+
+    def __init__(self, body, cut=None, bad_range=False, ignore_range=False):
+        self.body, self.cut, self.calls, self.ranges = body, cut, 0, []
+        outer = self
+
+        class H(http.server.BaseHTTPRequestHandler):
+            def log_message(self, *a):
+                pass
+
+            def do_HEAD(self):
+                self.send_response(200)
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+
+            def do_GET(self):
+                outer.calls += 1
+                rng = self.headers.get("Range")
+                outer.ranges.append(rng)
+                start = int(rng.split("=")[1].rstrip("-")) if rng else 0
+                if rng and not ignore_range:
+                    self.send_response(206)
+                    first = start + 1 if bad_range else start
+                    self.send_header("Content-Range", f"bytes {first}-{len(body)-1}/{len(body)}")
+                    data = body[start:]
+                else:
+                    self.send_response(200)
+                    data = body
+                self.send_header("Content-Length", str(len(data)))
+                self.end_headers()
+                if outer.calls == 1 and cut is not None:
+                    self.wfile.write(data[:cut])
+                else:
+                    self.wfile.write(data)
+                self.close_connection = True
+
+        self.httpd = http.server.ThreadingHTTPServer(("127.0.0.1", 0), H)
+        threading.Thread(target=self.httpd.serve_forever, daemon=True).start()
+        self.url = f"http://127.0.0.1:{self.httpd.server_address[1]}/f.csv"
+
+
+def test_dropped_connection_resumes_with_range(tmp_path, monkeypatch):
+    monkeypatch.setattr(fs.time, "sleep", lambda s: None)
+    body = bytes(range(256)) * 40
+    srv = _RangeServer(body, cut=3000)
+    try:
+        budget = fs.Budget(0, len(body))                # fails if charged twice
+        n, digest = fs.download(srv.url, tmp_path / "f.csv", budget)
+    finally:
+        srv.httpd.shutdown()
+    assert srv.ranges == [None, "bytes=3000-"]
+    assert (tmp_path / "f.csv").read_bytes() == body and n == len(body)
+    assert digest == hashlib.sha256(body).hexdigest()
+
+
+def test_resume_existing_part_only_with_flag(tmp_path, monkeypatch):
+    monkeypatch.setattr(fs.time, "sleep", lambda s: None)
+    body = b"abcdefghij" * 100
+    srv = _RangeServer(body)
+    part = tmp_path / "f.csv.part"
+    part.write_bytes(body[:400])
+    try:
+        with pytest.raises(FileExistsError):
+            fs.download(srv.url, tmp_path / "f.csv", fs.Budget(0))
+        budget = fs.Budget(400, len(body))               # part already counted by folder_bytes
+        fs.download(srv.url, tmp_path / "f.csv", budget, resume=True)
+    finally:
+        srv.httpd.shutdown()
+    assert srv.ranges == ["bytes=400-"]
+    assert (tmp_path / "f.csv").read_bytes() == body and not part.exists()
+
+
+def test_resume_200_restarts_cleanly(tmp_path, monkeypatch):
+    body = b"0123456789" * 50
+    srv = _RangeServer(body, ignore_range=True)
+    part = tmp_path / "f.csv.part"
+    part.write_bytes(b"GARBAGE")
+    try:
+        fs.download(srv.url, tmp_path / "f.csv", fs.Budget(0), resume=True)
+    finally:
+        srv.httpd.shutdown()
+    assert (tmp_path / "f.csv").read_bytes() == body
+
+
+def test_bad_content_range_is_refused(tmp_path, monkeypatch):
+    monkeypatch.setattr(fs.time, "sleep", lambda s: None)
+    body = b"x" * 1000
+    srv = _RangeServer(body, bad_range=True)
+    part = tmp_path / "f.csv.part"
+    part.write_bytes(body[:100])
+    try:
+        with pytest.raises(fs.IncompleteDownload):
+            fs.download(srv.url, tmp_path / "f.csv", fs.Budget(0), resume=True)
+    finally:
+        srv.httpd.shutdown()
+    assert not (tmp_path / "f.csv").exists()
+    assert part.read_bytes() == body[:100]               # kept, not appended to
+
+
+def test_total_change_between_attempts_is_fatal(tmp_path, monkeypatch):
+    """Attempt 1: 1000-byte body cut at 300. Attempt 2: upstream now 1200 bytes."""
+    monkeypatch.setattr(fs.time, "sleep", lambda s: None)
+    calls = {"n": 0}
+
+    class H(http.server.BaseHTTPRequestHandler):
+        def log_message(self, *a):
+            pass
+
+        def do_GET(self):
+            calls["n"] += 1
+            if calls["n"] == 1:
+                self.send_response(200)
+                self.send_header("Content-Length", "1000")
+                self.end_headers()
+                self.wfile.write(b"a" * 300)
+            else:
+                self.send_response(206)
+                self.send_header("Content-Range", "bytes 300-1199/1200")
+                self.send_header("Content-Length", "900")
+                self.end_headers()
+                self.wfile.write(b"b" * 900)
+            self.close_connection = True
+
+    httpd = http.server.ThreadingHTTPServer(("127.0.0.1", 0), H)
+    threading.Thread(target=httpd.serve_forever, daemon=True).start()
+    try:
+        with pytest.raises(fs.TotalChanged):
+            fs.download(f"http://127.0.0.1:{httpd.server_address[1]}/f", tmp_path / "f",
+                        fs.Budget(0))
+    finally:
+        httpd.shutdown()
+    assert (tmp_path / "f.part").read_bytes() == b"a" * 300     # untouched, not spliced
+    assert not (tmp_path / "f").exists()
+
+
+def test_transient_http_errors_retry(tmp_path, monkeypatch):
+    monkeypatch.setattr(fs.time, "sleep", lambda s: None)
+    calls = {"n": 0}
+
+    class H(http.server.BaseHTTPRequestHandler):
+        def log_message(self, *a):
+            pass
+
+        def do_GET(self):
+            calls["n"] += 1
+            if calls["n"] <= 2:
+                self.send_error(503)
+                return
+            self.send_response(200)
+            self.send_header("Content-Length", "5")
+            self.end_headers()
+            self.wfile.write(b"hello")
+
+    httpd = http.server.ThreadingHTTPServer(("127.0.0.1", 0), H)
+    threading.Thread(target=httpd.serve_forever, daemon=True).start()
+    try:
+        n, _ = fs.download(f"http://127.0.0.1:{httpd.server_address[1]}/f", tmp_path / "f",
+                           fs.Budget(0))
+    finally:
+        httpd.shutdown()
+    assert n == 5 and calls["n"] == 3
+
+
+def test_folder_lock_blocks_second_fetcher(tmp_path):
+    with fs.FolderLock(tmp_path):
+        assert (tmp_path / ".fetch.lock").exists()
+        with pytest.raises(fs.RefusedError, match="another fetcher"):
+            with fs.FolderLock(tmp_path):
+                pass
+        assert (tmp_path / ".fetch.lock").exists()      # the loser never removes it
+    assert not (tmp_path / ".fetch.lock").exists()
+
+
+def test_mimic_record_list_plausibility(tmp_path):
+    p = tmp_path / "record_list.csv"
+    pd.DataFrame({"subject_id": [1, 1, 2], "study_id": [10, 11, 12], "file_name": ["a"] * 3,
+                  "ecg_time": ["t"] * 3, "path": ["x"] * 3}).to_csv(p, index=False)
+    r = fs.mimic_record_list_check(p)
+    assert r["parses"] and r["rows"] == 3 and r["distinct_subject_id"] == 2
+    assert r["missing_expected_columns"] == "none"
+    p.write_text("not,a\n\"broken")
+    assert fs.mimic_record_list_check(p)["parses"] in (True, False)   # never raises
