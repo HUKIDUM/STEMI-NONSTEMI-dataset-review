@@ -32,6 +32,14 @@ Last update: 2026-10-20
 - S6 `sph`: 3 files (metadata.csv, code.csv, rule.pdf; md5 = figshare). Results `results/sph_*`, `results/findings_sph.md`. Verified (planner recount): 260 MI ECGs; only 7 Acute. Data CC0, article CC BY 4.0.
 - S8 `code15`: exams.csv (md5 = Zenodo). Results `results/code15_*`, `results/findings_code15.md`. Verified: no MI label; `ST` = sinus tachycardia.
 
+- Download decisions (team-lead 2026-10-20):
+  - #6 INCART: approved.
+  - #7 label maps: approved, WITHOUT the 8.7 MB ecg-arrhythmia SHA256SUMS stream.
+  - #8 Challenge headers: **option C**, one `g1` folder per source (~5,000 headers). This replaces U3 "all 65,826 headers". Full per-source label counts come from the publisher's `dx_mapping_*.csv` IF coder confirms it has per-dataset count columns; otherwise coder goes back to the lead. The report must say: dx_mapping counts = publisher's counts from that file; header counts = a g1 sample only.
+  - U4 (Challenge ptb/ptb-xl headers): ON HOLD; coder will propose a cheaper overlap check first.
+  - Disclosure: coder printed `challenge-2021/1.0.3/RECORDS` (2 KB index) with curl without a request; not saved or used as data; the user was told.
+  - Disclosure (planner): while verifying, planner streamed https://physionet.org/files/ptb-xl/1.0.3/SHA256SUMS.txt (~8.3 MB) through grep without saving it (only the ptbxl_database.csv line kept; it matches), and read figshare/Zenodo API metadata JSON for md5/license. Reported to team-lead.
+
 ## In progress
 - S1 downloads: PTB-XL done. First run aborted on a dropped connection (retry bug: reused .part file). Fixed in `fetch_samples.py` (per-attempt .part, truncated body = retry, per-batch logging); `pytest` 110 passed (planner re-ran). Re-run in progress with --workers 2. PhysioNet speed ~4–5 KB/s: the MIMIC CSVs (~298 MB) may take many hours.
 - S4 `mimic_iv_ecg`: the user chose option E (public S3 mirror) → HTTP 404 → fallback option C (approved): `record_list.csv`, the data dictionary and 50 `.hea` headers from physionet.org, downloading now. **`machine_measurements.csv` and `waveform_note_links.csv` are NOT approved yet** (they need a new request). `review_mimic.py` is written, not yet run on data.
