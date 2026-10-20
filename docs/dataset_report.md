@@ -57,7 +57,7 @@ Short answers only. Details and sources are in section 5.
 | CPSC-Extra | SNOMED CT codes in each header [OBS-CPSCX; PN-CHALLENGE2021] | Not found for this dataset [PN-CHALLENGE2021; PA2020] | Unused data from CPSC 2018, China; hospitals, years and patients not found [PN-CHALLENGE2021; PA2020] | Not found [PN-CHALLENGE2021; PA2020] | Device not found; 12 leads; 500 Hz; about 10–98 s in a sample [OBS-CPSCX] | No. "MI" labels exist, but most say **old** MI [DXMAP; OBS-CPSCX] | Maybe "MI label or not" after doctor review; not STEMI vs NSTEMI; pretraining. *Planner view, needs supervisor sign-off* | Mostly longer than 10 s; no patient ID; same origin as CPSC 2018, overlap not checked. Full check later (S10) | Open, no login [PN-CHALLENGE2021] | 3,453 recordings; CC BY 4.0 [PN-CHALLENGE2021; PA2020] |
 | Georgia | SNOMED CT codes in each header [OBS-GEORGIA; PN-CHALLENGE2021] | Not found for this dataset [PN-CHALLENGE2021; PA2020] | Emory University, Atlanta, Georgia, USA; years not found; 15,742 patients (all parts) [PA2020; PN-CHALLENGE2021] | Not found [PN-CHALLENGE2021; PA2020] | Device not found; 12 leads; 500 Hz; 5–10 s [PN-CHALLENGE2021] | No. Only 7 "MI" labels; many ST and ischaemia labels [DXMAP] | Not an MI source; at most a set to review for ST changes; pretraining. *Planner view, needs supervisor sign-off* | 5-s recordings need padding; **no patient ID**, but some patients have more than one recording. Full check later (S10) [PA2020] | Open, no login [PN-CHALLENGE2021] | 10,344 recordings (public part); CC BY 4.0 [PN-CHALLENGE2021] |
 | Ningbo | | | | | | | | | | |
-| Chapman-Shaoxing | | | | | | | | | | |
+| Chapman-Shaoxing | SNOMED CT codes in each header; MI wall locations merged into one code [OBS-CHAPMAN; ZH2020] | A doctor, checked by a second doctor; a senior doctor decided disagreements (best documented of the 5 Challenge sets) [ZH2020; PN-ECGARR] | Shaoxing People's Hospital, China, with Chapman University; years not found; 10,646 patients (original release) [ZH2020] | Not found (only "resting ECG") [ZH2020] | Stored in GE MUSE (storage system; machine not proven); 12 leads; 500 Hz; 10 s [ZH2020; OBS-CHAPMAN] | No. Only 40 MI labels, no timing [DXMAP] | Not an MI source; good for pretraining and rhythm. *Planner view, needs supervisor sign-off* | Same rate, length and leads as the planned input; no patient ID; the same ECGs are likely also in ecg-arrhythmia: never use both copies. Full check later (S10) [PN-CHALLENGE2021; PN-ECGARR] | Open [PN-CHALLENGE2021; PN-ECGARR] | 10,247 recordings (Challenge folder); CC BY 4.0 [PN-CHALLENGE2021] |
 | CODE-15% | 6 yes/no rhythm and conduction labels ("ST" = sinus tachycardia, **not** ST elevation), plus "normal ECG" and death [ZEN-CODE15] | Full CODE: computer reports plus text from expert reports; unclear cases checked by medical students with a cardiologist. For this 15% part: not found [RIBEIRO2020; ZEN-CODE15] | Telehealth Network of Minas Gerais, Brazil; 2010–2016; 233,770 patients [ZEN-CODE15; RIBEIRO2020] | Full CODE: mostly primary care (local health centres) [RIBEIRO2020] | TEB ECGPC or Micromed ErgoPC 13; 12 leads; 400 Hz as shared; 7–10 s, padded with zeros [RIBEIRO2020; ZEN-CODE15] | Neither. No MI label at all [OBS-CODE15; ZEN-CODE15] | Pretraining only, or not useful. *Planner view, needs supervisor sign-off* | Needs a speed change (400 Hz) and a padding mask; has patient IDs; no MI labels. Full check later (S10) [ZEN-CODE15] | Open, no login [ZEN-CODE15] | 345,779 ECGs; 46.3 GB (all files); CC BY 4.0 [ZEN-CODE15] |
 | INCART | Beat-by-beat marks; diagnosis text per patient; rhythm text per record [README-INCART; OBS-INCART] | Beat marks: computer, then corrected by people. Diagnoses: author not found [README-INCART] | St.-Petersburg Institute of Cardiological Technics, Russia; years not found; 32 patients tested for heart artery disease [README-INCART; PN-INCART] | Holter (long recording while the person goes about their day) [README-INCART] | Model not found; 12 leads; 257 Hz; 30 min [README-INCART; OBS-INCART] | Neither. "Acute MI" text: 2 patients only [OBS-INCART] | Not useful for MI tasks; at most pretraining on short pieces. *Planner view, needs supervisor sign-off* | Very different kind of recording; needs speed change and cutting; Challenge copy has 74 records, not 75. Full check later (S10) [MCR p.4; PA2020] | Open, no login [PN-INCART] | 75 records; 794.5 MB; ODC Attribution License v1.0 [PN-INCART] |
 
@@ -77,7 +77,7 @@ Short answers only. Details and sources are in section 5.
 | CPSC-Extra | Myocardial infarction; **old** MI; anterior MI [DXMAP] | Publisher's counts: MI 376, old MI 1,168, anterior MI 62 [DXMAP] | Partly: many are labelled "old"; none "acute" MI [DXMAP] | No [DXMAP] |
 | Georgia | Myocardial infarction [DXMAP] | Publisher's count: 7 [DXMAP] | No [DXMAP] | No [DXMAP] |
 | Ningbo | | | | |
-| Chapman-Shaoxing | | | | |
+| Chapman-Shaoxing | Myocardial infarction (one code; wall location lost) [OBS-CHAPMAN; ZH2020] | Publisher's count: 40 [DXMAP] | No [DXMAP] | No [DXMAP] |
 | CODE-15% | None. The "ST" column means sinus tachycardia (a fast heart rhythm that starts in the heart's normal pacemaker), not ST elevation [ZEN-CODE15] | 0 [OBS-CODE15] | No [OBS-CODE15] | No [OBS-CODE15; RIBEIRO2020] |
 | INCART | Diagnosis text "Acute MI" and "Earlier MI" [OBS-INCART] | Acute MI: 6 records (2 patients). Earlier MI: 9 records (4 patients) [OBS-INCART] | Yes, as diagnosis text ("acute" / "earlier") [OBS-INCART] | No [OBS-INCART] |
 
@@ -277,7 +277,28 @@ CPSC 2018, CPSC-Extra, Georgia, Ningbo and Chapman-Shaoxing are all shared insid
 
 ### 5.9 Chapman-Shaoxing
 
-*Waiting for verified facts.*
+**In one line:** an open set of 10-second resting ECGs from one Chinese hospital, with the best-documented doctor labelling of the five Challenge datasets. It has only 40 MI labels and no timing, so it is not a heart-attack dataset.
+
+1. **Labels.** SNOMED CT codes in each header, with the fields Age, Sex, Dx, Rx, Hx and Sx [OBS-CHAPMAN]. In a sample of one folder (999 headers; one listed file could not be found on the server) there were 35 different codes, all with known names [OBS-CHAPMAN]. **The heart-attack location is lost.** The original release had separate labels for MI in general and for MI of the back wall, front wall, lower wall and side wall. They all became one SNOMED code (164865005) [OBS-CHAPMAN; ZH2020]. **ST labels were renamed.** In the original release, "ST elevation" was called "ST tilt up" and "ST depression" was called "ST drop down" [OBS-CHAPMAN; ZH2020]. The wording differs between the original and Challenge copies, and doctors should review what it means [OBS-CHAPMAN].
+2. **Who labelled them.** "A licensed physician labeled the rhythm and other cardiac conditions". A second licensed physician checked the labels. When they disagreed, a senior physician made the final decision [ZH2020; PN-ECGARR]. This is the best-documented labelling of the five Challenge datasets.
+3. **Collection.** Shaoxing People's Hospital (Shaoxing Hospital Zhejiang University School of Medicine), China, working with Chapman University [ZH2020; PN-ECGARR]. Years: **not found**. The original release had 10,646 patients (5,956 male, 4,690 female), aged 4 to 98, with "a 12-lead resting ECG" of 10 seconds for each person [ZH2020]. This suggests one ECG per patient, but the paper does not say so directly. In the sample folder: 593 male and 406 female; ages 4 to 89 [OBS-CHAPMAN].
+4. **Setting.** **Not found.** The paper only says "12-lead resting ECG". It does not say inpatient, outpatient or health check-up [ZH2020].
+5. **Device.** "The data were stored into the GE MUSE ECG system" [ZH2020]. GE MUSE is a system for storing ECGs. It does not prove which machine recorded them [NB p.15]. 500 Hz, 10 seconds [ZH2020]. In the sample folder, all 999 had 12 leads, 500 Hz, 5,000 samples, units in millivolts, and the lead order I, II, III, aVR, aVL, aVF, V1–V6 [OBS-CHAPMAN].
+6. **STEMI vs NSTEMI.** **No.** Heart-related labels, as publisher's count / sample count [DXMAP; OBS-CHAPMAN]:
+
+   | Label | Publisher's count | Sample count (999) |
+   |---|---|---|
+   | Myocardial infarction | 40 | 3 |
+   | ST elevation (originally "ST tilt up") | 176 | 11 |
+   | ST depression (originally "ST drop down") | 402 | 33 |
+   | Q-wave abnormal | 235 | 18 |
+   | Nonspecific ST-T abnormality | 1,158 | 98 |
+
+   Very few MI labels, and none says whether the heart attack is new or old.
+7. **Best model use.** *This is the planner's view. The clinical supervisor still needs to agree.* Not a source for MI, or for STEMI vs NSTEMI (only 40 MI labels). Because the labels were checked by doctors, it is a good source for pretraining and for heart rhythm.
+8. **Combining.** *(Partial. The full check comes in step S10.)* 500 Hz, 10 seconds and 12 leads: this matches the planned model input directly (`data_contract.md` C1.3) [ZH2020]. **No patient ID** in the headers [OBS-CHAPMAN]. **The same ECGs are probably also in another dataset.** The PhysioNet "ecg-arrhythmia" dataset has 45,152 ECGs, which is exactly Challenge Chapman-Shaoxing (10,247) + Ningbo (34,905) [PN-CHALLENGE2021; PN-ECGARR]. This is a count match only: no one compared the recordings one by one (`data_contract.md` O4). **Never use the Challenge copy and the ecg-arrhythmia copy together.** Also, the original release had 10,646 records but the Challenge folder has 10,247. The sources we read do not explain the difference (see section 9) [ZH2020; PN-CHALLENGE2021].
+9. **Access.** Open [PN-CHALLENGE2021]. The ecg-arrhythmia copy is also open, under CC BY 4.0 [PN-ECGARR].
+10. **Size and license.** 10,247 recordings in the Challenge folder. License: CC BY 4.0 [PN-CHALLENGE2021].
 
 ### 5.10 CODE-15%
 
@@ -368,6 +389,8 @@ Datasets that could mislead a model. *Waiting for verified facts.*
 
 - **INCART, number of patients with "transient ischemic attack (angina pectoris)".** The README says 5 patients. The file `files-patients-diagnoses.txt` lists 4 (patients 3, 7, 8 and 18 = 7 records). We could not resolve this. Only the publisher could [README-INCART; OBS-INCART].
 - **Georgia, number of ECGs.** The Challenge page says "This source contains 20,672 ECGs". The Challenge paper gives 20,678 recordings. The 6-recording difference is not explained [PN-CHALLENGE2021; PA2020, Tables 1–2].
+- **Chapman-Shaoxing, number of records.** The original release had 10,646 records. The Challenge folder has 10,247. The sources we read do not explain the difference [ZH2020; PN-CHALLENGE2021].
+- **ecg-arrhythmia: patients or ECGs?** The ecg-arrhythmia page calls its 45,152 items "patients" in one place and "ECGs" in another. The number of different patients is not established [PN-ECGARR].
 
 ## Appendix A. Other datasets worth checking (not reviewed in depth)
 
@@ -397,6 +420,8 @@ Datasets that could mislead a model. *Waiting for verified facts.*
 - **[README-INCART]** The publisher's README file from the INCART release 1.0.0 file set (downloaded 2026-10-20; quoted word for word).
 - **[PN-MIMICECG]** MIMIC-IV-ECG: Diagnostic Electrocardiogram Matched Subset, release 1.0, PhysioNet. https://physionet.org/content/mimic-iv-ecg/1.0/ (checked 2026-10-21).
 - **[PN-MIMICECG-ICD]** MIMIC-IV-ECG-ext-ICD (diagnosis labels for MIMIC-IV-ECG), release 1.0.1, PhysioNet (credentialed; only the public page was read). https://physionet.org/content/mimic-iv-ecg-ext-icd-labels/1.0.1/
+- **[ZH2020]** Zheng J. et al., 2020 (the Chapman-Shaoxing dataset paper). https://pmc.ncbi.nlm.nih.gov/articles/PMC7016169/
+- **[PN-ECGARR]** A large scale 12-lead electrocardiogram database for arrhythmia study ("ecg-arrhythmia"), release 1.0.0, PhysioNet. https://physionet.org/content/ecg-arrhythmia/1.0.0/ (checked 2026-10-20).
 - **[PN-CHALLENGE2021]** PhysioNet/Computing in Cardiology Challenge 2021, release 1.0.3. https://physionet.org/content/challenge-2021/1.0.3/ (checked 2026-10-20), and the Challenge web page https://moody-challenge.physionet.org/2021/.
 - **[DXMAP]** The Challenge 2021 label files `dx_mapping_scored.csv` and `dx_mapping_unscored.csv` (from the Challenge evaluation code; our copy downloaded 2026-10-20, checksum in `download_manifest.csv`; these files can change). They give a count per label for each source. What the counts count is **not defined** by the publisher. Counts are in `results/challenge_dx_mapping_counts.csv` (recounted by the planner).
 
@@ -409,7 +434,7 @@ All are in `results/`. Each one describes the files we downloaded on 2026-10-20,
 - **[OBS-CODE15]** CODE-15% counts from `exams.csv`: `code15_summary.md`, `code15_label_counts.csv` (recounted by the planner).
 - **[OBS-PTBDB]** PTB Diagnostic counts from all 549 headers and the `RECORDS` / `CONTROLS` lists: `ptb_diagnostic_summary.md`, `ptb_diagnostic_comment_counts.csv`, `ptb_diagnostic_records.csv`, `ptb_diagnostic_mi_timing.csv`, `ptb_diagnostic_mi_patient_timing.csv`, `ptb_diagnostic_mi_lytic_agent.csv` (recounted by the planner).
 - **[OBS-INCART]** INCART checks of all 75 headers, `files-patients-diagnoses.txt` and `record-descriptions.txt`: `incart_summary.md`, `incart_headers.csv` (checked by the planner).
-- **[OBS-CPSC]**, **[OBS-CPSCX]**, **[OBS-GEORGIA]** Counts from a sample of one folder (`g1`, 999 headers) for each dataset: `challenge_<dataset>_summary.md`, `challenge_<dataset>_dx_counts.csv`, `challenge_<dataset>_headers.csv`, `challenge_<dataset>_comment_keys.csv`, where `<dataset>` is `cpsc_2018`, `cpsc_extra` or `georgia` (recounted by the planner).
+- **[OBS-CPSC]**, **[OBS-CPSCX]**, **[OBS-GEORGIA]**, **[OBS-CHAPMAN]** Counts from a sample of one folder (`g1`, 999 headers) for each dataset: `challenge_<dataset>_summary.md`, `challenge_<dataset>_dx_counts.csv`, `challenge_<dataset>_headers.csv`, `challenge_<dataset>_comment_keys.csv`, where `<dataset>` is `cpsc_2018`, `cpsc_extra`, `georgia` or `chapman_shaoxing` (recounted by the planner). [OBS-CHAPMAN] also covers the original release's `ConditionNames_SNOMED-CT.csv`.
 - **[OBS-MIMIC]** MIMIC-IV-ECG counts from `record_list.csv`, `machine_measurements_data_dictionary.csv` and a sample of 50 headers: `mimic_iv_ecg_summary.md`, `mimic_iv_ecg_headers.csv` (recounted by the planner); download check in `download_plausibility.csv`.
 - **[OBS-DOWNLOAD]** `download_manifest.csv`: what was downloaded, from where, and its checksum.
 - All checked facts: `verified_facts.md`.
