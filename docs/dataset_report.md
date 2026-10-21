@@ -142,8 +142,8 @@ This table shows labels that several datasets share. Each label is explained in 
 - CODE-15% `ST` means sinus tachycardia, not ST elevation. Its `normal_ecg` flag comes from an automatic system.
 - Chapman-Shaoxing and Ningbo: the LBBB code may also include fascicular blocks (blocks in smaller branches of the left wiring).
 - PTB-XL "ST elevation" is the code "non-specific ST elevation" (28 ECGs).
-- Ningbo atrial fibrillation is truly 0 in the label file, but Ningbo has 7,615 atrial flutter. Our sample shows the same (0 vs 97). Chapman-Shaoxing has the usual pattern (1,780 fibrillation vs 445 flutter) [DXMAP; OBS-NINGBO; OBS-CHAPMAN].
-- **Name trap:** in the original Chapman/Ningbo label list, the short name "AF" means atrial **flutter**, and "AFIB" means atrial fibrillation. Most readers expect "AF" to mean fibrillation [PN-ECGARR].
+- **Atrial fibrillation vs atrial flutter (warning).** Ningbo has 0 atrial fibrillation but 7,615 atrial flutter, both in the publisher's file and in our sample (0 and 97). So this is not a mapping error. Chapman-Shaoxing has 1,780 atrial fibrillation and 445 atrial flutter (sample 177 and 46) [AFCHK]. Careful with names: in the original label list, the short form "AF" means atrial **flutter**, and "AFIB" means atrial fibrillation [AFCHK]. *Planner's note:* Ningbo's pattern (no atrial fibrillation, many atrial flutter) is unusual and may reflect how the source labelled rhythms; a model could learn a dataset-specific labelling habit. A clinician should review this before Ningbo rhythm labels are used.
+- Chapman-Shaoxing and Ningbo: all heart-attack wall locations (front, back, lower, side) map to one MI code, so the location is lost (section 5.9) [XWALK].
 - PTB-XL has no "old MI" label. Its separate stage field shows 963 MI-coded ECGs (923 patients) at Stadium III ("old").
 - INCART counts come partly from diagnoses given per patient, not per recording.
 - "MI, any" includes old heart attacks. These are report labels, not checked diagnoses (`data_contract.md` L2).
@@ -513,8 +513,8 @@ Datasets that could mislead a model.
   - **Machine-written reports:** the open MIMIC-IV-ECG reports are written by the ECG machine [PN-MIMICECG]. About 31% of PTB-XL first reports were written by the machine [WAGNER2020]. CODE-15%'s `normal_ecg` comes from an automatic system [ZEN-CODE15].
   - **PTB-XL likelihood 100 does not mean new:** it measures report wording, and "status post" (a past event) also gives 100 [WAGNER2020, Table 4].
   - **"Acute" as a word, without timing:** SPH has 7 MI statements with "acute" [OBS-SPH]. Ningbo has 49 "acute MI" labels whose original label is unknown [DXMAP; OBS-NINGBO]. Neither is a reviewed new heart attack.
-  - **Ningbo rhythm labels:** Ningbo has 0 atrial fibrillation but 7,615 atrial flutter labels, while Chapman-Shaoxing has 1,780 and 445 [DXMAP]. *Planner's note:* this may reflect how that source labelled rhythms, so a model could learn a labelling habit of one dataset. A clinician should review this before Ningbo's rhythm labels are used.
   - **Mostly old heart attacks:** CPSC-Extra has 1,168 "old MI" labels vs 376 "MI" [DXMAP].
+  - **Atrial flutter vs fibrillation in Ningbo:** 0 atrial fibrillation but 7,615 atrial flutter, in the publisher's file and in our sample. In the original label list, "AF" means atrial flutter and "AFIB" means atrial fibrillation [AFCHK]. *Planner's note:* Ningbo's pattern (no atrial fibrillation, many atrial flutter) is unusual and may reflect how the source labelled rhythms; a model could learn a dataset-specific labelling habit. A clinician should review this before Ningbo rhythm labels are used.
   - **Lost detail:** in Chapman-Shaoxing, all heart-attack locations were merged into one code [OBS-CHAPMAN].
   - **Label quality varies** between the Challenge datasets, and "some of the data and labels are likely to have errors" [PA2020, §2.1.2; PN-CHALLENGE2021].
 - **Same patients or same ECGs in two places:** Example of the problem: if the same ECG is in both the training data and the test data, the model looks better than it really is.
@@ -1276,6 +1276,7 @@ All are in `results/`. Each one describes the files we downloaded on 2026-10-20,
 - **[CMB]** The combine table: `combine_matrix.csv`, `combine_matrix_summary.md` (55 pairs, made by a script from verified rows under rules a–g set by the planner; the planner spot-checked 7 pairs).
 - **[REC]** The planner's per-model assessment (row "S10 recommend" in `verified_facts.md`).
 - **[INV]** Full label lists: `label_inventory_<dataset>.csv`, `label_inventory_summary.md` (made by a script from the downloaded files only; checked by the planner).
+- **[AFCHK]** Atrial fibrillation vs flutter check for Ningbo and Chapman-Shaoxing (row "AF vs AFL check" in `verified_facts.md`; publisher's label file, our sample headers and the original release's `ConditionNames_SNOMED-CT.csv`).
 - **[XWALK]** Common-label table: `label_crosswalk_common.csv` (a team mapping by meaning, checked by the planner; needs supervisor review).
 - **[OBS-DOWNLOAD]** `download_manifest.csv`: what was downloaded, from where, and its checksum.
 - All checked facts: `verified_facts.md`.
