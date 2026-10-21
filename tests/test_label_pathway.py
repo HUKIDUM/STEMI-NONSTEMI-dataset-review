@@ -39,3 +39,15 @@ def test_built_file_traces(tmp_path):
     for r in df.itertuples(index=False):
         used = [k.strip() for k in r.source_rows.split(" ; ") if k.strip()]
         assert used and all(k in keys for k in used)
+
+
+def test_mimic_count_wording():
+    assert lp.MIMIC_ICD_COUNT == "pending user-run count (credentialed)"
+    p = lp.VERIFIED.parent / "label_provenance.csv"
+    if p.exists():
+        df = pd.read_csv(p, dtype=str, keep_default_na=False)
+        m = df[df["dataset"] == "mimic_iv_ecg"]
+        icd = m[~m["class"].str.startswith("machine report")]
+        assert len(icd) == 6 and (icd["count"] == lp.MIMIC_ICD_COUNT).all()
+        assert (m.loc[m["class"].str.startswith("machine report"), "count"] == "not checked").all()
+        assert not df.apply(lambda c: c.str.contains("awaiting user decision")).any().any()
