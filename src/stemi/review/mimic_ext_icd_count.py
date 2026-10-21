@@ -12,12 +12,18 @@ The team never runs this and never sees the file.
     python -I src/stemi/review/mimic_ext_icd_count.py --table /path/to/records_w_diag_icd10.csv \\
         [--out counts.csv]
 
-Column names follow https://physionet.org/content/mimic-iv-ecg-ext-icd-labels/1.0.1/
-(planner-supplied). ASSUMPTIONS, to be confirmed against that page:
-- one row per ECG (if a `study_id` column exists, ECGs are counted as distinct study_id);
-- diag cells are list-like strings of ICD-10-CM codes, e.g. "['I214', 'I10']";
-- the ED-vs-hospital comparison uses --ed-col (default ed_diag_ed) and --hosp-col
-  (default hosp_diag_hosp), only on ECGs where both cells hold at least one code.
+Column names follow the Data Description of
+https://physionet.org/content/mimic-iv-ecg-ext-icd-labels/1.0.1/ (subject_id, study_id,
+ecg_time, ed_diag_ed, ed_diag_hosp, hosp_diag_hosp, all_diag_hosp, all_diag_all,
+ecg_taken_in_ed, ecg_taken_in_hosp, ecg_taken_in_ed_or_hosp); ECGs = distinct study_id
+(row-count fallback only if study_id is missing, and the output says so); ecg_time is never
+read. Formats NOT documented on the page, so assumed:
+- diag cells: list-like strings of ICD-10-CM codes (e.g. "['I214', 'I10']"), parsed tolerantly;
+  unparseable cells are counted (suppressed), never printed;
+- flags: True/False/1/0/t/f (case-insensitive); anything else counts as "flag unparseable".
+The ED-vs-hospital comparison defaults to ed_diag_ed (ED discharge dx) vs ed_diag_hosp
+(hospital dx of the admission after that ED stay, "via ed_hadm_id"), i.e. one patient
+journey; --ed-col / --hosp-col change it; only ECGs where both cells hold a code count.
 Group labels (STEMI / NSTEMI / …) are an ASSUMPTION for clinical-supervisor review; the
 diagnoses are discharge billing codes and do not show whether the MI was acute at ECG time.
 """
@@ -34,6 +40,7 @@ import ast
 import hashlib
 import re
 import sys
+import time
 from pathlib import Path
 
 import pandas as pd
@@ -42,11 +49,12 @@ from stemi.review.mimic_icd_count import SUPPRESSED
 
 DIAG_COLUMNS = ["ed_diag_ed", "ed_diag_hosp", "hosp_diag_hosp", "all_diag_hosp", "all_diag_all"]
 FLAG_COLUMNS = ["ecg_taken_in_ed", "ecg_taken_in_hosp", "ecg_taken_in_ed_or_hosp"]
-REQUIRED = ["subject_id", *DIAG_COLUMNS, *FLAG_COLUMNS]
+REQUIRED = ["subject_id", *DIAG_COLUMNS, *FLAG_COLUMNS]   # study_id expected; ecg_time not read
+KEY = "study_id"
 GROUPS = [
     ("STEMI (I21.0-I21.3; ASSUMPTION)", r"I21[0-3]\w*"),
     ("NSTEMI (I21.4; ASSUMPTION)", r"I214\w*"),
-    ("unspecified/other MI (I21.9, I21.A*)", r"I21(9|A)\w*"),
+    ("unspecified/other MI (I21.9, I21.A*)", r"I21(?:9|A)\w*"),
     ("subsequent MI (I22*)", r"I22\w*"),
     ("old MI (I25.2)", r"I252\w*"),
     ("any I21/I22", r"I2[12]\w*"),
@@ -57,7 +65,9 @@ CAVEATS = [
     "Diagnoses are hospital/ED discharge billing codes; they do not show whether the MI was "
     "present or acute at the time of the ECG.",
     "The STEMI/NSTEMI group labels are an ASSUMPTION for clinical-supervisor review.",
-    "ASSUMPTION: one row per ECG unless a study_id column exists.",
+    "Cell format assumed (list-like ICD-10 strings): the diag-column format is not documented; "
+    "see the (suppressed) unparseable-cell counts.",
+    "Flag format assumed (True/False/1/0/t/f): not documented; see 'flag unparseable' counts.",
     "Counts 1-9 print as <10; some larger cells are hidden too (secondary suppression).",
 ]
 _CODE = re.compile(r"[A-Z][0-9][0-9A-Z]{1,6}")
@@ -85,8 +95,13 @@ def parse_codes(v) -> tuple[list[str], bool]:
     return ([c for c in codes if _CODE.fullmatch(c)], ok)
 
 
-def _flag(s: pd.Series) -> pd.Series:
-    return s.astype(str).str.strip().str.lower().isin({"true", "1", "1.0", "t", "yes"})
+TRUE_VALUES, FALSE_VALUES = {"true", "1", "t"}, {"false", "0", "f"}
+
+
+def _flag(s: pd.Series) -> tuple[pd.Series, int]:
+    """(boolean flag, number of unparseable cells). Accepts True/False/1/0/t/f, any case."""
+    v = s.astype(str).str.strip().str.lower()
+    return v.isin(TRUE_VALUES), int((~v.isin(TRUE_VALUES | FALSE_VALUES)).sum())
 
 
 def check_columns(path: Path) -> list[str]:
@@ -109,29 +124,32 @@ def file_identity(path: Path) -> tuple[int, str]:
     return path.stat().st_size, h.hexdigest()
 
 
-def flags_frame(path: Path, cols: list[str]) -> tuple[pd.DataFrame, dict[str, int]]:
-    """One compact row per input row: subject, optional study, settings, group hits per column."""
-    use = REQUIRED + (["study_id"] if "study_id" in cols else [])
-    parts, bad = [], {c: 0 for c in DIAG_COLUMNS}
+def flags_frame(path: Path, cols: list[str]) -> tuple[pd.DataFrame, dict[str, int], bool]:
+    """One compact row per input row: subject, ECG key, settings, group hits per column.
+    Returns (frame, unparseable counts, has_study_id)."""
+    has_key = KEY in cols
+    use = REQUIRED + ([KEY] if has_key else [])
+    parts, bad = [], {**{c: 0 for c in DIAG_COLUMNS}, **{f"flag:{f}": 0 for f in FLAG_COLUMNS}}
+    offset = 0
     for chunk in pd.read_csv(path, usecols=use, dtype=str, chunksize=CHUNK_ROWS,
                              keep_default_na=False, na_values=[""]):
         out = pd.DataFrame({"subject": chunk["subject_id"].to_numpy()})
-        out["ecg"] = chunk["study_id"].to_numpy() if "study_id" in chunk else None
+        out["ecg"] = (chunk[KEY].to_numpy() if has_key
+                      else range(offset, offset + len(chunk)))       # row-count fallback
+        offset += len(chunk)
         for f in FLAG_COLUMNS:
-            out[f] = _flag(chunk[f]).to_numpy()
+            val, nbad = _flag(chunk[f])
+            out[f] = val.to_numpy()
+            bad[f"flag:{f}"] += nbad
         for c in DIAG_COLUMNS:
             parsed = chunk[c].map(parse_codes)
             bad[c] += int((~parsed.map(lambda p: p[1])).sum())
-            codes = parsed.map(lambda p: p[0])
-            out[f"{c}__nonempty"] = codes.map(bool).to_numpy()
+            joined = "|" + parsed.map(lambda p: "|".join(p[0])) + "|"   # vectorised group tests
+            out[f"{c}__nonempty"] = (joined != "||").to_numpy()
             for name, pat in GROUPS:
-                rx = re.compile(pat)
-                out[f"{c}__{name}"] = codes.map(lambda cs: any(rx.fullmatch(x) for x in cs)).to_numpy()
+                out[f"{c}__{name}"] = joined.str.contains(rf"\|{pat}\|", regex=True).to_numpy()
         parts.append(out)
-    df = pd.concat(parts, ignore_index=True)
-    if df["ecg"].isna().all():
-        df["ecg"] = range(len(df))                   # one row per ECG (ASSUMPTION)
-    return df, bad
+    return pd.concat(parts, ignore_index=True), bad, has_key
 
 
 def _n(df: pd.DataFrame, mask: pd.Series) -> tuple[int, int]:
@@ -183,7 +201,7 @@ def by_setting(df: pd.DataFrame, col: str = "all_diag_all") -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-def disagreement(df: pd.DataFrame, ed_col: str = "ed_diag_ed", hosp_col: str = "hosp_diag_hosp") -> pd.DataFrame:
+def disagreement(df: pd.DataFrame, ed_col: str = "ed_diag_ed", hosp_col: str = "ed_diag_hosp") -> pd.DataFrame:
     """ECGs where both columns hold codes: group in both / ED only / hospital only / neither,
     plus the specific cross cases (no I21/I22 in one vs STEMI/NSTEMI in the other, STEMI vs NSTEMI)."""
     both = df[f"{ed_col}__nonempty"] & df[f"{hosp_col}__nonempty"]
@@ -211,18 +229,24 @@ def disagreement(df: pd.DataFrame, ed_col: str = "ed_diag_ed", hosp_col: str = "
     return pd.DataFrame(rows)
 
 
-def run(path: Path, ed_col: str = "ed_diag_ed", hosp_col: str = "hosp_diag_hosp") -> dict:
+def run(path: Path, ed_col: str = "ed_diag_ed", hosp_col: str = "ed_diag_hosp") -> dict:
     cols = check_columns(path)
     for c in (ed_col, hosp_col):
         if c not in DIAG_COLUMNS:
             raise SystemExit(f"--ed-col/--hosp-col must be one of {DIAG_COLUMNS}")
     size, sha = file_identity(path)
-    df, bad = flags_frame(path, cols)
+    df, bad, has_key = flags_frame(path, cols)
+    key_note = ("distinct study_id" if has_key
+                else "study_id column MISSING: ECGs counted as rows (fallback)")
     ident = pd.DataFrame({"item": ["file name", "file size (bytes)", "file sha256", "rows",
-                                   "distinct ECGs (study_id or rows)", "distinct patients",
-                                   *[f"unparseable cells in {c}" for c in DIAG_COLUMNS]],
+                                   f"distinct ECGs ({key_note})", "distinct patients",
+                                   "disagreement pair used",
+                                   *[f"unparseable cells in {c}" for c in DIAG_COLUMNS],
+                                   *[f"flag unparseable in {f}" for f in FLAG_COLUMNS]],
                           "value": [path.name, size, sha, len(df), df["ecg"].nunique(),
-                                    df["subject"].nunique(), *[bad[c] for c in DIAG_COLUMNS]]})
+                                    df["subject"].nunique(), f"{ed_col} vs {hosp_col}",
+                                    *[_s(bad[c]) for c in DIAG_COLUMNS],
+                                    *[_s(bad[f"flag:{f}"]) for f in FLAG_COLUMNS]]})
     return {"identity": ident, "by_column": by_column(df), "by_setting": by_setting(df),
             "disagreement": disagreement(df, ed_col, hosp_col)}
 
@@ -231,12 +255,15 @@ def main(argv: list[str] | None = None) -> dict:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--table", type=Path, required=True, help="records_w_diag_icd10.csv")
     ap.add_argument("--ed-col", default="ed_diag_ed", help="ED column for the disagreement table")
-    ap.add_argument("--hosp-col", default="hosp_diag_hosp", help="hospital column for the disagreement table")
+    ap.add_argument("--hosp-col", default="ed_diag_hosp",
+                    help="hospital column for the disagreement table (default: admission after the ED stay)")
     ap.add_argument("--out", type=Path, default=None, help="optional aggregate CSV (new file only)")
     args = ap.parse_args(argv)
     if args.out is not None and args.out.exists():
         raise SystemExit(f"{args.out} exists; choose a new file name (nothing is overwritten)")
+    t0 = time.perf_counter()
     res = run(args.table, args.ed_col, args.hosp_col)
+    print(f"Disagreement pair used: {args.ed_col} vs {args.hosp_col}")
     for c in CAVEATS:
         print(f"- {c}")
     for key in ("identity", "by_column", "by_setting", "disagreement"):
@@ -249,6 +276,7 @@ def main(argv: list[str] | None = None) -> dict:
             for key in ("identity", "by_column", "by_setting", "disagreement"):
                 f.write(f"# == {key}\n")
                 res[key].to_csv(f, index=False)
+    print(f"\nElapsed: {time.perf_counter() - t0:.1f} s")
     return res
 
 
