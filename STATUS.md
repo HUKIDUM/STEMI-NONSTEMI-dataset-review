@@ -91,6 +91,10 @@ Last update: 2026-10-21 (team-lead)
 - S13: final report to team-lead (planner).
 
 ## In progress
+- **S13 label provenance** (user-approved 2026-10-21; plan in `docs/project/PLAN.md` §8).
+  - S0 DONE (planner, web pages only; the file was NOT opened): `data/samples/mimic_iv_ecg/records_w_diag_icd10.csv` (339 MB, gitignored) matches the main table of **MIMIC-IV-ECG-Ext-ICD** (https://physionet.org/content/mimic-iv-ecg-ext-icd-labels/1.0.1/, versions 1.0.0/1.0.1; **credentialed + DUA + CITI**; discharge-diagnosis labels per ED stay / admission, with no time window beyond the stay). Reported to the lead; **nobody reads the file until the user decides** (current rule U1).
+  - S1 in progress (planner): provenance facts per dataset.
+
 - (none running)
 
 ## Done 2026-10-21

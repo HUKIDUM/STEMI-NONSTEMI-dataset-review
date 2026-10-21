@@ -152,3 +152,25 @@ Style: plain English, short sentences, every factual sentence cited.
 - **U6 PDF build.** `pandoc` is installed but has no PDF engine (no LaTeX, wkhtmltopdf, weasyprint or Chrome). Options: (a) install `weasyprint` into `.venv`, (b) install a LaTeX engine, (c) deliver HTML + Markdown only and you print to PDF. Which one?
 - **U7 Code location.** Review scripts go in `src/stemi/review/` (new subpackage). OK?
 - **U8 BG-UNCONFIRMED items to check (no answer needed now):** CPSC 2018 has an ST-elevation class; Georgia comes from Emory; PTB-DB headers have infarct date fields; Chapman/Ningbo export overlap; CODE-15 labels came from cardiologists + automatic systems. Each will be marked verified or not found.
+
+## 8. Add-on S13: label provenance (approved by the user 2026-10-21, via team-lead)
+
+**Goal.** A table, per dataset × label class, of HOW each label was made. Columns:
+- labeller (ECG machine / cardiologist reading the ECG / billing coder (ICD) / study doctors);
+- steps (e.g. auto statement → cardiologist → 2nd cardiologist);
+- basis (ECG only vs whole hospital stay or health record);
+- timing link to this ECG;
+- count;
+- source.
+
+**Classes in scope:** all MI / ST / ischaemia / Q-wave classes, plus the 21 labels in `results/label_crosswalk_common.csv`. MIMIC: I21.0–I21.3 (STEMI), I21.4 (NSTEMI), I21.9 / I21.A, I22, I25.2 (old MI), only if the user approves access (S0).
+
+**Rules.** As for the review: every fact sourced; "not found" plus where we looked; no downloads without the user's OK; no logins; no GitHub. Commit locally after each step. A class gets the dataset-level method unless a source states a class-specific method; that inheritance is written explicitly in each cell ("dataset-level method; no class-specific statement found").
+
+| Step | Owner | Content |
+|---|---|---|
+| S0 | planner | Identify `data/samples/mimic_iv_ecg/records_w_diag_icd10.csv` from web pages only (do NOT open it). Done 2026-10-21: MIMIC-IV-ECG-Ext-ICD (credentialed + DUA + CITI); reported to the lead; the user decides on access. |
+| S1 | planner | Verify provenance facts per dataset (reuse existing verified rows; new rows tagged "S13"): PTB-XL, PTB Diagnostic, SPH, CODE-15%, CPSC 2018, CPSC-Extra, Georgia, Ningbo, Chapman, INCART, MIMIC-IV-ECG machine statements, and (if approved) Ext-ICD. |
+| S2 | coder | Per-class counts → `results/label_provenance.csv` (dataset, class, source codes, count, count type, provenance fields filled only from S13 verified rows). MIMIC ICD counts only via a user-run aggregate script, unless the user approves otherwise. |
+| S3 | planner | Verify S2 against the files and rows. |
+| S4 | documenter | Report §4c "How each label was made", from verified rows only; rebuild the PDF. |
