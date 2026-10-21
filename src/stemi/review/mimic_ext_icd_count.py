@@ -20,7 +20,8 @@ ecg_taken_in_ed, ecg_taken_in_hosp, ecg_taken_in_ed_or_hosp); ECGs = distinct st
 read. Formats NOT documented on the page, so assumed:
 - diag cells: list-like strings of ICD-10-CM codes (e.g. "['I214', 'I10']"), parsed tolerantly;
   unparseable cells are counted (suppressed), never printed;
-- flags: True/False/1/0/t/f (case-insensitive); anything else counts as "flag unparseable".
+- flags: true-like {true, 1, 1.0, t, yes} / false-like {false, 0, 0.0, f, no, ""}
+  (case-insensitive); anything else is counted as "flag values not recognised".
 The ED-vs-hospital comparison defaults to ed_diag_ed (ED discharge dx) vs ed_diag_hosp
 (hospital dx of the admission after that ED stay, "via ed_hadm_id"), i.e. one patient
 journey; --ed-col / --hosp-col change it; only ECGs where both cells hold a code count.
@@ -67,7 +68,8 @@ CAVEATS = [
     "The STEMI/NSTEMI group labels are an ASSUMPTION for clinical-supervisor review.",
     "Cell format assumed (list-like ICD-10 strings): the diag-column format is not documented; "
     "see the (suppressed) unparseable-cell counts.",
-    "Flag format assumed (True/False/1/0/t/f): not documented; see 'flag unparseable' counts.",
+    "Flag format assumed (true-like true/1/1.0/t/yes, false-like false/0/0.0/f/no/empty): not "
+    "documented; see 'flag values not recognised' counts.",
     "Counts 1-9 print as <10; some larger cells are hidden too (secondary suppression).",
 ]
 _CODE = re.compile(r"[A-Z][0-9][0-9A-Z]{1,6}")
@@ -95,7 +97,8 @@ def parse_codes(v) -> tuple[list[str], bool]:
     return ([c for c in codes if _CODE.fullmatch(c)], ok)
 
 
-TRUE_VALUES, FALSE_VALUES = {"true", "1", "t"}, {"false", "0", "f"}
+TRUE_VALUES = {"true", "1", "1.0", "t", "yes"}
+FALSE_VALUES = {"false", "0", "0.0", "f", "no", "", "nan"}   # "nan" = an empty cell read as missing
 
 
 def _flag(s: pd.Series) -> tuple[pd.Series, int]:
@@ -242,7 +245,7 @@ def run(path: Path, ed_col: str = "ed_diag_ed", hosp_col: str = "ed_diag_hosp") 
                                    f"distinct ECGs ({key_note})", "distinct patients",
                                    "disagreement pair used",
                                    *[f"unparseable cells in {c}" for c in DIAG_COLUMNS],
-                                   *[f"flag unparseable in {f}" for f in FLAG_COLUMNS]],
+                                   *[f"flag values not recognised in {f}" for f in FLAG_COLUMNS]],
                           "value": [path.name, size, sha, len(df), df["ecg"].nunique(),
                                     df["subject"].nunique(), f"{ed_col} vs {hosp_col}",
                                     *[_s(bad[c]) for c in DIAG_COLUMNS],
