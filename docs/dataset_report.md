@@ -152,6 +152,108 @@ The full label list for each dataset is in Appendix B.
 
 <!-- section: A4 -->
 
+## 4c. How each label was made
+
+A label can be made in different ways: by a computer, by one doctor reading the ECG, by a doctor who also saw the health record, or by billing staff after the patient went home. It matters which one. A label made from the whole hospital stay may not describe the moment the ECG was taken. This section shows, for each dataset, the steps from the ECG to the label in our files [PROV; PATH].
+
+How to read the chains below:
+
+- **→** means "then".
+- **[OUR FILE]** marks the step our label file comes from.
+- **not found** means no source we read describes that step.
+
+### Pathways, step by step
+
+**PTB-XL** [WAGNER2020; PROV; PATH]
+
+1. ECG recorded (Schiller AG machines, Oct 1989 – Jun 1996). The setting is **not found**: the site names are hidden.
+2. → A first report, written by a cardiologist (67.13%) or by the ECG machine (31.2%).
+3. → Sometimes checked by a cardiologist. Sometimes a second opinion was added (not independent).
+4. → **Later, when the dataset was made:** the report text was turned into SCP-ECG codes with a "likelihood". The heart axis and the infarct stage were also taken from the report text. Who did this step, and whether by hand or by computer: **not found**. **[OUR FILE]** (`scp_codes` and the stage columns).
+5. Time from ECG to label: **not documented** (the dates were shifted on purpose).
+
+In plain words: every ECG that no person checked had a machine-written first report, but 1,070 machine-written reports were later checked by a person [PROV-XTAB]. Whether the readers saw any health record beyond the ECG: **not found** [WAGNER2020].
+
+**MIMIC-IV-ECG** [PN-MIMICECG; PN-MIMICED; PN-MIMICIV; PN-MIMICECG-ICD; PATH]
+
+1. ECG recorded in the emergency department (ED), the hospital (including intensive care), or outpatient centres. The open files do not say which one for each ECG.
+2. Then the ECG can lead to several different labels:
+   - (a) **At recording:** the ECG machine writes a report. (Not downloaded.)
+   - (b) **Cardiologist reading:** "Most ECG waveforms get read by a cardiologist". These reports are for consortium members only.
+   - (c) **ED stay → ED discharge codes:** "These diagnoses are determined by trained coders after discharge from the emergency department". They "are used for billing purposes" and "are exclusively related to the patient's emergency department stay".
+   - (d) **Hospital stay → hospital billing codes.** Who assigns them and when: **not stated** on the MIMIC-IV page (it lists them under "hospital billing information").
+   - (e) **Linked in 2024 (Ext-ICD):** each ECG's time is matched to an ED stay or a hospital stay, and that stay's discharge codes are attached. **[OUR FILE would be here]**: the user has this table locally (`records_w_diag_icd10.csv`). The team has **not opened it** (credentialed).
+3. **Intensive care (ICU) is only a place where ECGs were recorded. It is not a labelling step.** The MIMIC-IV intensive-care module has no diagnosis table, and Ext-ICD uses ED and hospital discharge codes only. So a chain like "ED → ICU → label" is not supported.
+4. Our open file (`record_list.csv`) has **no labels**.
+5. Time from ECG to label: **not documented**. The only rule is that the ECG was taken "within the stay". ED codes come after ED discharge, and hospital codes describe the whole stay.
+
+**PTB Diagnostic** [PN-PTBDB; PROV; PATH]
+
+1. ECG recorded at the Department of Cardiology, University Clinic Benjamin Franklin, Berlin (patients and healthy volunteers). Ward type: **not found**.
+2. → A clinical summary in the header: reason for admission, heart artery test (catheterization), treatment and so on. Who wrote it and when: **not found**. **[OUR FILE]** (header comments).
+3. Basis: the clinical work-up, not an ECG reading.
+4. Time from ECG to label: **documented**: "ECG date" minus "Infarction date (acute)". For 60 MI patients, the earliest ECG was 0–1 days after the infarction date (section 5.3).
+
+**SPH** [LIU2022; PROV; PATH]
+
+1. ECG recorded at Shandong Provincial Hospital, Jinan (Aug 2019 – Aug 2020), MedEx MECG-200. Setting: **not found**.
+2. → The MedEx system measured ECG features, as a reference.
+3. → "The responsible cardiologist made the final diagnosis in consideration of the patient health record" (in Chinese).
+4. → **Later, for the dataset:** "An experienced cardiologist re-checked all original diagnostic statements and made corrections".
+5. → Translated into AHA codes by rules. Records that could not be translated were left out. **[OUR FILE]** (`AHA_Code` in `metadata.csv`).
+6. Time from ECG to label: **not documented** (dates shifted).
+
+**CODE-15%** [RIBEIRO2020; ZEN-CODE15; PROV; PATH]
+
+1. ECG recorded "mostly in primary care facilities" on a tele-ECG machine. The tracing is sent "to the TNMG analysis center" together with the patient's clinical history.
+2. → "One cardiologist from the TNMG experienced team analyzes the exam" and writes a report.
+3. → **Later, for the study:** text labels were taken from these reports and combined with two computer systems (Uni-G and Minnesota codes) by rules. 34,512 unclear exams were "manually reviewed by medical students … under the supervision of a certified cardiologist". **[OUR FILE]** (`exams.csv` columns). This is the method for the full CODE dataset. For the 15% part: **not found**.
+4. `normal_ecg` is set by an automatic system.
+5. Time from ECG to label: **not documented**.
+
+**Chapman-Shaoxing and Ningbo** [ZH2020; PN-ECGARR; PA2020; PROV; PATH]
+
+1. "12-lead resting ECG", 10 seconds, 500 Hz, stored in the GE MUSE system. Setting: **not found**.
+2. → "A licensed physician labeled the rhythm and other cardiac conditions".
+3. → A second licensed physician checked the labels.
+4. → A senior physician decided when they disagreed.
+5. → **Later, for the 2021 Challenge:** mapped to SNOMED CT ("approximate SNOMED CT codes"). **[OUR FILE]** (header `#Dx` and publisher's counts). For Ningbo, the original label behind "acute MI" and "anterior MI" is unknown.
+6. Whether the doctors saw more than the ECG: **not found**. Time from ECG to label: **not documented**.
+
+**CPSC 2018, CPSC-Extra and Georgia** [PN-CHALLENGE2021; PA2020; PROV; PATH]
+
+1. ECG recorded: CPSC in China (the contest was in Nanjing); Georgia at Emory University, Atlanta. Settings: **not found**.
+2. → Original labelling steps: **not found**. We looked at the Challenge pages, the Challenge paper, and the CPSC 2018 paper, which could not be opened.
+3. → **Later, for the 2021 Challenge:** mapped to SNOMED CT (approximate codes). **[OUR FILE]** (header `#Dx` and publisher's counts).
+4. Time from ECG to label: **not found**.
+
+**INCART** [README-INCART; PROV; PATH]
+
+1. Holter recordings: "75 annotated recordings extracted from 32 Holter records" of patients "undergoing tests for coronary artery disease".
+2. → Patient diagnoses (such as "Acute MI") were "confirmed by enzyme check, coronary angiography, electrophysiological study, pressure monitoring where necessary". Who made them, and when: **not found**. **[OUR FILE]** (`files-patients-diagnoses.txt`, header comments).
+3. → Beat marks were "produced by an automatic algorithm and then corrected manually".
+4. → Record descriptions (such as "ST elevation"). Author: **not found**.
+5. Time from the heart attack to the recording: **not found**.
+
+### Summary table
+
+| Dataset | Who labelled | Basis of the label | Our file comes from | Time from ECG to label |
+|---|---|---|---|---|
+| PTB-XL | Cardiologist or ECG machine; often checked by a cardiologist | The ECG report; whether more was seen: not found | Report text turned into codes when the dataset was made | Not documented |
+| MIMIC-IV-ECG | Machine (open); cardiologist (not open); billing coders (credentialed) | Machine/cardiologist: the ECG. Codes: the whole ED or hospital stay | Open file: no labels. Ext-ICD (stay discharge codes): not opened | Not documented; only "within the stay" |
+| PTB Diagnostic | Not found | Clinical work-up | Header clinical summary | **Documented** (ECG date − infarction date) |
+| SPH | Cardiologist, then re-checked by an experienced cardiologist | ECG + patient health record | Re-checked statements translated to AHA codes | Not documented |
+| CODE-15% | Cardiologist report + computer systems; unclear cases by medical students with a cardiologist (full CODE) | The ECG + the clinical history sent with it (tele-ECG report) | Study labels from the reports (15% part: not stated) | Not documented |
+| Chapman-Shaoxing, Ningbo | Physician, checked by a second physician; senior physician for disagreements | Not found | Challenge 2021 SNOMED mapping | Not documented |
+| CPSC 2018, CPSC-Extra, Georgia | Not found | Not found | Challenge 2021 SNOMED mapping | Not found |
+| INCART | Diagnoses: not found; beat marks: computer, corrected by people | Clinical work-up (per patient) | Patient diagnosis file | Not found |
+
+Some classes are made differently within a dataset: CODE-15% `normal_ecg` is set by an automatic system, while its 6 other columns come from reports; PTB-XL's heart axis "was automatically extracted from the ECG report"; PTB-XL's likelihood is taken from report words, for diagnosis codes only; INCART's beat marks (computer, then corrected by people) are made differently from its patient diagnoses [PROV; ZEN-CODE15; WAGNER2020; README-INCART]. Apart from these named differences, no source describes a different method for individual label classes, so each class inherits its dataset's method [PROV].
+
+### Per-class table
+
+*Waiting for verified facts* (from `results/label_provenance.csv`).
+
 ## 5. Each dataset in detail
 
 Each part answers the same 10 questions. Each answer gives its source.
@@ -1258,6 +1360,8 @@ Every fact in the report cites one of these sources in square brackets. PDF page
 - **[RIEK]** Riek et al., ECG-SMART-NET. https://arxiv.org/abs/2405.09567 (abstract and Methods).
 - **[AWS-HEEDB]** Harvard-Emory ECG Database, AWS Open Data Registry. https://registry.opendata.aws/bdsp-heedb/
 - **[EXTRA-DERIVED]** MIMIC-IV-ECG-ext-ICD public page (as [PN-MIMICECG-ICD]), used for the "derived datasets" note.
+- **[PN-MIMICED]** MIMIC-IV-ED, release 2.2, PhysioNet (diagnosis table description). https://physionet.org/content/mimic-iv-ed/2.2/
+- **[PN-MIMICIV]** MIMIC-IV, release 2.2, PhysioNet (hosp and icu module descriptions). https://physionet.org/content/mimiciv/2.2/
 - **[PN-CHALLENGE2021]** PhysioNet/Computing in Cardiology Challenge 2021, release 1.0.3. https://physionet.org/content/challenge-2021/1.0.3/ (checked 2026-10-20), and the Challenge web page https://moody-challenge.physionet.org/2021/.
 - **[DXMAP]** The Challenge 2021 label files `dx_mapping_scored.csv` and `dx_mapping_unscored.csv` (from the Challenge evaluation code; our copy downloaded 2026-10-20, checksum in `download_manifest.csv`; these files can change). They give a count per label for each source. What the counts count is **not defined** by the publisher. Counts are in `results/challenge_dx_mapping_counts.csv` (recounted by the planner).
 
@@ -1278,5 +1382,8 @@ All are in `results/`. Each one describes the files we downloaded on 2026-10-20,
 - **[INV]** Full label lists: `label_inventory_<dataset>.csv`, `label_inventory_summary.md` (made by a script from the downloaded files only; checked by the planner).
 - **[AFCHK]** Atrial fibrillation vs flutter check for Ningbo and Chapman-Shaoxing (row "AF vs AFL check" in `verified_facts.md`; publisher's label file, our sample headers and the original release's `ConditionNames_SNOMED-CT.csv`).
 - **[XWALK]** Common-label table: `label_crosswalk_common.csv` (a team mapping by meaning, checked by the planner; needs supervisor review).
+- **[PROV]** Label provenance rows ("S13 provenance" in `verified_facts.md`, including the MIMIC Ext-ICD row).
+- **[PROV-XTAB]** PTB-XL check of human validation vs machine-written first reports (row "S13 provenance (crosstab)" in `verified_facts.md`).
+- **[PATH]** Label pathway rows ("S13 pathway" in `verified_facts.md`).
 - **[OBS-DOWNLOAD]** `download_manifest.csv`: what was downloaded, from where, and its checksum.
 - All checked facts: `verified_facts.md`.
