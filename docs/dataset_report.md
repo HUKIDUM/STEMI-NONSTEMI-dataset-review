@@ -417,15 +417,15 @@ ICD-10 is the international list of disease codes. It exists in several versions
 | I21.29 | does not exist | STEMI involving other sites | does not exist |
 | I21.3 | Acute transmural MI of unspecified site | "ST elevation (STEMI) myocardial infarction of unspecified site" | Acute transmural MI of unspecified site (as WHO) |
 | I21.4 | "Acute subendocardial myocardial infarction". Includes "Myocardial infarction with non-ST elevation" | "Non-ST elevation (NSTEMI) myocardial infarction" (type 1 NSTEMI and nontransmural MI) | "Acute subendocardial myocardial infarction". Includes "Myocardial infarction with non-ST elevation" |
-| I21.9 | "Acute myocardial infarction, unspecified" | The default for an unspecified acute MI or unspecified type | Exists |
+| I21.9 | "Acute myocardial infarction, unspecified" | The default for an unspecified acute MI or unspecified type | "Acute myocardial infarction, unspecified" |
 | I21.A1 | does not exist | "Myocardial infarction type 2" | does not exist |
 | I21.A9 | does not exist | "Other myocardial infarction type" (types 3, 4a, 4b, 4c, 5) | does not exist |
 | I21.B | does not exist | "Myocardial infarction with coronary microvascular dysfunction" | does not exist |
-| I22.0 | Subsequent MI, anterior wall | Subsequent STEMI, anterior wall | Exists |
-| I22.1 | Subsequent MI, inferior wall | Subsequent STEMI, inferior wall | Exists |
+| I22.0 | Subsequent MI, anterior wall | Subsequent STEMI, anterior wall | Subsequent myocardial infarction of anterior wall |
+| I22.1 | Subsequent MI, inferior wall | Subsequent STEMI, inferior wall | Subsequent myocardial infarction of inferior wall |
 | I22.2 | does not exist | "Subsequent non-ST elevation (NSTEMI) myocardial infarction" | does not exist |
-| I22.8 | Subsequent MI, other sites | Subsequent STEMI, other sites | Exists |
-| I22.9 | Subsequent MI, unspecified site | Subsequent STEMI, unspecified site | Exists |
+| I22.8 | Subsequent MI, other sites | Subsequent STEMI, other sites | Subsequent myocardial infarction of other sites |
+| I22.9 | Subsequent MI, unspecified site | Subsequent STEMI, unspecified site | Subsequent myocardial infarction of unspecified site |
 | I25.2 | "Old myocardial infarction" (healed, or past MI with no symptoms now) | "Old myocardial infarction" | "Old myocardial infarction" (same inclusion terms as WHO) |
 | **4-week rule** | I21 = MI "specified as acute or with a stated duration of 4 weeks (28 days) or less from onset". For hospital data, this means the time from onset to admission | I21 is used while the MI is "equal to, or less than, four weeks old"; old or healed MI not needing care → I25.2 | Same inclusion text as WHO |
 
