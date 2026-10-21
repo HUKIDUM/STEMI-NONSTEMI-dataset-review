@@ -155,7 +155,7 @@ Style: plain English, short sentences, every factual sentence cited.
 
 ## 8. Add-on S13: label provenance (approved by the user 2026-10-21, via team-lead)
 
-**Goal.** A table, per dataset × label class, of HOW each label was made. Columns:
+**Goal.** A table, per dataset × label class, of HOW each label was made, plus a per-dataset label pathway (S1b). Columns:
 - labeller (ECG machine / cardiologist reading the ECG / billing coder (ICD) / study doctors);
 - steps (e.g. auto statement → cardiologist → 2nd cardiologist);
 - basis (ECG only vs whole hospital stay or health record);
@@ -171,6 +171,7 @@ Style: plain English, short sentences, every factual sentence cited.
 |---|---|---|
 | S0 | planner | Identify `data/samples/mimic_iv_ecg/records_w_diag_icd10.csv` from web pages only (do NOT open it). Done 2026-10-21: MIMIC-IV-ECG-Ext-ICD (credentialed + DUA + CITI); reported to the lead; the user decides on access. |
 | S1 | planner | Verify provenance facts per dataset (reuse existing verified rows; new rows tagged "S13"): PTB-XL, PTB Diagnostic, SPH, CODE-15%, CPSC 2018, CPSC-Extra, Georgia, Ningbo, Chapman, INCART, MIMIC-IV-ECG machine statements, and (if approved) Ext-ICD. |
+| S1b | planner | **Pathway (scope addition 2026-10-21):** per dataset, an ordered chain: (1) where/when recorded, (2) each later labelling stage (who, with what), (3) which stage our label file comes from, (4) the documented time gap ECG → label. Every step sourced or "not found". Do not assume a stage the user suggested (e.g. ICU) without a source. Done: 8 "S13 pathway" rows. |
 | S2 | coder | Per-class counts → `results/label_provenance.csv` (dataset, class, source codes, count, count type, provenance fields filled only from S13 verified rows). MIMIC ICD counts only via a user-run aggregate script, unless the user approves otherwise. |
 | S3 | planner | Verify S2 against the files and rows. |
 | S4 | documenter | Report §4c "How each label was made", from verified rows only; rebuild the PDF. |

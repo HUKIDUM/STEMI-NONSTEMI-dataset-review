@@ -1,0 +1,16 @@
+column,is_label_column,looks_boolean,name_refers_to_origin,n_true,origin_column_found
+exam_id,False,False,False,,False
+age,False,False,False,,False
+is_male,False,True,False,,False
+nn_predicted_age,False,False,False,,False
+1dAVb,True,True,False,5716,False
+RBBB,True,True,False,9672,False
+LBBB,True,True,False,6026,False
+SB,True,True,False,5605,False
+ST,True,True,False,7584,False
+AF,True,True,False,7033,False
+patient_id,False,False,False,,False
+death,False,True,False,,False
+timey,False,False,False,,False
+normal_ecg,True,True,False,134657,False
+trace_file,False,False,False,,False
