@@ -13,7 +13,7 @@ It answers three questions for 11 public ECG datasets:
 
 Every fact in the report is traced to a source (PDF page, official dataset page, paper, or a count reproduced from downloaded metadata) and was independently re-checked before use.
 
-**📄 Main result: [`docs/dataset_report.pdf`](docs/dataset_report.pdf)** (43 pages, plain English) · [Markdown version](docs/dataset_report.md)
+**📄 Main result: [`docs/dataset_report.pdf`](docs/dataset_report.pdf)** (plain English) · [Markdown version](docs/dataset_report.md)
 
 ---
 
@@ -31,6 +31,7 @@ Every fact in the report is traced to a source (PDF page, official dataset page,
 
 - **Acute / timing information is rare:** PTB Diagnostic is the only dataset with documented infarction dates (60 MI patients have an ECG 0–1 days after). PTB-XL marks 150 MI-coded ECGs as an early infarct stage; SPH has 7 "acute" MI statements; Ningbo has 49 "acute MI" labels of unknown origin.
 - **Combining:** 0 of 55 dataset pairs can be pooled as-is; 45 need named checks (resampling, length policy, lead mapping by name, units, patient IDs, label mapping, overlap); 10 (every pair with INCART) should not be pooled for MI training.
+- **How the labels were made:** in most datasets the labels are statements from reading the ECG (by a cardiologist, the ECG machine, or both); PTB Diagnostic and INCART have clinical diagnoses, and for CPSC 2018, CPSC-Extra and Georgia the method was not found. MIMIC-IV-ECG-Ext-ICD gives ED/hospital discharge ICD-10 codes per stay (credentialed; no time window to the ECG is stated). See report §4c.
 - **Traps found:** MIMIC-IV-ECG stores aVF before aVL and uses a different scale than PTB-XL (in our samples); CODE-15%'s `ST` column means sinus tachycardia; in the Chapman/Ningbo label list "AF" means atrial *flutter*; the Challenge 2021 copies of PTB-XL and PTB Diagnostic duplicate the original releases; five Challenge datasets have repeat patients but no patient ID.
 
 ## Datasets reviewed
