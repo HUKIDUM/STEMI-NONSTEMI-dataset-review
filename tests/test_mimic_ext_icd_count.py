@@ -100,8 +100,9 @@ def test_suppress_parts():
 
 
 def test_flag_parsing_and_unparseable():
-    v, bad = mx._flag(pd.Series(["True", "false", "1", "0", "T", "f", "yes", "maybe"]))
-    assert v.tolist() == [True, False, True, False, True, False, False, False] and bad == 2
+    v, bad = mx._flag(pd.Series(["True", "false", "1", "0.0", "T", "f", "yes", "no", "", "maybe", "2"]))
+    assert v.tolist() == [True, False, True, False, True, False, True, False, False, False, False]
+    assert bad == 2                                                   # "maybe", "2"
 
 
 def test_default_pair_is_ed_journey(tmp_path):
@@ -125,3 +126,13 @@ def test_elapsed_and_pair_printed(tmp_path, capsys):
     out = capsys.readouterr().out
     assert "Elapsed:" in out and "Disagreement pair used: ed_diag_ed vs ed_diag_hosp" in out
     assert "Cell format assumed" in out and "Flag format assumed" in out
+    assert "flag values not recognised" in out
+
+
+def test_unparseable_1_to_9_prints_suppressed(tmp_path):
+    rows = [_row(6000 + i, hosp="['I10']") for i in range(12)]
+    for r in rows[:3]:
+        r["ed_diag_ed"] = "garbage {"                                  # 3 unparseable cells
+    ident = mx.run(_write(tmp_path, rows))["identity"].set_index("item")["value"]
+    assert ident["unparseable cells in ed_diag_ed"] == "<10"
+    assert ident["unparseable cells in hosp_diag_hosp"] == "0"
