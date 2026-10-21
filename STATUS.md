@@ -112,7 +112,7 @@ Last update: 2026-10-21 (team-lead)
   - **S12-L DONE.** Optional when the team is back: planner re-reads §4b + Appendix B against `results/label_crosswalk_common.csv` / `label_inventory_*.csv` (tables are script-generated from verified CSVs).
 - Still waiting for the user's MIMIC ICD count output (U1).
 
-- **S14 label coding systems** (user-approved 2026-10-21): Part A (label system per dataset) + Part B (MI codes in WHO ICD-10 2019 / ICD-10-CM FY2025 / ICD-10-TM 2016) → 5 "S14" rows in `results/verified_facts.md` (planner, official sources only: WHO browser, the CMS FY2025 guideline PDF, NLM ICD-10-CM API, the THCC ICD-10-TM 2016 Vol. 1 e-book). Key point: TM = WHO structure; CM-only I21.01–I21.29, I21.A1/A9, I21.B, I22.2; CM titles say STEMI/NSTEMI, WHO/TM say transmural/subendocardial. Next: documenter §4d.
+- **S14 label coding systems** (user-approved 2026-10-21): Part A (label system per dataset) + Part B (MI codes in WHO ICD-10 2019 / ICD-10-CM FY2025 / ICD-10-TM 2016) → 5 "S14" rows in `results/verified_facts.md` (planner, official sources only: WHO browser, the CMS FY2025 guideline PDF, NLM ICD-10-CM API, the THCC ICD-10-TM 2016 Vol. 1 e-book). Key point: TM = WHO structure; CM-only I21.01–I21.29, I21.A1/A9, I21.B, I22.2; CM titles say STEMI/NSTEMI, WHO/TM say transmural/subendocardial. §4d written by documenter and checked by planner; PDF 52 pages.
 
 ## Next
 - When the user sends the `mimic_icd_count.py` output: planner verifies it (aggregates only), adds mimic_iv_ecg Q6 rows, documenter updates §1/§4/§5.2/§6, rebuild the PDF, commit.

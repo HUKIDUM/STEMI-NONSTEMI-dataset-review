@@ -376,6 +376,80 @@ The classes are the 21 from section 4b plus **Q wave** (a downward wave at the s
 | any I21/I22 (I21*, I22*; ASSUMPTION) | `I21*, I22*` | pending user-run count (credentialed) |
 | machine report statements (all classes) | `report_0..report_17` | not checked |
 
+## 4d. Label coding systems
+
+Each dataset writes its labels in a "coding system": a fixed list of codes. Different systems can give different names to the same thing. This matters most for heart attacks, because the codes that say "STEMI" or "NSTEMI" differ between countries.
+
+### Which system each dataset uses
+
+| Dataset | Label system | Standard / version |
+|---|---|---|
+| PTB-XL | SCP-ECG statements | "Conforming to the SCP-ECG standard", Standard ISO 11073-91064:2009. The paper also mentions older "SCP-ECG v0.4 (Annex B)" statements. The label table also gives AHA, aECG, CDISC and DICOM columns [WAGNER2020; S14A] |
+| SPH | AHA standard statements | The AHA/ACC/HRS recommendations: Mason, Hancock, Gettes, Circulation 2007;115:1325–1332, doi:10.1161/CIRCULATIONAHA.106.180201 (part number: not given) [LIU2022; S14A] |
+| CPSC 2018, CPSC-Extra, Georgia, Ningbo, Chapman-Shaoxing | SNOMED CT | "Approximate SNOMED CT codes" mapped from the original labels. Which SNOMED CT release: **not found** [PN-CHALLENGE2021; PA2020; S14A] |
+| CODE-15% | Yes/no columns | Full CODE labels came from the Uni-G program, Minnesota codes and cardiologist reports. Versions of Uni-G and Minnesota code: **not found** [RIBEIRO2020; S14A] |
+| PTB Diagnostic | Free text (clinical summary) | No code system [S14A] |
+| INCART | Free-text diagnoses + beat marks | Beat marks follow "the standard PhysioBank beat annotation definitions" [README-INCART; S14A] |
+| MIMIC-IV-ECG (open files) | Machine-written free text | No code system [S14A] |
+| MIMIC-IV-ECG-Ext-ICD (credentialed) | ICD-10-CM (the US version of ICD-10) | Older ICD-9-CM codes were converted with the Python package "icd-mappings". ICD-10-CM release year: **not stated** on the page [PN-MIMICECG-ICD; S14A] |
+
+### Heart-attack codes in three versions of ICD-10
+
+ICD-10 is the international list of disease codes. It exists in several versions:
+
+- **WHO ICD-10** (the international version, 2019 edition) [WHO-ICD10-2019];
+- **ICD-10-CM** (the US version, used by MIMIC). Code titles are from the US National Library of Medicine code list, which does not state its edition year. The rules are confirmed by the official FY 2025 coding guidelines [NLM-CM-API; CMS-CM-FY2025];
+- **ICD-10-TM** (the Thai version, 2016 edition, Volume 1) [THCC-TM-2016].
+
+"Transmural" means the damage goes through the whole heart wall. "Subendocardial" means only the inner layer is damaged.
+
+| Code | WHO ICD-10 (2019) | ICD-10-CM (US) | ICD-10-TM (Thailand, 2016) |
+|---|---|---|---|
+| I21.0 | Acute transmural MI of anterior wall | Group only (see I21.01–I21.09); used for type 1 STEMI | Acute transmural MI of anterior wall (as WHO) |
+| I21.01 | does not exist | STEMI involving left main coronary artery | does not exist |
+| I21.02 | does not exist | STEMI involving left anterior descending coronary artery | does not exist |
+| I21.09 | does not exist | STEMI involving other coronary artery of anterior wall | does not exist |
+| I21.1 | Acute transmural MI of inferior wall | Group only (see I21.11–I21.19); used for type 1 STEMI | Acute transmural MI of inferior wall (as WHO) |
+| I21.11 | does not exist | STEMI involving right coronary artery | does not exist |
+| I21.19 | does not exist | STEMI involving other coronary artery of inferior wall | does not exist |
+| I21.2 | Acute transmural MI of other sites | Group only (see I21.21–I21.29); used for type 1 STEMI | Acute transmural MI of other sites (as WHO) |
+| I21.21 | does not exist | STEMI involving left circumflex coronary artery | does not exist |
+| I21.29 | does not exist | STEMI involving other sites | does not exist |
+| I21.3 | Acute transmural MI of unspecified site | "ST elevation (STEMI) myocardial infarction of unspecified site" | Acute transmural MI of unspecified site (as WHO) |
+| I21.4 | "Acute subendocardial myocardial infarction". Includes "Myocardial infarction with non-ST elevation" | "Non-ST elevation (NSTEMI) myocardial infarction" (type 1 NSTEMI and nontransmural MI) | "Acute subendocardial myocardial infarction". Includes "Myocardial infarction with non-ST elevation" |
+| I21.9 | "Acute myocardial infarction, unspecified" | The default for an unspecified acute MI or unspecified type | Exists |
+| I21.A1 | does not exist | "Myocardial infarction type 2" | does not exist |
+| I21.A9 | does not exist | "Other myocardial infarction type" (types 3, 4a, 4b, 4c, 5) | does not exist |
+| I21.B | does not exist | "Myocardial infarction with coronary microvascular dysfunction" | does not exist |
+| I22.0 | Subsequent MI, anterior wall | Subsequent STEMI, anterior wall | Exists |
+| I22.1 | Subsequent MI, inferior wall | Subsequent STEMI, inferior wall | Exists |
+| I22.2 | does not exist | "Subsequent non-ST elevation (NSTEMI) myocardial infarction" | does not exist |
+| I22.8 | Subsequent MI, other sites | Subsequent STEMI, other sites | Exists |
+| I22.9 | Subsequent MI, unspecified site | Subsequent STEMI, unspecified site | Exists |
+| I25.2 | "Old myocardial infarction" (healed, or past MI with no symptoms now) | "Old myocardial infarction" | "Old myocardial infarction" (same inclusion terms as WHO) |
+| **4-week rule** | I21 = MI "specified as acute or with a stated duration of 4 weeks (28 days) or less from onset". For hospital data, this means the time from onset to admission | I21 is used while the MI is "equal to, or less than, four weeks old"; old or healed MI not needing care → I25.2 | Same inclusion text as WHO |
+
+DNE = does not exist in that version [WHO-ICD10-2019; NLM-CM-API; CMS-CM-FY2025; THCC-TM-2016; S14C].
+
+Notes:
+
+- **The word "STEMI" is not in the WHO or Thai titles.** They say "transmural" and "subendocardial". Only the US version says "STEMI" and "NSTEMI" [WHO-ICD10-2019; THCC-TM-2016; NLM-CM-API].
+- **US rules that the other versions do not have** (CM guideline only):
+  - A type 2 MI that is described as STEMI or NSTEMI gets **only** I21.A1. I21.01–I21.4 are for type 1 MI only.
+  - An NSTEMI that becomes a STEMI is coded STEMI. A STEMI that turns into an NSTEMI after clot-dissolving treatment is still coded STEMI.
+  - I22 is used only when both heart attacks are type 1 or unspecified, within 4 weeks [CMS-CM-FY2025].
+- **Thai version:** for I21, I22 and I25.2, the 2016 edition has the same structure as WHO. We searched the whole of Volume 1: there are no I21.A, I21.B, 5-character I21 or I22 codes and no I22.2, and the words "STEMI" and "NSTEMI" do not occur [THCC-TM-2016]. The Thai coding guidelines (Volume 5), which say how coders should use these codes for MI: **not checked**.
+- The year each US-only code was introduced: **not checked** [S14C].
+
+### What this means when combining MIMIC with Thai hospital data
+
+- The Thai codes follow the WHO structure (for I21, I22 and I25.2 in the 2016 edition). The US codes used by MIMIC are more detailed [THCC-TM-2016; S14C].
+- In the US version, I21.0–I21.3 are called STEMI and I21.4 is called NSTEMI. In the WHO and Thai versions the same codes are called "transmural" and "subendocardial", although Thai and WHO I21.4 includes "MI with non-ST elevation" [S14C].
+- The US-only codes (I21.01–I21.29, I21.A1, I21.A9, I21.B, I22.2) have no Thai equivalent [S14C].
+- In the US, a type 2 MI described as STEMI or NSTEMI goes to I21.A1, not to I21.0–I21.4 [CMS-CM-FY2025].
+
+*Planner's note:* so a mapping between MIMIC (US codes, with old ICD-9 codes converted) and Thai hospital data (Thai codes) is **not one to one**. US I21.A1, I21.A9 and I21.B have no Thai equivalent. The Thai "transmural" vs "subendocardial" titles only approximate STEMI vs NSTEMI. The supervisor must agree this mapping before any combined labels are used (section 9) [S14C].
+
 ## 5. Each dataset in detail
 
 Each part answers the same 10 questions. Each answer gives its source.
@@ -770,6 +844,7 @@ Each item says where we looked. Section 5 gives the details for each dataset.
 
 - **MIMIC diagnosis-code count.** The user will run `src/stemi/review/mimic_icd_count.py` with their own credentialed access. Until then: not checked yet: needs credentialed access; the user will run the count script (`STATUS.md`, U1).
 - **Which diagnosis codes mean STEMI, and which mean NSTEMI?** The supervisor must sign off this list before any count is used as a label. The team's proposed groups are listed in section 4c (I21.0–I21.3 as STEMI, I21.4 as NSTEMI, marked ASSUMPTION).
+- **Agree a WHO/TM ↔ CM mapping for MI codes (section 4d).** This is needed before MIMIC labels (US codes) are combined with Thai hospital data (Thai codes).
 - **What counts as "acute" (new)?** For example, how many days between the heart attack and the ECG (`data_contract.md` Q2). This decides how to use PTB Diagnostic's dates and the "acute" words in SPH and Ningbo.
 - **What counts as proof of "no heart attack"?** A missing code is not enough (`data_contract.md` L1, Q4).
 - **PTB Diagnostic "Lytic agent" field:** does it tell us anything about STEMI? This report does not use it as a label (section 5.3).
@@ -1484,6 +1559,10 @@ Every fact in the report cites one of these sources in square brackets. PDF page
 - **[EXTRA-DERIVED]** MIMIC-IV-ECG-ext-ICD public page (as [PN-MIMICECG-ICD]), used for the "derived datasets" note.
 - **[PN-MIMICED]** MIMIC-IV-ED, release 2.2, PhysioNet (diagnosis table description). https://physionet.org/content/mimic-iv-ed/2.2/
 - **[PN-MIMICIV]** MIMIC-IV, release 2.2, PhysioNet (hosp and icu module descriptions). https://physionet.org/content/mimiciv/2.2/
+- **[WHO-ICD10-2019]** WHO ICD-10, 2019 edition, official browser. https://icd.who.int/browse10/2019/en (I21, I22, I25; read 2026-10-21).
+- **[CMS-CM-FY2025]** CMS/NCHS, "ICD-10-CM Official Guidelines for Coding and Reporting FY 2025", section I.C.9.e (pp. 52–54). https://www.cms.gov/files/document/fy-2025-icd-10-cm-coding-guidelines.pdf
+- **[NLM-CM-API]** NIH/NLM Clinical Tables ICD-10-CM code list (edition year not stated). https://clinicaltables.nlm.nih.gov/api/icd10cm/v3/search
+- **[THCC-TM-2016]** ICD-10-TM 2016, Volume 1 (Tabular List, English–Thai), Chapter IX pp. 286–288. Thai national health coding centre (THCC), http://thcc.or.th/ICD-10TM/ and http://www.thcc.or.th/ebook1/2016/
 - **[PN-CHALLENGE2021]** PhysioNet/Computing in Cardiology Challenge 2021, release 1.0.3. https://physionet.org/content/challenge-2021/1.0.3/ (checked 2026-10-20), and the Challenge web page https://moody-challenge.physionet.org/2021/.
 - **[DXMAP]** The Challenge 2021 label files `dx_mapping_scored.csv` and `dx_mapping_unscored.csv` (from the Challenge evaluation code; our copy downloaded 2026-10-20, checksum in `download_manifest.csv`; these files can change). They give a count per label for each source. What the counts count is **not defined** by the publisher. Counts are in `results/challenge_dx_mapping_counts.csv` (recounted by the planner).
 
@@ -1508,5 +1587,7 @@ All are in `results/`. Each one describes the files we downloaded on 2026-10-20,
 - **[PROV-XTAB]** PTB-XL check of human validation vs machine-written first reports (row "S13 provenance (crosstab)" in `verified_facts.md`).
 - **[LPROV]** Per-class provenance table: `label_provenance.csv` (row "S13 label_provenance" in `verified_facts.md`; counts equal the verified common-label table).
 - **[PATH]** Label pathway rows ("S13 pathway" in `verified_facts.md`).
+- **[S14A]** Label systems per dataset (row "S14 coding systems (Part A)" in `verified_facts.md`).
+- **[S14C]** Comparison of WHO, US and Thai ICD-10 heart-attack codes (row "S14 comparison" in `verified_facts.md`, including the planner's note).
 - **[OBS-DOWNLOAD]** `download_manifest.csv`: what was downloaded, from where, and its checksum.
 - All checked facts: `verified_facts.md`.
